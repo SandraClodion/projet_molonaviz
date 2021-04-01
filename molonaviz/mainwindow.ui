@@ -29,6 +29,7 @@
     </property>
     <addaction name="actionCreate_Study"/>
     <addaction name="actionOpen_Study"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuStudy"/>
