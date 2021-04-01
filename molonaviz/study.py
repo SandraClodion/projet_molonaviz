@@ -11,7 +11,6 @@ class Study(object):
         self.rootDir = rootDir
         self.sensorDir = sensorDir
     
-    
     def loadSensor(self, sensorName):
         sensor = Sensor(sensorName)
         pathCalib = os.path.join(self.sensorDir, sensorName, "calibfit_{}.csv".format(sensorName))
