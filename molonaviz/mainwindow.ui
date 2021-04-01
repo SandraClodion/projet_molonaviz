@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>918</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuStudy">
@@ -62,6 +62,11 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionCreateStudy2">
+   <property name="text">
+    <string>CreateStudy2</string>
    </property>
   </action>
  </widget>

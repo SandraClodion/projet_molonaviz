@@ -1,8 +1,9 @@
 import sys
 import os
 from PyQt5 import QtWidgets, uic
+from study import Study
 
-From_DialogStudy,dummy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"dialogstudy.ui"))
+From_DialogStudy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"dialogstudy.ui"))[0]
 
 class DialogStudy(QtWidgets.QDialog,From_DialogStudy):
     
@@ -13,7 +14,10 @@ class DialogStudy(QtWidgets.QDialog,From_DialogStudy):
         self.setupUi(self) 
         self.pushButtonBrowseRootDir.clicked.connect(self.browseRootDir)
         self.pushButtonBrowseSensorsDir.clicked.connect(self.browseSensorsDir)
-        
+        self.buttonBox.rejected.connect(self.clickedCancel)
+        self.buttonBox.accepted.connect(self.clickedOk)
+
+
     def browseRootDir(self):
         dirPath = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Study Root Directory")
         if dirPath:
@@ -23,5 +27,11 @@ class DialogStudy(QtWidgets.QDialog,From_DialogStudy):
         dirPath = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Study Sensors Directory")
         if dirPath:
             self.lineEditSensorsDir.setText(dirPath) 
+    
+    def clickedCancel(self):
+        print("cancel !")
+
+    def clickedOk(self):
+        print("Ok !")
 
 
