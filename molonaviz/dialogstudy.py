@@ -13,6 +13,7 @@ class DialogStudy(QtWidgets.QDialog,From_DialogStudy):
         
         self.pushButtonBrowseRootDir.clicked.connect(self.browseRootDir)
         self.pushButtonBrowseSensorsDir.clicked.connect(self.browseSensorsDir)
+        
     def browseRootDir(self):
         dirPath = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Study Root Directory")
         if dirPath:

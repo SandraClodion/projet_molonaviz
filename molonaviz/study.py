@@ -1,5 +1,4 @@
 from sensor import Sensor
-from point import Point
 import os
 
 class Study(object):
@@ -15,7 +14,7 @@ class Study(object):
     
     def loadSensor(self, sensorName):
         sensor = Sensor(sensorName)
-        pathCalib = os.path.join(self.sensorDir, sensorName, f"calibfit_{sensorName}.csv")
+        pathCalib = os.path.join(self.sensorDir, sensorName, "calibfit_{}.csv".format(sensorName))
         file = open(pathCalib,"r")
         lines = file.readlines()
         for line in lines:
@@ -26,9 +25,3 @@ class Study(object):
             if line.split(';')[0].strip() == "dU/dT":
                 sensor.dudt = line.split(';')[1].strip()
         return sensor
-    
-   # def loadPoint(self, pointName):
-        #point = Point(pointName)
-        #pathPressure = os.path.join(self.rootDir, pointname, f"")
-        # à compléter
-        #return point
