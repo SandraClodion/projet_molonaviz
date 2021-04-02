@@ -26,7 +26,6 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.actionOpen_Study.triggered.connect(self.clickedOpenStudy)
 
         self.dialogstudy = DialogStudy()
-
         self.dialogstudy.buttonBox.accepted.connect(self.createStudy)
     
     def createStudy(self):

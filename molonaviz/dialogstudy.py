@@ -14,9 +14,6 @@ class DialogStudy(QtWidgets.QDialog,From_DialogStudy):
         self.setupUi(self) 
         self.pushButtonBrowseRootDir.clicked.connect(self.browseRootDir)
         self.pushButtonBrowseSensorsDir.clicked.connect(self.browseSensorsDir)
-        self.buttonBox.rejected.connect(self.clickedCancel)
-        self.buttonBox.accepted.connect(self.clickedOk)
-
 
     def browseRootDir(self):
         dirPath = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Study Root Directory")
@@ -27,11 +24,5 @@ class DialogStudy(QtWidgets.QDialog,From_DialogStudy):
         dirPath = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Study Sensors Directory")
         if dirPath:
             self.lineEditSensorsDir.setText(dirPath) 
-    
-    def clickedCancel(self):
-        print("cancel !")
-
-    def clickedOk(self):
-        print("Ok !")
 
 
