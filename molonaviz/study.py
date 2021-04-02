@@ -1,6 +1,6 @@
 from sensor import Sensor
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
-import os
+import os, glob
 
 class Study(object):
     '''
@@ -11,10 +11,11 @@ class Study(object):
         self.name = name
         self.rootDir = rootDir
         self.sensorDir = sensorDir
+        self.saveFileName = "studyText"
     
     def loadSensor(self, sensorName):
         sensor = Sensor(sensorName)
-        pathCalib = os.path.join(self.sensorDir, sensorName, "calibfit_{}.csv".format(sensorName))
+        pathCalib = os.path.join(self.sensorDir, sensorName, f"calibfit_{sensorName}.csv")
         file = open(pathCalib,"r")
         lines = file.readlines()
         for line in lines:
@@ -37,7 +38,36 @@ class Study(object):
             item.setData(sensor, QtCore.Qt.UserRole)
             
             sensorModel.appendRow(item)
-            item.appendRow(QtGui.QStandardItem("intercept = {:.2f}".format(float(sensor.intercept))))
-            item.appendRow(QtGui.QStandardItem("dudh = {:.2f}".format(float(sensor.dudh))))
-            item.appendRow(QtGui.QStandardItem("dudt = {:.2f}".format(float(sensor.dudt))))
+            item.appendRow(QtGui.QStandardItem(f"intercept = {float(sensor.intercept):.2f}"))
+            item.appendRow(QtGui.QStandardItem(f"dudh = {float(sensor.dudh):.2f}"))
+            item.appendRow(QtGui.QStandardItem(f"dudt = {float(sensor.dudt):.2f}"))
     
+    def saveStudyToText(self):
+        pathStudyText = os.path.join(self.rootDir, f"{self.saveFileName}.txt")
+        with open(pathStudyText, "w") as studyText :
+            studyText.write(f"Name: {self.name} \n")
+            studyText.write(f"SensorsDirectory: {self.sensorDir}")
+
+    def loadStudyFromText(rootDir):
+        """
+        Le fichier texte doit se présenter sous la forme suivante :
+        Name: Nom de l'étude
+        SensorsDir: Chemin d'accès du dossier capteurs
+        Pour le moment la méthode renvoie le nom de l'étude qu'on souhaite charger 
+        et le chemin d'accès vers le dossier des capteurs utilisés pour l'étude
+        """
+        os.chdir(rootDir)
+        textFile = glob.glob("*.txt")[0]
+        with open(textFile, 'r') as studyText:
+            lines = studyText.read().splitlines() 
+            nameLine = lines[0]
+            sensorDirLine = lines[1]
+            name = nameLine.split(' ', 1)[1]
+            sensorDir = sensorDirLine.split(' ', 1)[1]
+        return name, sensorDir
+
+
+        
+
+
+   
