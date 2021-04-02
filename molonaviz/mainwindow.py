@@ -19,7 +19,10 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         
         self.sensorModel = QtGui.QStandardItemModel()
         self.treeViewSensors.setModel(self.sensorModel)
-        
+
+        self.pointModel = QtGui.QStandardItemModel()
+        self.treeViewDataPoints.setModel(self.pointModel)
+
         self.menubar.setNativeMenuBar(False) #Permet d'afficher la barre de menu dans la fenêtre
 
         self.actionCreate_Study.triggered.connect(self.clickedCreateStudy)
@@ -45,6 +48,16 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             item.appendRow(QtGui.QStandardItem(f"intercept = {float(sensor.intercept):.2f}"))
             item.appendRow(QtGui.QStandardItem(f"dudh = {float(sensor.dudh):.2f}"))
             item.appendRow(QtGui.QStandardItem(f"dudt = {float(sensor.dudt):.2f}"))
+    
+    def loadPoints(self):
+        rdir = self.currentStudy.rootDir
+        dirs = os.listdir(rdir)
+        print()
+        for mydir in dirs:
+            point = self.currentStudy.loadPoint(mydir)
+            item = QtGui.QStandardItem(mydir)
+            item.setData(point, QtCore.Qt.UserRole)
+            self.pointModel.appendRow(item)
 
     def openStudy(self, study):
         self.currentStudy = study
