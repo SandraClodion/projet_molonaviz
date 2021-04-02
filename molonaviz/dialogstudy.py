@@ -1,9 +1,12 @@
 import sys
 import os
 from PyQt5 import QtWidgets, uic
+from study import Study
 
-From_DialogStudy,dummy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"dialogstudy.ui"))
+From_DialogStudy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"dialogstudy.ui"))[0]
+
 class DialogStudy(QtWidgets.QDialog,From_DialogStudy):
+    
     def __init__(self):
         # Call constructor of parent classes
         super(DialogStudy, self).__init__()
@@ -23,4 +26,11 @@ class DialogStudy(QtWidgets.QDialog,From_DialogStudy):
         dirPath = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Study Root Directory")
         if dirPath:
             self.lineEditSensorsDir.setText(dirPath) 
+
+    def getStudy(self):
+        name = self.lineEditName.text()
+        rootdir = self.lineEditRootDir.text()
+        sensorsdir = self.lineEditSensorsDir.text()
+        return Study(name, rootdir, sensorsdir)
+
 
