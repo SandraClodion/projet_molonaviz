@@ -7,9 +7,10 @@ class Study(object):
     '''
 
     def __init__(self, name, rootDir, sensorDir):
-        self.name = name
-        self.rootDir = rootDir
-        self.sensorDir = sensorDir
+        self.name = str(name.text())
+        self.rootDir = str(rootDir.text())
+        self.sensorDir = str(sensorDir.text())
+    
     
     def loadSensor(self, sensorName):
         sensor = Sensor(sensorName)
