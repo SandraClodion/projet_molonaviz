@@ -1,4 +1,0 @@
-STUDY INFOS
-
-Name: Étude 1
-Sensors directory: /Users/sandraclodion/MINES/2A/MOLONARI/PROJET/projet_molonaviz/sensors

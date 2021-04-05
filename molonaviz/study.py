@@ -48,7 +48,7 @@ class Study(object):
             studyText.write(f"Name: {self.name} \n")
             studyText.write(f"SensorsDirectory: {self.sensorDir}")
 
-    def loadStudyFromText(rootDir):
+    def loadStudyFromText(self, rootDir):
         """
         Le fichier texte doit se présenter sous la forme suivante :
         Name: Nom de l'étude

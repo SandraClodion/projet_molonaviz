@@ -3,6 +3,7 @@ import os
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from study import Study
 from dialogstudy import DialogStudy
+from dialogfindstudy import DialogFindStudy
 
 From_MainWindow,dummy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))
 
@@ -30,12 +31,17 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         res = dlg.exec_()
         if res == QtWidgets.QDialog.Accepted:
             self.currentStudy = dlg.getStudy()
-        # à modifier par Charlotte pour appeler la fonction save to
+            self.currentStudy.saveStudyToText()
+
         
     def openStudy(self):
-        # à modifier par Charlotte pour appeler nouvelle fenêtre de dialogue
-        # qui permet de charger une étude qu'on stocke dans currentStudy
-        self.currentStudy.loadSensors(self.sensorModel)
+        dlg = DialogFindStudy()
+        res = dlg.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            rootDir = dlg.getRootDir()
+            name, sensorDir = self.currentStudy.loadStudyFromText(rootDir)
+            self.currentStudy = Study(name, rootDir, sensorDir)
+            self.currentStudy.loadSensors(self.sensorModel)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
