@@ -1,6 +1,7 @@
 from sensor import Sensor
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 import os, glob
+from to_filename import clean_filename
 
 class Study(object):
     '''
@@ -11,7 +12,6 @@ class Study(object):
         self.name = name
         self.rootDir = rootDir
         self.sensorDir = sensorDir
-        self.saveFileName = "studyText"
     
     def loadSensor(self, sensorName):
         sensor = Sensor(sensorName)
@@ -43,7 +43,7 @@ class Study(object):
             item.appendRow(QtGui.QStandardItem(f"dudt = {float(sensor.dudt):.2f}"))
     
     def saveStudyToText(self):
-        pathStudyText = os.path.join(self.rootDir, f"{self.saveFileName}.txt")
+        pathStudyText = os.path.join(self.rootDir, f"{clean_filename(self.name)}.txt")
         with open(pathStudyText, "w") as studyText :
             studyText.write(f"Name: {self.name} \n")
             studyText.write(f"SensorsDirectory: {self.sensorDir}")
