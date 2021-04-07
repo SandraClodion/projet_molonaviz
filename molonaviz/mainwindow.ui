@@ -32,7 +32,16 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuPoint">
+    <property name="title">
+     <string>Point</string>
+    </property>
+    <addaction name="actionImport_Point"/>
+    <addaction name="actionOpen_Point"/>
+    <addaction name="actionRemove_Point"/>
+   </widget>
    <addaction name="menuStudy"/>
+   <addaction name="menuPoint"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockDataPoints">
@@ -86,6 +95,21 @@
   <action name="actionCreateStudy2">
    <property name="text">
     <string>CreateStudy2</string>
+   </property>
+  </action>
+  <action name="actionImport_Point">
+   <property name="text">
+    <string>Import Point</string>
+   </property>
+  </action>
+  <action name="actionOpen_Point">
+   <property name="text">
+    <string>Open Point</string>
+   </property>
+  </action>
+  <action name="actionRemove_Point">
+   <property name="text">
+    <string>Remove Point</string>
    </property>
   </action>
  </widget>
