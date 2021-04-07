@@ -30,9 +30,8 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         dlg = DialogStudy()
         res = dlg.exec_()
         if res == QtWidgets.QDialog.Accepted:
-            self.currentStudy = dlg.getStudy()
+            self.currentStudy = dlg.setStudy()
             self.currentStudy.saveStudyToText()
-
         
     def openStudy(self):
         dlg = DialogFindStudy()
