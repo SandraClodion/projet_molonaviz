@@ -8,10 +8,14 @@ class Study(object):
     classdocs
     '''
 
-    def __init__(self, name, rootDir, sensorDir):
+    def __init__(self, name="", rootDir="", sensorDir=""):
         self.name = name
         self.rootDir = rootDir
         self.sensorDir = sensorDir
+    
+    def getStudyAttributes(self):
+        dico = {"name": self.name, "rootDir": self.rootDir, "sensorDir": self.sensorDir}
+        return dico
     
     def loadSensor(self, sensorName):
         sensor = Sensor(sensorName)
@@ -41,6 +45,7 @@ class Study(object):
             item.appendRow(QtGui.QStandardItem(f"intercept = {float(sensor.intercept):.2f}"))
             item.appendRow(QtGui.QStandardItem(f"dudh = {float(sensor.dudh):.2f}"))
             item.appendRow(QtGui.QStandardItem(f"dudt = {float(sensor.dudt):.2f}"))
+
     
     def saveStudyToText(self):
         pathStudyText = os.path.join(self.rootDir, f"{clean_filename(self.name)}.txt")
@@ -65,6 +70,8 @@ class Study(object):
             name = nameLine.split(' ', 1)[1]
             sensorDir = sensorDirLine.split(' ', 1)[1]
         return name, sensorDir
+
+
 
 
         

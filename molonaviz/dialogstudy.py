@@ -5,7 +5,7 @@ from study import Study
 
 From_DialogStudy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"dialogstudy.ui"))[0]
 
-class DialogStudy(QtWidgets.QDialog,From_DialogStudy):
+class DialogStudy(QtWidgets.QDialog, From_DialogStudy):
     
     def __init__(self):
         # Call constructor of parent classes

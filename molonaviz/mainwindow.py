@@ -1,11 +1,15 @@
 import sys
 import os
+import shutil
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from study import Study
+from point import Point
 from dialogstudy import DialogStudy
 from dialogfindstudy import DialogFindStudy
+from dialogimportpoint import DialogImportPoint
+from dialogopenpoint import DialogOpenPoint
 
-From_MainWindow,dummy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))
+From_MainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))[0]
 
 class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
     
@@ -21,10 +25,15 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.sensorModel = QtGui.QStandardItemModel()
         self.treeViewSensors.setModel(self.sensorModel)
 
+        self.openedPointsModel = QtGui.QStandardItemModel()
+        self.treeViewDataPoints.setModel(self.openedPointsModel)
+
         self.menubar.setNativeMenuBar(False) #Permet d'afficher la barre de menu dans la fenêtre
 
         self.actionOpen_Study.triggered.connect(self.openStudy)
         self.actionCreate_Study.triggered.connect(self.createStudy)
+        self.actionImport_Point.triggered.connect(self.importPoint)
+        self.actionOpen_Point.triggered.connect(self.openPoint)
 
     def createStudy(self):
         dlg = DialogStudy()
@@ -34,6 +43,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             self.currentStudy.saveStudyToText()
         
     def openStudy(self):
+        self.currentStudy = Study()
         dlg = DialogFindStudy()
         res = dlg.exec_()
         if res == QtWidgets.QDialog.Accepted:
@@ -41,6 +51,28 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             name, sensorDir = self.currentStudy.loadStudyFromText(rootDir)
             self.currentStudy = Study(name, rootDir, sensorDir)
             self.currentStudy.loadSensors(self.sensorModel)
+
+    def importPoint(self):
+        dlg = DialogImportPoint()
+        dlg.setSensorsList(self.sensorModel)
+        res = dlg.exec()
+        if res == QtWidgets.QDialog.Accepted:
+            point = dlg.addPoint(self.currentStudy.getStudyAttributes()['rootDir']) 
+            point.savePointToText()
+    
+    def openPoint(self):
+        point = Point()
+        dlg = DialogOpenPoint()
+        res = dlg.exec()
+        if res == QtWidgets.QDialog.Accepted:
+            pointDir = dlg.getPointDir()
+            name, sensor = point.loadPointFromText(pointDir)
+            point = Point(name, pointDir, sensor)
+            point.loadPoint(self.openedPointsModel)
+
+    def removePoint(self):
+        pass
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
