@@ -2,7 +2,6 @@ import sys
 import os
 from PyQt5 import QtWidgets, uic
 from study import Study
-from to_filename import clean_filename
 
 From_DialogStudy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"dialogstudy.ui"))[0]
 
@@ -32,7 +31,7 @@ class DialogStudy(QtWidgets.QDialog,From_DialogStudy):
         name = self.lineEditName.text()
         sensorsdir = self.lineEditSensorsDir.text()
         rootpath = self.lineEditRootDirPath.text()
-        rootdir = os.path.join(rootpath, clean_filename(name))
+        rootdir = os.path.join(rootpath, name)
         os.mkdir(rootdir)
         return Study(name, rootdir, sensorsdir)
 
