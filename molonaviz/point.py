@@ -1,8 +1,9 @@
 import os, glob, shutil
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from usefulfonctions import clean_filename
-from widgetpoint import WidgetPoint
-
+#from widgetpoint import WidgetPoint
+import pandas as pd
+from pandasmodel import PandasModel
 
 class Point(object):
     
@@ -45,11 +46,22 @@ class Point(object):
     def delete(self):
         shutil.rmtree(self.pointDir)
 
-    def openWidget(self):
-        self.wdgpoint = WidgetPoint(self.name, self.pointDir, self.sensor)
-        self.wdgpoint.show()
+    #def openWidget(self):
+        #self.wdgpoint = WidgetPoint(self.name, self.pointDir, self.sensor)
+        #self.wdgpoint.show()
 
-    def closeWidget(self):
-        self.wdgpoint.close()
+    #def closeWidget(self):
+        #self.wdgpoint.close()
 
-    
+    def temperatureModel(self, pointDir):
+        self.tempcsv = pointDir + "/processed_data/processed_temperatures.csv"
+        pdtemp = pd.read_csv(self.tempcsv)
+        #print(pdtemp)
+        temperatureModel = PandasModel(pdtemp)
+        return(temperatureModel)
+
+    def pressureModel(self, pointDir):
+        self.presscsv = pointDir + "/processed_data/processed_pressures.csv"
+        pdpress = pd.read_csv(self.presscsv)
+        pressureModel = PandasModel(pdpress)
+        return(pressureModel)

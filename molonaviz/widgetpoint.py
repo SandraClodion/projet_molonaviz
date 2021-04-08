@@ -1,6 +1,8 @@
 import sys
 import os
 from PyQt5 import QtWidgets, uic
+from pandasmodel import PandasModel
+from point import Point
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
@@ -26,6 +28,13 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
 
+        point = Point()
+
+        self.temperatureModel = point.temperatureModel(self.pointDir)
+        self.tableViewTemp.setModel(self.temperatureModel)
+
+        self.pressureModel = point.pressureModel(self.pointDir)
+        self.tableViewPress.setModel(self.pressureModel)
 
     def reset(self):
         ## À compléter
@@ -42,6 +51,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     def checkbox(self):
         ## À compléter
         print("checkbox")
+
 
  
     

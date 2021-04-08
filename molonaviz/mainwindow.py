@@ -10,6 +10,7 @@ from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
 from dialogremovepoint import DialogRemovePoint
 from usefulfonctions import displayInfoMessage
+from widgetpoint import WidgetPoint
 
 From_MainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))[0]
 
@@ -73,7 +74,10 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             point = Point(pointDir=pointDir)
             point.loadPointFromText() #charge le nom du point et son capteur associé
             point.loadPoint(self.openedPointsModel)
-            point.openWidget()
+            #point.openWidget()
+            self.wdg = WidgetPoint(point.name, point.pointDir, point.sensor)
+            self.wdg.show()
+
 
     def removePoint(self):
         dlg = DialogRemovePoint()
