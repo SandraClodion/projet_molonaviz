@@ -42,9 +42,13 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
         pointDir = os.path.join(rootDir, name) #le dossier porte le nom du point
         os.mkdir(pointDir)
         rawDataDir = os.path.join(pointDir, "raw_data")
-        os.mkdir(rawDataDir)
+        processedDataDir = os.path.join(pointDir, "processed_data")
 
+        os.mkdir(rawDataDir)
         shutil.copyfile(prawfile, os.path.join(rawDataDir, "raw_pressures.csv"))
         shutil.copyfile(trawfile, os.path.join(rawDataDir, "raw_temperatures.csv"))
+
+        os.mkdir(processedDataDir)
+        # à compléter, faire les conversions nécessaires
 
         return Point(name, pointDir, sensor)

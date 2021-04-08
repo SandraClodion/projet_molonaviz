@@ -21,5 +21,5 @@ class DialogRemovePoint(QtWidgets.QDialog, From_DialogRemovePoint):
         if dirPath:
             self.lineEditPointDir.setText(dirPath) 
 
-    def deletePoint(self, pointDir):
-        pass
+    def getPointToDelete(self, pointDir):
+        return 

@@ -45,8 +45,10 @@ class Study(object):
             item.appendRow(QtGui.QStandardItem(f"intercept = {float(sensor.intercept):.2f}"))
             item.appendRow(QtGui.QStandardItem(f"dudh = {float(sensor.dudh):.2f}"))
             item.appendRow(QtGui.QStandardItem(f"dudt = {float(sensor.dudt):.2f}"))
+        
+        #newsensor = sensorModel.findItems("p508")[0].data(QtCore.Qt.UserRole)
+        #print(newsensor.intercept)
 
-    
     def saveStudyToText(self):
         pathStudyText = os.path.join(self.rootDir, f"{clean_filename(self.name)}.txt")
         with open(pathStudyText, "w") as studyText :

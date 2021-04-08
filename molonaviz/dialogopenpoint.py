@@ -21,7 +21,6 @@ class DialogOpenPoint(QtWidgets.QDialog, From_DialogOpenPoint):
         if dirPath:
             self.lineEditPointDir.setText(dirPath)
      
-
     def getPointDir(self):
         pointDir = self.lineEditPointDir.text()
         return pointDir

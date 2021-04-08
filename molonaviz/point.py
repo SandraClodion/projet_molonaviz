@@ -40,7 +40,8 @@ class Point(object):
         
         item = QtGui.QStandardItem(self.name)
         item.setData(self, QtCore.Qt.UserRole)
+        pointModel.appendRow(item)    
+
         
-        pointModel.appendRow(item)        
 
     

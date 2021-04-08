@@ -51,6 +51,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             name, sensorDir = self.currentStudy.loadStudyFromText(rootDir)
             self.currentStudy = Study(name, rootDir, sensorDir)
             self.currentStudy.loadSensors(self.sensorModel)
+            
 
     def importPoint(self):
         dlg = DialogImportPoint()
