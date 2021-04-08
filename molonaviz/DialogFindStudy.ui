@@ -22,7 +22,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Root Directory</string>
+        <string>Study Directory</string>
        </property>
       </widget>
      </item>

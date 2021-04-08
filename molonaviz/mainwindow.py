@@ -3,11 +3,12 @@ import os
 import shutil
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from study import Study
-from point import Point
+from point import Point, loadPointFromText
 from dialogstudy import DialogStudy
 from dialogfindstudy import DialogFindStudy
 from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
+from widgetpoint import WidgetPoint
 
 From_MainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))[0]
 
@@ -71,14 +72,17 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             msg.exec_() 
     
     def openPoint(self):
-        point = Point()
+        #point = Point()
         dlg = DialogOpenPoint()
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
             pointDir = dlg.getPointDir()
-            name, sensor = point.loadPointFromText(pointDir)
+            name, sensor = loadPointFromText(pointDir)
             point = Point(name, pointDir, sensor)
             point.loadPoint(self.openedPointsModel)
+            self.wdgpoint = WidgetPoint(pointDir)
+            self.wdgpoint.show()
+
 
     def removePoint(self):
         pass
