@@ -1,5 +1,5 @@
 Titre de tracé : p41_p,,,
-#,Date Heure, GMT+01:00,Tension(V),Températures(°C)
+#,Date Heure(GMT+01:00),Tension(V),Températures(°C)
 1,05/18/17 12:00:00,2.49996,19.961
 2,05/18/17 12:15:00,1.52277,14.931
 3,05/18/17 12:30:00,1.98550,14.921

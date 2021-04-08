@@ -1,5 +1,5 @@
 Titre de tracé : p41_t,,,,,
-#,Date Heure, GMT+01:00,Température1(°C),Température2(°C),Température3(°C),Température4(°C)
+#,Date Heure(GMT+01:00),Température1(°C),Température2(°C),Température3(°C),Température4(°C)
 1,05/18/17 12:15:00 PM,246.216,177.188,537.327,331.683
 2,05/18/17 12:30:00 PM,285.420,157.978,304.306,537.327
 3,05/18/17 12:45:00 PM,14.361,14.122,13.738,13.137
