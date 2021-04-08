@@ -3,12 +3,13 @@ import os
 import shutil
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from study import Study
-from point import Point, loadPointFromText
+from point import Point
 from dialogstudy import DialogStudy
 from dialogfindstudy import DialogFindStudy
 from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
-from widgetpoint import WidgetPoint
+from dialogremovepoint import DialogRemovePoint
+from usefulfonctions import displayInfoMessage
 
 From_MainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))[0]
 
@@ -35,6 +36,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.actionCreate_Study.triggered.connect(self.createStudy)
         self.actionImport_Point.triggered.connect(self.importPoint)
         self.actionOpen_Point.triggered.connect(self.openPoint)
+        self.actionRemove_Point.triggered.connect(self.removePoint)
 
     def createStudy(self):
         dlg = DialogStudy()
@@ -42,19 +44,14 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         if res == QtWidgets.QDialog.Accepted:
             self.currentStudy = dlg.setStudy()
             self.currentStudy.saveStudyToText()
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Information)
-            msg.setText("New study successfully created")
-            msg.exec_() 
+            displayInfoMessage("New study successfully created")
         
     def openStudy(self):
-        self.currentStudy = Study()
         dlg = DialogFindStudy()
         res = dlg.exec_()
         if res == QtWidgets.QDialog.Accepted:
-            rootDir = dlg.getRootDir()
-            name, sensorDir = self.currentStudy.loadStudyFromText(rootDir)
-            self.currentStudy = Study(name, rootDir, sensorDir)
+            self.currentStudy = Study(rootDir=dlg.getRootDir())
+            self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
             self.currentStudy.loadSensors(self.sensorModel)
 
     def importPoint(self):
@@ -66,26 +63,36 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             sensor = self.sensorModel.findItems(sensorname)[0].data(QtCore.Qt.UserRole)
             point = self.currentStudy.addPoint(name, sensorname, prawfile, trawfile, sensor) 
             point.savePointToText()
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Information)
-            msg.setText("Point successfully imported")
-            msg.exec_() 
+            displayInfoMessage("Point successfully imported")
     
     def openPoint(self):
-        #point = Point()
         dlg = DialogOpenPoint()
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
             pointDir = dlg.getPointDir()
-            name, sensor = loadPointFromText(pointDir)
-            point = Point(name, pointDir, sensor)
+            point = Point(pointDir=pointDir)
+            point.loadPointFromText() #charge le nom du point et son capteur associé
             point.loadPoint(self.openedPointsModel)
-            self.wdgpoint = WidgetPoint(pointDir)
-            self.wdgpoint.show()
-
+            point.openWidget()
 
     def removePoint(self):
-        pass
+        dlg = DialogRemovePoint()
+        dlg.setPointsList(self.openedPointsModel)
+        res = dlg.exec()
+        if res == QtWidgets.QDialog.Accepted:
+            pointName = dlg.getPointToDelete()
+            pointItem = self.openedPointsModel.findItems(pointName)[0]
+            
+            point = pointItem.data(QtCore.Qt.UserRole)
+            point.delete() #supprime le dossier du rootDir
+
+            pointIndex = self.openedPointsModel.indexFromItem(pointItem)
+            self.openedPointsModel.removeRow(pointIndex.row()) #supprime l'item du model
+
+            point.closeWidget()
+            
+            displayInfoMessage("Point successfully removed")
+
 
 
 if __name__ == '__main__':

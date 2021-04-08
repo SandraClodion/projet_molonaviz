@@ -1,2 +1,0 @@
-Name: point41 
-SensorName: p508

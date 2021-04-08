@@ -14,12 +14,8 @@ class DialogRemovePoint(QtWidgets.QDialog, From_DialogRemovePoint):
         
         self.setupUi(self)
 
-        self.pushButtonBrowse.clicked.connect(self.browsePointDir)
-    
-    def browsePointDir(self):
-        dirPath = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Study Root Directory")
-        if dirPath:
-            self.lineEditPointDir.setText(dirPath) 
+    def setPointsList(self, pointsModel):
+        self.comboBox.setModel(pointsModel)
 
-    def getPointToDelete(self, pointDir):
-        return 
+    def getPointToDelete(self):
+        return self.comboBox.currentText()

@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>484</width>
-    <height>109</height>
+    <width>455</width>
+    <height>194</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,23 +18,16 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Point Directory :</string>
+        <string>Select point directory to remove :</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEditPointDir"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonBrowse">
-       <property name="text">
-        <string>Browse</string>
-       </property>
-      </widget>
+      <widget class="QComboBox" name="comboBox"/>
      </item>
     </layout>
    </item>

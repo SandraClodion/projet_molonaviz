@@ -15,7 +15,6 @@ class Sensor(object):
     def tensionToPressure(self, prawfile, pprocessedfile):
         df = pd.read_csv(prawfile, header = 1, index_col = 0)
         columnsNames = list(df.head(0))
-        print(len(columnsNames))
         time = columnsNames[0]
         tension = columnsNames[1]
         temperature = columnsNames[2]

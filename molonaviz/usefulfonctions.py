@@ -1,6 +1,7 @@
 import unicodedata
 import string
 import pandas as pd
+from PyQt5 import QtWidgets
 
 valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
 char_limit = 255
@@ -20,12 +21,19 @@ def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
     
     return cleaned_filename[:char_limit] 
 
+
 def celsiusToKelvin(trawfile, tprocessedfile):
-        df = pd.read_csv(trawfile, header = 1, index_col = 0)
-        columnsNames = list(df.head(0))
-        print(len(columnsNames))
-        time = columnsNames[0]
-        temps = [columnsNames[i] for i in range(1,5)]
-        for temp in temps:
-            df[temp] = df[temp]+273.15
-        df.to_csv(tprocessedfile)
+    df = pd.read_csv(trawfile, header = 1, index_col = 0)
+    columnsNames = list(df.head(0))
+    time = columnsNames[0]
+    temps = [columnsNames[i] for i in range(1,5)]
+    for temp in temps:
+        df[temp] = df[temp]+273.15
+    df.to_csv(tprocessedfile)
+
+
+def displayInfoMessage(message):
+    msg = QtWidgets.QMessageBox()
+    msg.setIcon(QtWidgets.QMessageBox.Information)
+    msg.setText(message)
+    msg.exec_() 

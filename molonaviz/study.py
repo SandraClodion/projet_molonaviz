@@ -55,15 +55,13 @@ class Study(object):
             studyText.write(f"Name: {self.name} \n")
             studyText.write(f"SensorsDirectory: {self.sensorDir}")
 
-    def loadStudyFromText(self, rootDir):
+    def loadStudyFromText(self):
         """
         Le fichier texte doit se présenter sous la forme suivante :
         Name: Nom de l'étude
         SensorsDir: Chemin d'accès du dossier capteurs
-        Pour le moment la méthode renvoie le nom de l'étude qu'on souhaite charger 
-        et le chemin d'accès vers le dossier des capteurs utilisés pour l'étude
         """
-        os.chdir(rootDir)
+        os.chdir(self.rootDir)
         textFile = glob.glob("*.txt")[0]
         with open(textFile, 'r') as studyText:
             lines = studyText.read().splitlines() 
@@ -71,7 +69,8 @@ class Study(object):
             sensorDirLine = lines[1]
             name = nameLine.split(' ', 1)[1]
             sensorDir = sensorDirLine.split(' ', 1)[1]
-        return name, sensorDir
+        self.name = name
+        self.sensorDir = sensorDir
     
 
     def addPoint(self, name, sensorname, prawfile, trawfile, sensor):
