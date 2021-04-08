@@ -41,3 +41,16 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     def checkbox(self):
         ## À compléter
         print("checkbox")
+
+    def tabInfos(self):
+        layout = QFormLayout()
+        layout.addRow("Name",QLineEdit())
+        layout.addRow("Address",QLineEdit())
+        self.tabInfos.setLayout(layout)
+    
+
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    mainWin = WidgetPoint()
+    mainWin.show()
+    sys.exit(app.exec_())

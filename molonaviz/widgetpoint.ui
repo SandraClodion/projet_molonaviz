@@ -76,12 +76,25 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabInfos">
       <attribute name="title">
        <string>Infos</string>
       </attribute>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="geometry">
+        <rect>
+         <x>152</x>
+         <y>160</y>
+         <width>271</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>No infos yet</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="tabTemperature">
       <attribute name="title">
