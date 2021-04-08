@@ -1,6 +1,6 @@
 import os, glob
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
-from to_filename import clean_filename
+from usefulfonctions import clean_filename
 
 class Point(object):
     
@@ -42,6 +42,6 @@ class Point(object):
         item.setData(self, QtCore.Qt.UserRole)
         pointModel.appendRow(item)    
 
-        
+
 
     

@@ -1,7 +1,10 @@
 from sensor import Sensor
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
-import os, glob
-from to_filename import clean_filename
+import os, glob, shutil
+import pandas as pd
+from usefulfonctions import clean_filename, celsiusToKelvin
+from point import Point
+from sensor import Sensor
 
 class Study(object):
     '''
@@ -12,10 +15,7 @@ class Study(object):
         self.name = name
         self.rootDir = rootDir
         self.sensorDir = sensorDir
-    
-    def getStudyAttributes(self):
-        dico = {"name": self.name, "rootDir": self.rootDir, "sensorDir": self.sensorDir}
-        return dico
+
     
     def loadSensor(self, sensorName):
         sensor = Sensor(sensorName)
@@ -24,11 +24,11 @@ class Study(object):
         lines = file.readlines()
         for line in lines:
             if line.split(';')[0].strip() == "Intercept":
-                sensor.intercept = line.split(';')[1].strip()
+                sensor.intercept = float(line.split(';')[1].strip())
             if line.split(';')[0].strip() == "dU/dH":
-                sensor.dudh = line.split(';')[1].strip()
+                sensor.dudh = float(line.split(';')[1].strip())
             if line.split(';')[0].strip() == "dU/dT":
-                sensor.dudt = line.split(';')[1].strip()
+                sensor.dudt = float(line.split(';')[1].strip())
         return sensor
     
     def loadSensors(self, sensorModel):
@@ -72,6 +72,31 @@ class Study(object):
             name = nameLine.split(' ', 1)[1]
             sensorDir = sensorDirLine.split(' ', 1)[1]
         return name, sensorDir
+    
+
+    def addPoint(self, name, sensorname, prawfile, trawfile, sensor):
+    
+        pointDir = os.path.join(self.rootDir, name) #le dossier porte le nom du point
+
+        point = Point(name, pointDir, sensorname)
+
+        os.mkdir(pointDir)
+        rawDataDir = os.path.join(pointDir, "raw_data")
+        processedDataDir = os.path.join(pointDir, "processed_data")
+
+        os.mkdir(rawDataDir)
+        shutil.copyfile(prawfile, os.path.join(rawDataDir, "raw_pressures.csv"))
+        shutil.copyfile(trawfile, os.path.join(rawDataDir, "raw_temperatures.csv"))
+
+        os.mkdir(processedDataDir)
+        
+        tprocessedfile = os.path.join(processedDataDir, "processed_temperatures.csv")
+        celsiusToKelvin(trawfile, tprocessedfile)
+
+        pprocessedfile = os.path.join(processedDataDir, "processed_pressures.csv")
+        sensor.tensionToPressure(prawfile, pprocessedfile)
+
+        return point
 
 
 

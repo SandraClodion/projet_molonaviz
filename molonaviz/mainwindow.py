@@ -41,6 +41,10 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         if res == QtWidgets.QDialog.Accepted:
             self.currentStudy = dlg.setStudy()
             self.currentStudy.saveStudyToText()
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+            msg.setText("New study successfully created")
+            msg.exec_() 
         
     def openStudy(self):
         self.currentStudy = Study()
@@ -51,15 +55,20 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             name, sensorDir = self.currentStudy.loadStudyFromText(rootDir)
             self.currentStudy = Study(name, rootDir, sensorDir)
             self.currentStudy.loadSensors(self.sensorModel)
-            
 
     def importPoint(self):
         dlg = DialogImportPoint()
         dlg.setSensorsList(self.sensorModel)
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
-            point = dlg.addPoint(self.currentStudy.getStudyAttributes()['rootDir']) 
+            name, sensorname, prawfile, trawfile = dlg.getPointInfo()
+            sensor = self.sensorModel.findItems(sensorname)[0].data(QtCore.Qt.UserRole)
+            point = self.currentStudy.addPoint(name, sensorname, prawfile, trawfile, sensor) 
             point.savePointToText()
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+            msg.setText("Point successfully imported")
+            msg.exec_() 
     
     def openPoint(self):
         point = Point()
