@@ -14,15 +14,9 @@ class DialogOpenPoint(QtWidgets.QDialog, From_DialogOpenPoint):
         
         self.setupUi(self)
     
-        self.pushButtonBrowse.clicked.connect(self.browsePointDir)
-        
-    def browsePointDir(self):
-        dirPath = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Study Root Directory")
-        if dirPath:
-            self.lineEditPointDir.setText(dirPath)
-     
-    def getPointDir(self):
-        pointDir = self.lineEditPointDir.text()
-        return pointDir
+    def setPointsList(self, pointModel):
+        self.comboBox.setModel(pointModel)
 
+    def getPointName(self):
+        return self.comboBox.currentText()
         

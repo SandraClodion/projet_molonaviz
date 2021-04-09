@@ -10,7 +10,7 @@ from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
 from dialogremovepoint import DialogRemovePoint
 from usefulfonctions import displayInfoMessage
-from widgetpoint import WidgetPoint
+#from widgetpoint import WidgetPoint
 
 From_MainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))[0]
 
@@ -28,8 +28,8 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.sensorModel = QtGui.QStandardItemModel()
         self.treeViewSensors.setModel(self.sensorModel)
 
-        self.openedPointsModel = QtGui.QStandardItemModel()
-        self.treeViewDataPoints.setModel(self.openedPointsModel)
+        self.pointModel = QtGui.QStandardItemModel()
+        self.treeViewDataPoints.setModel(self.pointModel)
 
         self.menubar.setNativeMenuBar(False) #Permet d'afficher la barre de menu dans la fenêtre
 
@@ -45,15 +45,22 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         if res == QtWidgets.QDialog.Accepted:
             self.currentStudy = dlg.setStudy()
             self.currentStudy.saveStudyToText()
+            self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
             displayInfoMessage("New study successfully created")
         
     def openStudy(self):
-        dlg = DialogFindStudy()
-        res = dlg.exec_()
-        if res == QtWidgets.QDialog.Accepted:
-            self.currentStudy = Study(rootDir=dlg.getRootDir())
+        if self.currentStudy == None :
+            dlg = DialogFindStudy()
+            res = dlg.exec_()
+            if res == QtWidgets.QDialog.Accepted:
+                self.currentStudy = Study(rootDir=dlg.getRootDir())
+                self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
+                self.currentStudy.loadSensors(self.sensorModel)
+                self.currentStudy.loadPoints(self.pointModel)
+        else : #si une nouvelle étude a été créée
             self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
             self.currentStudy.loadSensors(self.sensorModel)
+            self.currentStudy.loadPoints(self.pointModel)
 
     def importPoint(self):
         dlg = DialogImportPoint()
@@ -64,34 +71,32 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             sensor = self.sensorModel.findItems(sensorname)[0].data(QtCore.Qt.UserRole)
             point = self.currentStudy.addPoint(name, sensorname, prawfile, trawfile, sensor) 
             point.savePointToText()
-            displayInfoMessage("Point successfully imported")
+            point.loadPoint(self.pointModel)
     
     def openPoint(self):
         dlg = DialogOpenPoint()
+        dlg.setPointsList(self.pointModel)
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
-            pointDir = dlg.getPointDir()
-            point = Point(pointDir=pointDir)
-            point.loadPointFromText() #charge le nom du point et son capteur associé
-            point.loadPoint(self.openedPointsModel)
-            #point.openWidget()
-            self.wdg = WidgetPoint(point.name, point.pointDir, point.sensor)
-            self.wdg.show()
-
+            pointname = dlg.getPointName()
+            point = self.pointModel.findItems(pointname)[0].data(QtCore.Qt.UserRole)
+            point.openWidget()
+            #self.wdg = WidgetPoint(point.name, point.pointDir, point.sensor)
+            #self.wdg.show()
 
     def removePoint(self):
         dlg = DialogRemovePoint()
-        dlg.setPointsList(self.openedPointsModel)
+        dlg.setPointsList(self.pointModel)
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
             pointName = dlg.getPointToDelete()
-            pointItem = self.openedPointsModel.findItems(pointName)[0]
+            pointItem = self.pointModel.findItems(pointName)[0]
             
             point = pointItem.data(QtCore.Qt.UserRole)
             point.delete() #supprime le dossier du rootDir
 
-            pointIndex = self.openedPointsModel.indexFromItem(pointItem)
-            self.openedPointsModel.removeRow(pointIndex.row()) #supprime l'item du model
+            pointIndex = self.pointModel.indexFromItem(pointItem)
+            self.pointModel.removeRow(pointIndex.row()) #supprime l'item du model
 
             point.closeWidget()
             

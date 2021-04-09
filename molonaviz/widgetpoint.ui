@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>787</width>
-    <height>500</height>
+    <width>785</width>
+    <height>467</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -76,7 +76,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabInfos">
       <attribute name="title">
@@ -94,37 +94,30 @@
        <property name="text">
         <string>No infos yet</string>
        </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
       </widget>
      </widget>
      <widget class="QWidget" name="tabTemperature">
       <attribute name="title">
        <string>Temperature</string>
       </attribute>
-      <widget class="QTableView" name="tableViewTemp">
-       <property name="geometry">
-        <rect>
-         <x>5</x>
-         <y>11</y>
-         <width>681</width>
-         <height>391</height>
-        </rect>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QTableView" name="tableViewTemp"/>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="tabPressure">
       <attribute name="title">
        <string>Pressure</string>
       </attribute>
-      <widget class="QTableView" name="tableViewPress">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>10</y>
-         <width>751</width>
-         <height>391</height>
-        </rect>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QTableView" name="tableViewPress"/>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="tabPlot">
       <attribute name="title">

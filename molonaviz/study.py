@@ -15,7 +15,9 @@ class Study(object):
         self.name = name
         self.rootDir = rootDir
         self.sensorDir = sensorDir
-
+    
+    def getRootDir(self):
+        return self.rootDir
     
     def loadSensor(self, sensorName):
         sensor = Sensor(sensorName)
@@ -48,6 +50,18 @@ class Study(object):
         
         #newsensor = sensorModel.findItems("p508")[0].data(QtCore.Qt.UserRole)
         #print(newsensor.intercept)
+    
+    def loadPoints(self, pointModel):
+        rdir = self.rootDir
+        dirs = [ name for name in os.listdir(rdir) if os.path.isdir(os.path.join(rdir, name)) ] #no file
+        dirs = list(filter(('.DS_Store').__ne__, dirs)) 
+        print(dirs)
+        #permet de ne pas prendre en compte les fichier '.DS_Store' 
+        for mydir in dirs:
+            pointDir = os.path.join(self.rootDir, mydir)
+            point = Point(pointDir=pointDir)
+            point.loadPointFromText()
+            point.loadPoint(pointModel)
 
     def saveStudyToText(self):
         pathStudyText = os.path.join(self.rootDir, f"{clean_filename(self.name)}.txt")

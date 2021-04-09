@@ -16,25 +16,26 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
         
         self.setupUi(self)
 
-        self.pushButtonBrowsePressures.clicked.connect(self.browsePressuresFile)
-        self.pushButtonBrowseTemperatures.clicked.connect(self.browseTemperaturesFile)
+        self.pushButtonBrowsePressures.clicked.connect(self.browse)
+        self.pushButtonBrowseTemperatures.clicked.connect(self.browse)
+        self.pushButtonBrowseInfo.clicked.connect(self.browse)
+        self.pushButtonBrowseNotice.clicked.connect(self.browse)
+        self.pushButtonBrowseInstallation.clicked.connect(self.browse)
+
     
     def setSensorsList(self, sensorModel):
         self.comboBoxSensors.setModel(sensorModel)
 
-    def browsePressuresFile(self):
-        filePath = QtWidgets.QFileDialog.getOpenFileName(self, "Select Pressures File")[0]
+    def browse(self):
+        filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
         if filePath:
             self.lineEditPressures.setText(filePath) 
 
-    def browseTemperaturesFile(self):
-        filePath = QtWidgets.QFileDialog.getOpenFileName(self, "Select Temperatures File")[0]
-        if filePath:
-            self.lineEditTemperatures.setText(filePath) 
-
     def getPointInfo(self):
         name = self.lineEditPointName.text()
+        sensor = self.comboBoxSensors.currentText()
         prawfile = self.lineEditPressures.text()
         trawfile = self.lineEditTemperatures.text()
-        sensor = self.comboBoxSensors.currentText()
+        noticefile = self.lineEditNotice.text()
+        configfile = self.lineEditInstallation.text()
         return name, sensor, prawfile, trawfile
