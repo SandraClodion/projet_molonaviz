@@ -19,18 +19,27 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         
         self.pointDir = pointDir
 
+        # Link every button to their function
+
         self.pushButtonReset.clicked.connect(self.reset)
         self.pushButtonCleanUp.clicked.connect(self.cleanup)
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
 
+        # Set the "Infos" tab
+            #Installation
         self.labelSchema.setPixmap(QPixmap(self.pointDir + "/info_data" + "/config.png"))
-
+            #Notice
         file = open(self.pointDir + "/info_data" + "/notice.txt")
         self.notice = file.read()
         self.plainTextEditNotice.setPlainText(self.notice)
         file.close()
+            #Infos
+        self.infosDir = self.pointDir + "/info_data" + "/info.csv"
+        self.infos = PandasModel(self.infosDir)
+        self.tableViewInfos.setModel(self.infos)
 
+        # Set the Temperature and Pressure models
         self.currentdata = "processed"
 
         self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
@@ -39,13 +48,13 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.currentPressureModel = PandasModel(self.PressureDir)
         self.tableViewPress.setModel(self.currentPressureModel)
 
-
         self.currentTemperatureModel = PandasModel(self.TemperatureDir)
         self.tableViewTemp.setModel(self.currentTemperatureModel)
 
     def setWidgetInfos(self, pointName, pointSensor):
         self.setWindowTitle(pointName)
         self.lineEditSensor.setText(pointSensor)
+
 
     #def setCurrentTemperatureModel(self, dftemp):
         #self.currentTemperatureModel._data = dftemp # --> plutot changeData(dftemp)
