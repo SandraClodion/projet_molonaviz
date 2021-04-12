@@ -63,10 +63,14 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                 self.currentStudy = Study(rootDir=dlg.getRootDir())
                 self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
                 self.currentStudy.loadPressureSensors(self.pSensorModel)
+                self.currentStudy.loadShafts(self.shaftModel)
+                self.currentStudy.loadThermometers(self.thermometersModel)
                 self.currentStudy.loadPoints(self.pointModel)
         else : #si une nouvelle étude a été créée
             self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
             self.currentStudy.loadPressureSensors(self.pSensorModel)
+            self.currentStudy.loadShafts(self.shaftModel)
+            self.currentStudy.loadThermometers(self.thermometersModel)
             self.currentStudy.loadPoints(self.pointModel)
 
     def importPoint(self):

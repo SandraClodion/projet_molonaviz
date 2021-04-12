@@ -1,4 +1,4 @@
-from sensors import PressureSensor
+from sensors import PressureSensor, Shaft, Thermometer
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 import os, glob, shutil
 import pandas as pd
@@ -28,9 +28,26 @@ class Study(object):
             psensor = PressureSensor(name=file)
             psensor.loadPressureSensor(csv, sensorModel)
         
-        #newsensor = sensorModel.findItems("p508")[0].data(QtCore.Qt.UserRole)
-        #print(newsensor.intercept)
-    
+    def loadShafts(self, sensorModel):
+        sdir = os.path.join(self.sensorDir, "Shafts")
+        files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
+        files.sort()
+        #permet de ne pas prendre en compte les fichier '.DS_Store' 
+        for file in files:
+            csv = os.path.join(sdir, file)  
+            shaft = Shaft(name=file)
+            shaft.loadShaft(csv, sensorModel)  
+
+    def loadThermometers(self, sensorModel):
+        sdir = os.path.join(self.sensorDir, "Thermometers")
+        files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
+        files.sort()
+        #permet de ne pas prendre en compte les fichier '.DS_Store' 
+        for file in files:
+            csv = os.path.join(sdir, file)  
+            thermometer = Thermometer(name=file)
+            thermometer.loadThermometer(csv, sensorModel)  
+
     def loadPoints(self, pointModel):
         rdir = self.rootDir
         dirs = [ name for name in os.listdir(rdir) if os.path.isdir(os.path.join(rdir, name)) ] #no file
