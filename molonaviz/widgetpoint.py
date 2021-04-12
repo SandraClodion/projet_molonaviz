@@ -16,38 +16,35 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         
         self.setupUi(self)
         
-        #self.pointName = pointName
         self.pointDir = pointDir
-        #self.pointSensor = pointSensor
-        #self.setWindowTitle(self.pointName)
-        #self.lineEditSensor.setText(self.pointSensor)
 
         self.pushButtonReset.clicked.connect(self.reset)
         self.pushButtonCleanUp.clicked.connect(self.cleanup)
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
 
-        #point = Point()
-        #self.temperatureModel = point.temperatureModel(self.pointDir)
-        #self.tableViewTemp.setModel(self.temperatureModel)
-        self.currentPressureModel = PandasModel(pd.DataFrame())
+        self.currentdata = "processed"
+
+        self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
+        self.PressureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
+
+        self.currentPressureModel = PandasModel(self.PressureDir)
         self.tableViewPress.setModel(self.currentPressureModel)
 
-        #self.pressureModel = point.pressureModel(self.pointDir)
-        #self.tableViewPress.setModel(self.pressureModel)
-        self.currentTemperatureModel = PandasModel(pd.DataFrame())
+
+        self.currentTemperatureModel = PandasModel(self.TemperatureDir)
         self.tableViewTemp.setModel(self.currentTemperatureModel)
 
     def setWidgetInfos(self, pointName, pointSensor):
         self.setWindowTitle(pointName)
         self.lineEditSensor.setText(pointSensor)
 
-    def setCurrentTemperatureModel(self, dftemp):
-        self.currentTemperatureModel._data = dftemp # --> plutot changeData(dftemp)
+    #def setCurrentTemperatureModel(self, dftemp):
+        #self.currentTemperatureModel._data = dftemp # --> plutot changeData(dftemp)
         #self.tableViewTemp.resizeColumnsToContents() --> rame un peu
 
-    def setCurrentPressureModel(self, dfpress):
-        self.currentPressureModel._data = dfpress # --> plutot changeData(dftemp)
+    #def setCurrentPressureModel(self, dfpress):
+        #self.currentPressureModel._data = dfpress # --> plutot changeData(dftemp)
         #self.tableViewPress.resizeColumnsToContents() --> rame un peu
 
     def reset(self):
@@ -63,8 +60,21 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         print("compute")
     
     def checkbox(self):
-        ## À compléter
-        print("checkbox")
+        if self.checkBoxRaw_Data.isChecked():
+            self.currentdata = "raw"
+        else :
+            self.currentdata = "processed"
+
+        self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
+        self.PressureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
+
+        self.currentPressureModel = PandasModel(self.PressureDir)
+        self.tableViewPress.setModel(self.currentPressureModel)
+
+
+        self.currentTemperatureModel = PandasModel(self.TemperatureDir)
+        self.tableViewTemp.setModel(self.currentTemperatureModel)
+
 
 """ 
 if __name__ == '__main__':

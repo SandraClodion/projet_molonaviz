@@ -55,8 +55,8 @@ class Point(object):
         self.wdgpoint = WidgetPoint(self.pointDir)
         self.wdgpoint.setWidgetInfos(self.name, self.sensor)
         # à terme, à remplacer par self.wdgpoint.setWidgetInfos(self.dataframeinfos)
-        self.wdgpoint.setCurrentTemperatureModel(self.dftemp)
-        self.wdgpoint.setCurrentPressureModel(self.dfpress)
+        #self.wdgpoint.setCurrentTemperatureModel(self.dftemp)
+        #self.wdgpoint.setCurrentPressureModel(self.dfpress)
         self.wdgpoint.show()
 
     def closeWidget(self):
