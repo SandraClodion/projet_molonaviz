@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets, QtCore, uic
 from PyQt5.QtGui import QPixmap
 import pandas as pd
 from pandasmodel import PandasModel
-#from point import Point
+from dialogcleanup import DialogCleanup
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
@@ -69,8 +69,11 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         print("reset")
 
     def cleanup(self):
-        ## À compléter
-        print("cleanup")
+        dlg = DialogCleanup()
+        res = dlg.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            script = dlg.getScript()
+            print(script)
 
     def compute(self):
         ## À compléter
