@@ -1,6 +1,6 @@
 import sys, os, shutil, re
 from PyQt5 import QtWidgets, uic
-from usefulfonctions import clean_filename
+from usefulfonctions import clean_filename, displayWarningMessage
 from point import Point
 import pandas as pd
 
@@ -66,7 +66,8 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
 
             self.lineEditDataDir.setText(dirPath)
             files = list(filter(('.DS_Store').__ne__, os.listdir(dirPath))) 
-            print(files)
+
+            nPath = 0
 
             for file in files : 
 
@@ -78,28 +79,37 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
                     self.lineEditPressureSensor.setText(df.iloc[1].at[1])
                     self.lineEditShaft.setText(df.iloc[2].at[1])
                     self.lineEditDeltaH.setText(df.iloc[6].at[1])
+                    nPath += 1
 
                 if re.search('config', file):
                     filePath = os.path.join(dirPath, file)
                     self.lineEditConfig.setText(filePath) 
+                    nPath += 1
 
                 if re.search('notice', file):
                     filePath = os.path.join(dirPath, file)
                     self.lineEditNotice.setText(filePath) 
+                    nPath += 1
 
                 if re.search('P_', file):
                     filePath = os.path.join(dirPath, file)
                     self.lineEditPressures.setText(filePath) 
+                    nPath += 1
 
                 if re.search('T_', file):
                     filePath = os.path.join(dirPath, file)
                     self.lineEditTemperatures.setText(filePath) 
+                    nPath += 1
+            
+            if nPath<5 : 
+                displayWarningMessage(f'Only {nPath} lines have been successfully filled. Please fill in missing information manually')
+                self.radioButtonManual.setChecked(True)
+
 
     def browseInfo(self):
         filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
         if filePath:
             self.lineEditInfo.setText(filePath) 
-            print(filePath)
             df = pd.read_csv(filePath)
             self.lineEditPressureSensor = df.iloc[0][0]
             self.lineEditTemperatureShaft = df.iloc[1][0]
