@@ -1,9 +1,10 @@
 import sys
 import os
 from PyQt5 import QtWidgets, QtCore, uic
+from PyQt5.QtGui import QPixmap
 import pandas as pd
 from pandasmodel import PandasModel
-#from point import Point
+from dialogcleanup import DialogCleanup
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
@@ -18,13 +19,27 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         
         self.pointDir = pointDir
 
+        # Link every button to their function
+
         self.pushButtonReset.clicked.connect(self.reset)
         self.pushButtonCleanUp.clicked.connect(self.cleanup)
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
 
-        self.labelSchema.setPixmap(QPixmap(self.pointDir + "À COMPLÉTER"))
+        # Set the "Infos" tab
+            #Installation
+        self.labelSchema.setPixmap(QPixmap(self.pointDir + "/info_data" + "/config.png"))
+            #Notice
+        file = open(self.pointDir + "/info_data" + "/notice.txt")
+        self.notice = file.read()
+        self.plainTextEditNotice.setPlainText(self.notice)
+        file.close()
+            #Infos
+        self.infosDir = self.pointDir + "/info_data" + "/info.csv"
+        self.infos = PandasModel(self.infosDir)
+        self.tableViewInfos.setModel(self.infos)
 
+        # Set the Temperature and Pressure models
         self.currentdata = "processed"
 
         self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
@@ -33,13 +48,13 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.currentPressureModel = PandasModel(self.PressureDir)
         self.tableViewPress.setModel(self.currentPressureModel)
 
-
         self.currentTemperatureModel = PandasModel(self.TemperatureDir)
         self.tableViewTemp.setModel(self.currentTemperatureModel)
 
     def setWidgetInfos(self, pointName, pointSensor):
         self.setWindowTitle(pointName)
         self.lineEditSensor.setText(pointSensor)
+
 
     #def setCurrentTemperatureModel(self, dftemp):
         #self.currentTemperatureModel._data = dftemp # --> plutot changeData(dftemp)
@@ -54,8 +69,11 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         print("reset")
 
     def cleanup(self):
-        ## À compléter
-        print("cleanup")
+        dlg = DialogCleanup()
+        res = dlg.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            script = dlg.getScript()
+            print(script)
 
     def compute(self):
         ## À compléter
