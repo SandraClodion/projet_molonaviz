@@ -1,6 +1,7 @@
 import sys
 import os
 from PyQt5 import QtWidgets, QtCore, uic
+from PyQt5.QtGui import QPixmap
 import pandas as pd
 from pandasmodel import PandasModel
 #from point import Point
@@ -23,7 +24,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
 
-        self.labelSchema.setPixmap(QPixmap(self.pointDir + "À COMPLÉTER"))
+        self.labelSchema.setPixmap(QPixmap(self.pointDir + "/info_data" + "/config.png"))
+
+        file = open(self.pointDir + "/info_data" + "/notice.txt")
+        self.notice = file.read()
+        self.plainTextEditNotice.setPlainText(self.notice)
+        file.close()
 
         self.currentdata = "processed"
 

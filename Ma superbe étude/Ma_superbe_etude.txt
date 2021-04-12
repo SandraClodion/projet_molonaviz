@@ -1,2 +1,2 @@
 Name: Ma superbe étude 
-SensorsDirectory: /Users/sandraclodion/MINES/2A/MOLONARI/PROJET/projet_molonaviz/sensors
+SensorsDirectory: /Users/charlottedemaillynesle/Desktop/Cours Mines/2A/MOLONARI/Interface/projet_molonaviz/sensors
