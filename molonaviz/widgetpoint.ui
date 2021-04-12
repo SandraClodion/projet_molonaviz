@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>785</width>
-    <height>467</height>
+    <width>789</width>
+    <height>616</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -82,21 +82,68 @@
       <attribute name="title">
        <string>Infos</string>
       </attribute>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QGroupBox" name="groupBox">
        <property name="geometry">
         <rect>
-         <x>152</x>
-         <y>160</y>
-         <width>271</width>
-         <height>21</height>
+         <x>30</x>
+         <y>200</y>
+         <width>681</width>
+         <height>321</height>
         </rect>
        </property>
-       <property name="text">
-        <string>No infos yet</string>
+       <property name="title">
+        <string>Installation</string>
        </property>
-       <property name="readOnly">
-        <bool>true</bool>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>649</width>
+             <height>270</height>
+            </rect>
+           </property>
+           <widget class="QLabel" name="labelSchema">
+            <property name="geometry">
+             <rect>
+              <x>280</x>
+              <y>110</y>
+              <width>60</width>
+              <height>16</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="geometry">
+        <rect>
+         <x>19</x>
+         <y>19</y>
+         <width>201</width>
+         <height>171</height>
+        </rect>
        </property>
+       <property name="title">
+        <string>Notice</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QPlainTextEdit" name="plainTextEditNotice"/>
+        </item>
+       </layout>
       </widget>
      </widget>
      <widget class="QWidget" name="tabTemperature">
