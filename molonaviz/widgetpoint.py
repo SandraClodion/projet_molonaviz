@@ -23,6 +23,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
 
+        self.labelSchema.setPixmap(QPixmap(self.pointDir + "À COMPLÉTER"))
+
         self.currentdata = "processed"
 
         self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
