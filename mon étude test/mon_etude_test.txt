@@ -1,2 +1,2 @@
-Name: mon étude test 
-SensorsDirectory: /Users/sandraclodion/MINES/2A/MOLONARI/PROJET/projet_molonaviz/sensors
+Name: Mon étude test 
+SensorsDirectory: /Users/sandraclodion/Downloads/EXEMPLES FICHIERS/Sensors

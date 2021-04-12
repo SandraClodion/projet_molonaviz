@@ -1,6 +1,7 @@
 import sys
 import os
 import shutil
+import pandas as pd
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from study import Study
 from point import Point
@@ -25,8 +26,14 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
 
         self.currentStudy = None
 
-        self.sensorModel = QtGui.QStandardItemModel()
-        self.treeViewSensors.setModel(self.sensorModel)
+        self.pSensorModel = QtGui.QStandardItemModel()
+        self.treeViewPressureSensors.setModel(self.pSensorModel)
+
+        self.shaftModel = QtGui.QStandardItemModel()
+        self.treeViewShafts.setModel(self.shaftModel)
+
+        self.thermometersModel = QtGui.QStandardItemModel()
+        self.treeViewThermometers.setModel(self.thermometersModel)
 
         self.pointModel = QtGui.QStandardItemModel()
         self.treeViewDataPoints.setModel(self.pointModel)
@@ -45,9 +52,9 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         if res == QtWidgets.QDialog.Accepted:
             self.currentStudy = dlg.setStudy()
             self.currentStudy.saveStudyToText()
-            self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
             displayInfoMessage("New study successfully created")
-        
+            self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
+            
     def openStudy(self):
         if self.currentStudy == None :
             dlg = DialogFindStudy()
@@ -55,22 +62,28 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             if res == QtWidgets.QDialog.Accepted:
                 self.currentStudy = Study(rootDir=dlg.getRootDir())
                 self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
-                self.currentStudy.loadSensors(self.sensorModel)
+                self.currentStudy.loadPressureSensors(self.pSensorModel)
                 self.currentStudy.loadPoints(self.pointModel)
         else : #si une nouvelle étude a été créée
             self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
-            self.currentStudy.loadSensors(self.sensorModel)
+            self.currentStudy.loadPressureSensors(self.pSensorModel)
             self.currentStudy.loadPoints(self.pointModel)
 
     def importPoint(self):
+
         dlg = DialogImportPoint()
-        dlg.setSensorsList(self.sensorModel)
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
-            name, sensorname, prawfile, trawfile = dlg.getPointInfo()
-            sensor = self.sensorModel.findItems(sensorname)[0].data(QtCore.Qt.UserRole)
-            point = self.currentStudy.addPoint(name, sensorname, prawfile, trawfile, sensor) 
-            point.savePointToText()
+            
+            name, infofile, prawfile, trawfile, noticefile, configfile  = dlg.getPointInfo()
+            
+            psensorname = pd.read_csv(infofile, sep=';', index_col=0).iloc[0][0]
+            print(psensorname)
+            psensor = self.pSensorModel.findItems(psensorname)[0].data(QtCore.Qt.UserRole)
+            pointDir = self.currentStudy.addPoint(name, infofile, prawfile, trawfile, noticefile, configfile, psensor) #psensor nécessaire pour la conversion
+            
+            point = Point(name, pointDir)
+            point.loadPointFromDir()
             point.loadPoint(self.pointModel)
     
     def openPoint(self):

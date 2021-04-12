@@ -23,7 +23,7 @@ def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
 
 
 def celsiusToKelvin(trawfile, tprocessedfile):
-    df = pd.read_csv(trawfile, header = 1, index_col = 0)
+    df = pd.read_csv(trawfile, sep=';')
     columnsNames = list(df.head(0))
     time = columnsNames[0]
     temps = [columnsNames[i] for i in range(1,5)]

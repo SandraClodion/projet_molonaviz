@@ -1,10 +1,9 @@
-from sensor import Sensor
+from sensors import PressureSensor
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 import os, glob, shutil
 import pandas as pd
 from usefulfonctions import clean_filename, celsiusToKelvin
 from point import Point
-from sensor import Sensor
 
 class Study(object):
     '''
@@ -19,34 +18,15 @@ class Study(object):
     def getRootDir(self):
         return self.rootDir
     
-    def loadSensor(self, sensorName):
-        sensor = Sensor(sensorName)
-        pathCalib = os.path.join(self.sensorDir, sensorName, f"calibfit_{sensorName}.csv")
-        file = open(pathCalib,"r")
-        lines = file.readlines()
-        for line in lines:
-            if line.split(';')[0].strip() == "Intercept":
-                sensor.intercept = float(line.split(';')[1].strip())
-            if line.split(';')[0].strip() == "dU/dH":
-                sensor.dudh = float(line.split(';')[1].strip())
-            if line.split(';')[0].strip() == "dU/dT":
-                sensor.dudt = float(line.split(';')[1].strip())
-        return sensor
-    
-    def loadSensors(self, sensorModel):
-        sdir = self.sensorDir
-        dirs = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
+    def loadPressureSensors(self, sensorModel):
+        sdir = os.path.join(self.sensorDir, "Pressure")
+        files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
+        files.sort()
         #permet de ne pas prendre en compte les fichier '.DS_Store' 
-        for mydir in dirs:
-            sensor = self.loadSensor(mydir)
-            
-            item = QtGui.QStandardItem(mydir)
-            item.setData(sensor, QtCore.Qt.UserRole)
-            
-            sensorModel.appendRow(item)
-            item.appendRow(QtGui.QStandardItem(f"intercept = {float(sensor.intercept):.2f}"))
-            item.appendRow(QtGui.QStandardItem(f"dudh = {float(sensor.dudh):.2f}"))
-            item.appendRow(QtGui.QStandardItem(f"dudt = {float(sensor.dudt):.2f}"))
+        for file in files:
+            csv = os.path.join(sdir, file)  
+            psensor = PressureSensor(name=file)
+            psensor.loadPressureSensor(csv, sensorModel)
         
         #newsensor = sensorModel.findItems("p508")[0].data(QtCore.Qt.UserRole)
         #print(newsensor.intercept)
@@ -59,8 +39,9 @@ class Study(object):
         #permet de ne pas prendre en compte les fichier '.DS_Store' 
         for mydir in dirs:
             pointDir = os.path.join(self.rootDir, mydir)
-            point = Point(pointDir=pointDir)
-            point.loadPointFromText()
+            name = os.path.basename(pointDir)
+            point = Point(name, pointDir)
+            point.loadPointFromDir()
             point.loadPoint(pointModel)
 
     def saveStudyToText(self):
@@ -87,30 +68,35 @@ class Study(object):
         self.sensorDir = sensorDir
     
 
-    def addPoint(self, name, sensorname, prawfile, trawfile, sensor):
+    def addPoint(self, name, infofile, prawfile, trawfile, noticefile, configfile, psensor):
+
+        """
+        Crée, remplit et retourne le répertoire du point
+        """
     
         pointDir = os.path.join(self.rootDir, name) #le dossier porte le nom du point
-
-        point = Point(name, pointDir, sensorname)
 
         os.mkdir(pointDir)
         rawDataDir = os.path.join(pointDir, "raw_data")
         processedDataDir = os.path.join(pointDir, "processed_data")
+        infoDataDir = os.path.join(pointDir, "info_data")
 
         os.mkdir(rawDataDir)
         shutil.copyfile(prawfile, os.path.join(rawDataDir, "raw_pressures.csv"))
         shutil.copyfile(trawfile, os.path.join(rawDataDir, "raw_temperatures.csv"))
 
-        os.mkdir(processedDataDir)
-        
+        os.mkdir(processedDataDir)    
         tprocessedfile = os.path.join(processedDataDir, "processed_temperatures.csv")
         celsiusToKelvin(trawfile, tprocessedfile)
-
         pprocessedfile = os.path.join(processedDataDir, "processed_pressures.csv")
-        sensor.tensionToPressure(prawfile, pprocessedfile)
+        psensor.tensionToPressure(prawfile, pprocessedfile)
 
-        return point
+        os.mkdir(infoDataDir)
+        shutil.copyfile(infofile, os.path.join(infoDataDir, "info.csv"))
+        shutil.copyfile(noticefile, os.path.join(infoDataDir, "notice.txt"))
+        shutil.copyfile(configfile, os.path.join(infoDataDir, "config.png"))
 
+        return pointDir
 
 
 
