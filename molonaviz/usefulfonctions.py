@@ -37,3 +37,15 @@ def displayInfoMessage(message):
     msg.setIcon(QtWidgets.QMessageBox.Information)
     msg.setText(message)
     msg.exec_() 
+
+def displayInfoMessage(message):
+    msg = QtWidgets.QMessageBox()
+    msg.setIcon(QtWidgets.QMessageBox.Information)
+    msg.setText(message)
+    msg.exec_() 
+
+def displayWarningMessage(message):
+    msg = QtWidgets.QMessageBox()
+    msg.setIcon(QtWidgets.QMessageBox.Warning)
+    msg.setText(message)
+    msg.exec_() 
