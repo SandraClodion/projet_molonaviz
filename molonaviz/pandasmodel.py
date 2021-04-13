@@ -23,6 +23,9 @@ class PandasModel(QtCore.QAbstractTableModel):
                 return QtCore.QVariant(str(
                     self._data.iloc[index.row()][index.column()]))
         return QtCore.QVariant()
+    
+    def getpdData(self):
+        return(self._data)
 
 
 

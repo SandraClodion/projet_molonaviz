@@ -5,6 +5,7 @@ from PyQt5.QtGui import QPixmap
 import pandas as pd
 from pandasmodel import PandasModel
 from dialogcleanup import DialogCleanup
+from usefulfonctions import displayInfoMessage
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
@@ -69,11 +70,27 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         print("reset")
 
     def cleanup(self):
-        dlg = DialogCleanup()
-        res = dlg.exec_()
-        if res == QtWidgets.QDialog.Accepted:
-            script = dlg.getScript()
-            print(script)
+        if self.currentdata == "raw":
+            displayInfoMessage("Please clean-up your processed data.")
+        else:
+            dft = self.currentTemperatureModel.getpdData()
+            dfp = self.currentPressureModel.getpdData()
+            dlg = DialogCleanup()
+            res = dlg.exec_()
+            if res == QtWidgets.QDialog.Accepted:
+                new_dft, new_dfp = dlg.executeScript(dft, dfp, self.pointDir)
+                #On enregistre les nouvelles dataframe en cvs à la place des anciens
+                os.remove(self.TemperatureDir)
+                os.remove(self.PressureDir)
+                new_dft.to_csv(self.TemperatureDir)
+                new_dfp.to_csv(self.PressureDir)
+                displayInfoMessage("Data successfully cleaned !")
+                #On actualise les modèles
+                self.currentPressureModel = PandasModel(self.PressureDir)
+                self.tableViewPress.setModel(self.currentPressureModel)
+                self.currentTemperatureModel = PandasModel(self.TemperatureDir)
+                self.tableViewTemp.setModel(self.currentTemperatureModel)
+
 
     def compute(self):
         ## À compléter

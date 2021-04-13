@@ -14,9 +14,18 @@ class DialogCleanup(QtWidgets.QDialog, From_DialogCleanup):
         self.setupUi(self)
 
 
-    def getScript(self):
-        self.script = self.plainTextEdit.toPlainText()
-        #On enregistre le script comme un fichier texte
-        #Difficulté = le convertir ensuite en python
-        #Quand est-ce qu'on met le directory en paramètres ?
-        return(self.script)
+    def executeScript(self, dft, dfp, dir):
+        self.scriptpartiel = self.plainTextEdit.toPlainText()
+        self.scriptindente = self.scriptpartiel.replace("\n", "\n   ")
+        self.script = "def fonction(dft, dfp): \n   " + self.scriptindente + "\n" + "   return(dft, dfp)"
+
+        scriptDir = dir + "/script.py"
+        sys.path.append(dir)
+        with open(scriptDir, "w") as f:
+            f.write(self.script)
+            f.close()
+
+        from script import fonction
+        new_dft, new_dfp = fonction(dft, dfp)
+        return(new_dft, new_dfp)
+        os.remove(scriptDir)
