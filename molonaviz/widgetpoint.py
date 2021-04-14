@@ -37,7 +37,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         file.close()
             #Infos
         self.infosDir = self.pointDir + "/info_data" + "/info.csv"
-        self.infos = PandasModel(self.infosDir)
+        dfinfo = pd.read_csv(self.infosDir, sep=';')
+        self.infos = PandasModel(dfinfo)
         self.tableViewInfos.setModel(self.infos)
 
         # Set the Temperature and Pressure models
@@ -46,23 +47,28 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
         self.PressureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
 
-        self.currentPressureModel = PandasModel(self.PressureDir)
+        #self.currentPressureModel = PandasModel(self.PressureDir)
+        dfpress = pd.read_csv(self.PressureDir, index_col=0)
+        self.currentPressureModel = PandasModel(dfpress)
         self.tableViewPress.setModel(self.currentPressureModel)
+        self.tableViewPress.resizeColumnsToContents()
 
-        self.currentTemperatureModel = PandasModel(self.TemperatureDir)
+        #self.currentTemperatureModel = PandasModel(self.TemperatureDir)
+        dftemp = pd.read_csv(self.TemperatureDir, index_col=0)
+        self.currentTemperatureModel = PandasModel(dftemp)
         self.tableViewTemp.setModel(self.currentTemperatureModel)
+        self.tableViewTemp.resizeColumnsToContents()
 
     def setWidgetInfos(self, pointName, pointSensor):
         self.setWindowTitle(pointName)
         self.lineEditSensor.setText(pointSensor)
 
-
     #def setCurrentTemperatureModel(self, dftemp):
-        #self.currentTemperatureModel._data = dftemp # --> plutot changeData(dftemp)
+        #self.currentTemperatureModel.setData(dftemp) # --> plutot changeData(dftemp)
         #self.tableViewTemp.resizeColumnsToContents() --> rame un peu
 
     #def setCurrentPressureModel(self, dfpress):
-        #self.currentPressureModel._data = dfpress # --> plutot changeData(dftemp)
+        #self.currentPressureModel.setData(dfpress) # --> plutot changeData(dftemp)
         #self.tableViewPress.resizeColumnsToContents() --> rame un peu
 
     def reset(self):
@@ -105,12 +111,26 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
         self.PressureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
 
-        self.currentPressureModel = PandasModel(self.PressureDir)
-        self.tableViewPress.setModel(self.currentPressureModel)
+        #self.currentPressureModel = PandasModel(self.PressureDir)
+        #self.tableViewPress.setModel(self.currentPressureModel)
+        #self.currentTemperatureModel = PandasModel(self.TemperatureDir)
+        #self.tableViewTemp.setModel(self.currentTemperatureModel)
 
-
-        self.currentTemperatureModel = PandasModel(self.TemperatureDir)
-        self.tableViewTemp.setModel(self.currentTemperatureModel)
+        if self.currentdata == "processed":
+            dfTemp = pd.read_csv(self.TemperatureDir, index_col=0)
+            dfPress = pd.read_csv(self.PressureDir, index_col=0)
+            self.currentTemperatureModel.setData(dfTemp)
+            self.currentPressureModel.setData(dfPress)
+            self.tableViewTemp.resizeColumnsToContents()
+            self.tableViewPress.resizeColumnsToContents()
+        
+        elif self.currentdata == "raw":
+            dfTemp = pd.read_csv(self.TemperatureDir, sep=';')
+            dfPress = pd.read_csv(self.PressureDir, sep=';')
+            self.currentTemperatureModel.setData(dfTemp)
+            self.currentPressureModel.setData(dfPress)  
+            self.tableViewTemp.resizeColumnsToContents()
+            self.tableViewPress.resizeColumnsToContents() 
 
 
 """ 
