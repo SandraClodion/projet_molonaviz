@@ -85,13 +85,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             
             name, infofile, prawfile, trawfile, noticefile, configfile  = dlg.getPointInfo()
             
-            psensorname = pd.read_csv(infofile, sep=';', index_col=0).iloc[0][0]
-            print(psensorname)
-            psensor = self.pSensorModel.findItems(psensorname)[0].data(QtCore.Qt.UserRole)
-            pointDir = self.currentStudy.addPoint(name, infofile, prawfile, trawfile, noticefile, configfile, psensor) #psensor nécessaire pour la conversion
-            
-            point = Point(name, pointDir)
-            point.loadPointFromDir()
+            point = self.currentStudy.addPoint(name, infofile, prawfile, trawfile, noticefile, configfile, self.pSensorModel) 
             point.loadPoint(self.pointModel)
     
     def openPoint(self):
@@ -99,19 +93,28 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         dlg.setPointsList(self.pointModel)
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
+
             pointname = dlg.getPointName()
             point = self.pointModel.findItems(pointname)[0].data(QtCore.Qt.UserRole)
-            
-            pointDir = point.pointDir #pas ok en encapulation, juste pour tester
-            
             sub = QtWidgets.QMdiSubWindow()
-            sub.setWidget(WidgetPoint(pointDir))
+            wdg = WidgetPoint(point)
+            wdg.setInfoTab()
+            wdg.setPressureAndTemperatureModels()
+            sub.setWidget(wdg)
             self.mdi.addSubWindow(sub)
             sub.show()
 
-            #point.openWidget()
-            #self.wdg = WidgetPoint(point.name, point.pointDir, point.sensor)
-            #self.wdg.show()
+    def openPointfromTree(self):
+        
+        point = self.treeViewDataPoints.selectedIndexes()[0].data(QtCore.Qt.UserRole)
+        sub = QtWidgets.QMdiSubWindow()
+        wdg = WidgetPoint(point)
+        wdg.setInfoTab()
+        wdg.setPressureAndTemperatureModels()
+        sub.setWidget(wdg)
+        self.mdi.addSubWindow(sub)
+        sub.show()
+
 
     def removePoint(self):
         dlg = DialogRemovePoint()
@@ -130,17 +133,6 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             point.closeWidget()
             
             displayInfoMessage("Point successfully removed")
-
-    def openPointfromTree(self):
-        point = self.treeViewDataPoints.selectedIndexes()[0].data(QtCore.Qt.UserRole)
-        pointDir = point.pointDir #pas ok en encapulation, juste pour tester
-            
-        sub = QtWidgets.QMdiSubWindow()
-        sub.setWidget(WidgetPoint(pointDir))
-        self.mdi.addSubWindow(sub)
-        sub.show()
-
-
 
 
 if __name__ == '__main__':

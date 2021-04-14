@@ -85,13 +85,20 @@ class Study(object):
         self.sensorDir = sensorDir
     
 
-    def addPoint(self, name, infofile, prawfile, trawfile, noticefile, configfile, psensor):
+    def addPoint(self, name, infofile, prawfile, trawfile, noticefile, configfile, pSensorModel):
 
         """
-        Crée, remplit et retourne le répertoire du point
+        Crée, remplit le répertoire du point et retourne l'objet point
         """
     
         pointDir = os.path.join(self.rootDir, name) #le dossier porte le nom du point
+        
+        df_info = pd.read_csv(infofile, sep=";", header=None, index_col=0)
+        psensor = df_info.iloc[1].at[1]
+        shaft = df_info.iloc[2].at[1]
+        deltaH = float(df_info.iloc[6].at[1])
+        
+        point = Point(name, pointDir, psensor, shaft, deltaH)
 
         os.mkdir(pointDir)
         rawDataDir = os.path.join(pointDir, "raw_data")
@@ -102,18 +109,15 @@ class Study(object):
         shutil.copyfile(prawfile, os.path.join(rawDataDir, "raw_pressures.csv"))
         shutil.copyfile(trawfile, os.path.join(rawDataDir, "raw_temperatures.csv"))
 
-        os.mkdir(processedDataDir)    
-        tprocessedfile = os.path.join(processedDataDir, "processed_temperatures.csv")
-        celsiusToKelvin(trawfile, tprocessedfile)
-        pprocessedfile = os.path.join(processedDataDir, "processed_pressures.csv")
-        psensor.tensionToPressure(prawfile, pprocessedfile)
-
         os.mkdir(infoDataDir)
         shutil.copyfile(infofile, os.path.join(infoDataDir, "info.csv"))
         shutil.copyfile(noticefile, os.path.join(infoDataDir, "notice.txt"))
         shutil.copyfile(configfile, os.path.join(infoDataDir, "config.png"))
+        
+        os.mkdir(processedDataDir)  
+        point.processData(pSensorModel)
 
-        return pointDir
+        return point
 
 
 
