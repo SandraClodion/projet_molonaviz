@@ -11,7 +11,7 @@ from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
 from dialogremovepoint import DialogRemovePoint
 from usefulfonctions import displayInfoMessage
-#from widgetpoint import WidgetPoint
+from widgetpoint import WidgetPoint
 
 From_MainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))[0]
 
@@ -23,6 +23,9 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         QtWidgets.QMainWindow.__init__(self)
         
         self.setupUi(self)
+
+        self.mdi = QtWidgets.QMdiArea()
+        self.setCentralWidget(self.mdi)
 
         self.currentStudy = None
 
@@ -97,7 +100,15 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         if res == QtWidgets.QDialog.Accepted:
             pointname = dlg.getPointName()
             point = self.pointModel.findItems(pointname)[0].data(QtCore.Qt.UserRole)
-            point.openWidget()
+            
+            pointDir = point.pointDir #pas ok en encapulation, juste pour tester
+            
+            sub = QtWidgets.QMdiSubWindow()
+            sub.setWidget(WidgetPoint(pointDir))
+            self.mdi.addSubWindow(sub)
+            sub.show()
+
+            #point.openWidget()
             #self.wdg = WidgetPoint(point.name, point.pointDir, point.sensor)
             #self.wdg.show()
 
