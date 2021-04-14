@@ -48,7 +48,6 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.actionImport_Point.triggered.connect(self.importPoint)
         self.actionOpen_Point.triggered.connect(self.openPoint)
         self.actionRemove_Point.triggered.connect(self.removePoint)
-        self.treeViewDataPoints.doubleClicked.connect(self.openPointfromTree)
 
     def createStudy(self):
         dlg = DialogStudy()
@@ -130,16 +129,6 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             point.closeWidget()
             
             displayInfoMessage("Point successfully removed")
-
-    def openPointfromTree(self):
-        point = self.treeViewDataPoints.selectedIndexes()[0].data(QtCore.Qt.UserRole)
-        pointDir = point.pointDir #pas ok en encapulation, juste pour tester
-            
-        sub = QtWidgets.QMdiSubWindow()
-        sub.setWidget(WidgetPoint(pointDir))
-        self.mdi.addSubWindow(sub)
-        sub.show()
-
 
 
 

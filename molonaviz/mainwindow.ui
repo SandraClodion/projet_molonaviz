@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>798</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuStudy">
@@ -54,11 +54,7 @@
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QTreeView" name="treeViewDataPoints">
-       <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
-       </property>
-      </widget>
+      <widget class="QTreeView" name="treeViewDataPoints"/>
      </item>
     </layout>
    </widget>
@@ -197,5 +193,22 @@
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>458</x>
+     <y>272</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
