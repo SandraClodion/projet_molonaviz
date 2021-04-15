@@ -33,6 +33,9 @@
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuPoint">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="title">
      <string>Point</string>
     </property>

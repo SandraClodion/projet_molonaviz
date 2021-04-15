@@ -27,6 +27,8 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
 
         self.mdi = QtWidgets.QMdiArea()
         self.setCentralWidget(self.mdi)
+        self.mdi.setTabsMovable(True)
+        self.mdi.setTabsClosable(True)
 
         self.currentStudy = None
 
@@ -78,6 +80,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                     self.currentStudy.loadShafts(self.shaftModel)
                     self.currentStudy.loadThermometers(self.thermometersModel)
                     self.currentStudy.loadPoints(self.pointModel)
+                    self.menuPoint.setEnabled(True)
                 except FileNotFoundError :
                     displayCriticalMessage("No such directory \n Please try again")
         else : #si une nouvelle étude a été créée
@@ -86,6 +89,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             self.currentStudy.loadShafts(self.shaftModel)
             self.currentStudy.loadThermometers(self.thermometersModel)
             self.currentStudy.loadPoints(self.pointModel)
+            self.menuPoint.setEnabled(True)
 
     def importPoint(self):
 
