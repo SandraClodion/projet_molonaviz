@@ -22,7 +22,6 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.point = point
         print(self.point)
 
-
         # Link every button to their function
 
         self.pushButtonReset.clicked.connect(self.reset)
@@ -65,12 +64,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.tableViewTemp.resizeColumnsToContents()
 
     def setWidgetInfos(self):
-        pointName = point.getName()
-        pointPressureSensor = point.getPressureSensor()
-        pointShaft = point.getShaft()
+        pointName = self.point.getName()
+        pointPressureSensor = self.point.getPressureSensor()
+        pointShaft = self.point.getShaft()
 
         self.setWindowTitle(pointName)
-        self.lineEditSensor.setText(pointSensor)
+        self.lineEditSensor.setText(pointPressureSensor)
         #self.lineEditShaft.setText()
 
     def reset(self):
@@ -102,7 +101,6 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.currentTemperatureModel = PandasModel(self.TemperatureDir)
                 self.tableViewTemp.setModel(self.currentTemperatureModel)
 
-
     def compute(self):
         ## À compléter
         print("compute")
@@ -128,13 +126,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.tableViewPress.resizeColumnsToContents()
         
         elif self.currentdata == "raw":
-            dfTemp = pd.read_csv(self.TemperatureDir, sep=';')
-            dfPress = pd.read_csv(self.PressureDir, sep=';')
+            dfTemp = pd.read_csv(self.TemperatureDir, index_col=0, header=1)
+            dfPress = pd.read_csv(self.PressureDir, sep=';') #à modifier à reception des dataloggers de pression
             self.currentTemperatureModel.setData(dfTemp)
             self.currentPressureModel.setData(dfPress)  
             self.tableViewTemp.resizeColumnsToContents()
             self.tableViewPress.resizeColumnsToContents() 
-
 
 """ 
 if __name__ == '__main__':

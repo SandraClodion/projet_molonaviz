@@ -31,7 +31,7 @@ class PressureSensor(object):
         df[temperature] = df[temperature] + 273.15 #conversion en Kelvin
         a, b, c = self.intercept, self.dudh, self.dudt
         df['Pression différentielle (m)'] = (1/b)*(df[tension] - c*df[temperature] - a)
-        df.drop([tension, temperature], axis=1)
+        df.drop([tension, temperature], axis=1, inplace=True)
         df.to_csv(pprocessedfile)
         
     def setPressureSensor(self, csv):

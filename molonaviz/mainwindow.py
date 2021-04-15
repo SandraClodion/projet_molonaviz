@@ -10,8 +10,9 @@ from dialogfindstudy import DialogFindStudy
 from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
 from dialogremovepoint import DialogRemovePoint
-from usefulfonctions import displayInfoMessage
-from widgetpoint import WidgetPoint
+from usefulfonctions import displayInfoMessage, displayCriticalMessage
+#from widgetpoint import WidgetPoint
+from subwindow import SubWindow
 
 From_MainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))[0]
 
@@ -48,7 +49,13 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.actionImport_Point.triggered.connect(self.importPoint)
         self.actionOpen_Point.triggered.connect(self.openPoint)
         self.actionRemove_Point.triggered.connect(self.removePoint)
+        self.actionSwitch_To_Tabbed_View.triggered.connect(self.switchToTabbedView)
+        self.actionSwitch_To_SubWindow_View.triggered.connect(self.switchToSubWindowView)
         self.treeViewDataPoints.doubleClicked.connect(self.openPointfromTree)
+
+        #On adapte la taille de la fenêtre principale à l'écran
+        screenSize = QtWidgets.QDesktopWidget().screenGeometry(-1)
+        self.setGeometry(screenSize)
 
     def createStudy(self):
         dlg = DialogStudy()
@@ -64,12 +71,15 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             dlg = DialogFindStudy()
             res = dlg.exec_()
             if res == QtWidgets.QDialog.Accepted:
-                self.currentStudy = Study(rootDir=dlg.getRootDir())
-                self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
-                self.currentStudy.loadPressureSensors(self.pSensorModel)
-                self.currentStudy.loadShafts(self.shaftModel)
-                self.currentStudy.loadThermometers(self.thermometersModel)
-                self.currentStudy.loadPoints(self.pointModel)
+                try :
+                    self.currentStudy = Study(rootDir=dlg.getRootDir())
+                    self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
+                    self.currentStudy.loadPressureSensors(self.pSensorModel)
+                    self.currentStudy.loadShafts(self.shaftModel)
+                    self.currentStudy.loadThermometers(self.thermometersModel)
+                    self.currentStudy.loadPoints(self.pointModel)
+                except FileNotFoundError :
+                    displayCriticalMessage("No such directory \n Please try again")
         else : #si une nouvelle étude a été créée
             self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
             self.currentStudy.loadPressureSensors(self.pSensorModel)
@@ -87,35 +97,37 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             
             point = self.currentStudy.addPoint(name, infofile, prawfile, trawfile, noticefile, configfile, self.pSensorModel) 
             point.loadPoint(self.pointModel)
-    
+           
     def openPoint(self):
         dlg = DialogOpenPoint()
         dlg.setPointsList(self.pointModel)
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
-
             pointname = dlg.getPointName()
             point = self.pointModel.findItems(pointname)[0].data(QtCore.Qt.UserRole)
-            sub = QtWidgets.QMdiSubWindow()
-            wdg = WidgetPoint(point)
-            wdg.setInfoTab()
-            wdg.setPressureAndTemperatureModels()
-            sub.setWidget(wdg)
-            self.mdi.addSubWindow(sub)
-            sub.show()
+            self.openPointView(point)
 
     def openPointfromTree(self):
-        
         point = self.treeViewDataPoints.selectedIndexes()[0].data(QtCore.Qt.UserRole)
-        sub = QtWidgets.QMdiSubWindow()
-        wdg = WidgetPoint(point)
-        wdg.setInfoTab()
-        wdg.setPressureAndTemperatureModels()
-        sub.setWidget(wdg)
-        self.mdi.addSubWindow(sub)
-        sub.show()
+        self.openPointView(point)
 
+    def openPointView(self, point):
+ 
+        subWin = SubWindow(point)
+        subWin.setPointWidget()
 
+        if self.mdi.viewMode() == QtWidgets.QMdiArea.SubWindowView:
+            self.mdi.addSubWindow(subWin)
+            subWin.show()
+            self.mdi.tileSubWindows()
+
+        elif self.mdi.viewMode() == QtWidgets.QMdiArea.TabbedView:
+            self.switchToSubWindowView()
+            self.mdi.addSubWindow(subWin)
+            subWin.show()
+            self.mdi.tileSubWindows()
+            self.switchToTabbedView()
+        
     def removePoint(self):
         dlg = DialogRemovePoint()
         dlg.setPointsList(self.pointModel)
@@ -130,9 +142,25 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             pointIndex = self.pointModel.indexFromItem(pointItem)
             self.pointModel.removeRow(pointIndex.row()) #supprime l'item du model
 
-            point.closeWidget()
+            #On ferme la fenêtre associée au point qu'on enlève
+            openedSubWindows = self.mdi.subWindowList()
+            for subWin in openedSubWindows:
+                if subWin.getName() == pointName:
+                    subWin.close()
             
             displayInfoMessage("Point successfully removed")
+
+    def switchToTabbedView(self):
+        self.mdi.setViewMode(QtWidgets.QMdiArea.TabbedView)
+        self.actionSwitch_To_Tabbed_View.setEnabled(False)
+        self.actionSwitch_To_SubWindow_View.setEnabled(True)
+
+    def switchToSubWindowView(self):
+        self.mdi.setViewMode(QtWidgets.QMdiArea.SubWindowView)
+        self.mdi.tileSubWindows()
+        self.actionSwitch_To_Tabbed_View.setEnabled(True)
+        self.actionSwitch_To_SubWindow_View.setEnabled(False)
+        
 
 
 if __name__ == '__main__':

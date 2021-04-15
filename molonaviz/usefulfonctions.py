@@ -23,7 +23,7 @@ def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
 
 
 def celsiusToKelvin(trawfile, tprocessedfile):
-    df = pd.read_csv(trawfile, sep=';')
+    df = pd.read_csv(trawfile, index_col=0, header=1) #modifié avec la nouvelle API
     columnsNames = list(df.head(0))
     time = columnsNames[0]
     temps = [columnsNames[i] for i in range(1,5)]
@@ -47,5 +47,11 @@ def displayInfoMessage(message):
 def displayWarningMessage(message):
     msg = QtWidgets.QMessageBox()
     msg.setIcon(QtWidgets.QMessageBox.Warning)
+    msg.setText(message)
+    msg.exec_() 
+
+def displayCriticalMessage(message):
+    msg = QtWidgets.QMessageBox()
+    msg.setIcon(QtWidgets.QMessageBox.Critical)
     msg.setText(message)
     msg.exec_() 

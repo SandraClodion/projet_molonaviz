@@ -20,7 +20,7 @@ class Point(object):
         self.dftemp = pd.DataFrame()
         self.dfpress = pd.DataFrame()
     
-    def getName():
+    def getName(self):
         return self.name
 
     def getPointDir(self):
@@ -44,7 +44,7 @@ class Point(object):
         self.shaft = df.iloc[2].at[1]
         self.deltaH = float(df.iloc[6].at[1])
         self.dftemp = pd.read_csv(tempcsv, sep=';')
-        self.dfpress = pd.read_csv(presscsv, sep=';')
+        self.dfpress = pd.read_csv(presscsv, sep=';') #à modifier à réception des dataloggers
 
     def loadPoint(self, pointModel): 
         item = QtGui.QStandardItem(self.name)
