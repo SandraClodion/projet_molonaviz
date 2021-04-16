@@ -25,13 +25,13 @@ def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
 
 
 def celsiusToKelvin(trawfile, tprocessedfile):
-    df = pd.read_csv(trawfile, index_col=0, header=1) #modifié avec la nouvelle API
+    df = pd.read_csv(trawfile)
     columnsNames = list(df.head(0))
     time = columnsNames[0]
     temps = [columnsNames[i] for i in range(1,5)]
     for temp in temps:
         df[temp] = df[temp]+273.15
-    df.to_csv(tprocessedfile)
+    df.to_csv(tprocessedfile, index=False)
 
 
 def displayInfoMessage(message):

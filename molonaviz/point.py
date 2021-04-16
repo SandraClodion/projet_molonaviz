@@ -43,8 +43,8 @@ class Point(object):
         self.psensor = df.iloc[1].at[1]
         self.shaft = df.iloc[2].at[1]
         self.deltaH = float(df.iloc[6].at[1])
-        self.dftemp = pd.read_csv(tempcsv, sep=';')
-        self.dfpress = pd.read_csv(presscsv, sep=';') #à modifier à réception des dataloggers
+        self.dftemp = pd.read_csv(tempcsv)
+        self.dfpress = pd.read_csv(presscsv) #à modifier à réception des dataloggers
 
     def loadPoint(self, pointModel): 
         item = QtGui.QStandardItem(self.name)
@@ -66,5 +66,5 @@ class Point(object):
         psensor = pSensorModel.findItems(self.psensor)[0].data(QtCore.Qt.UserRole)
         psensor.tensionToPressure(prawfile, pprocessedfile)
 
-        self.dftemp = pd.read_csv(tprocessedfile, sep=';')
-        self.dfpress = pd.read_csv(pprocessedfile, sep=';')
+        self.dftemp = pd.read_csv(tprocessedfile)
+        self.dfpress = pd.read_csv(pprocessedfile)
