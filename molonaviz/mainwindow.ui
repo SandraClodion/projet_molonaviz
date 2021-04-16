@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>798</width>
-    <height>595</height>
+    <width>1300</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>798</width>
-     <height>24</height>
+     <width>1300</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuStudy">
@@ -33,6 +33,9 @@
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuPoint">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="title">
      <string>Point</string>
     </property>
@@ -40,8 +43,16 @@
     <addaction name="actionOpen_Point"/>
     <addaction name="actionRemove_Point"/>
    </widget>
+   <widget class="QMenu" name="menuWindows">
+    <property name="title">
+     <string>Windows</string>
+    </property>
+    <addaction name="actionSwitch_To_Tabbed_View"/>
+    <addaction name="actionSwitch_To_SubWindow_View"/>
+   </widget>
    <addaction name="menuStudy"/>
    <addaction name="menuPoint"/>
+   <addaction name="menuWindows"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockDataPoints">
@@ -193,6 +204,19 @@
   <action name="actionRemove_Point">
    <property name="text">
     <string>Remove Point</string>
+   </property>
+  </action>
+  <action name="actionSwitch_To_Tabbed_View">
+   <property name="text">
+    <string>Switch To Tabbed View</string>
+   </property>
+  </action>
+  <action name="actionSwitch_To_SubWindow_View">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Switch To SubWindow View</string>
    </property>
   </action>
  </widget>

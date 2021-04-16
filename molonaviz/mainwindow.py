@@ -10,8 +10,9 @@ from dialogfindstudy import DialogFindStudy
 from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
 from dialogremovepoint import DialogRemovePoint
-from usefulfonctions import displayInfoMessage
-from widgetpoint import WidgetPoint
+from usefulfonctions import displayInfoMessage, displayCriticalMessage
+#from widgetpoint import WidgetPoint
+from subwindow import SubWindow
 
 From_MainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))[0]
 
@@ -26,20 +27,26 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
 
         self.mdi = QtWidgets.QMdiArea()
         self.setCentralWidget(self.mdi)
+        self.mdi.setTabsMovable(True)
+        self.mdi.setTabsClosable(True)
 
         self.currentStudy = None
 
         self.pSensorModel = QtGui.QStandardItemModel()
         self.treeViewPressureSensors.setModel(self.pSensorModel)
+        self.treeViewPressureSensors.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
         self.shaftModel = QtGui.QStandardItemModel()
         self.treeViewShafts.setModel(self.shaftModel)
+        self.treeViewShafts.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
         self.thermometersModel = QtGui.QStandardItemModel()
         self.treeViewThermometers.setModel(self.thermometersModel)
-
+        self.treeViewThermometers.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        
         self.pointModel = QtGui.QStandardItemModel()
         self.treeViewDataPoints.setModel(self.pointModel)
+        self.treeViewDataPoints.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
         self.menubar.setNativeMenuBar(False) #Permet d'afficher la barre de menu dans la fenêtre
 
@@ -48,7 +55,13 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.actionImport_Point.triggered.connect(self.importPoint)
         self.actionOpen_Point.triggered.connect(self.openPoint)
         self.actionRemove_Point.triggered.connect(self.removePoint)
+        self.actionSwitch_To_Tabbed_View.triggered.connect(self.switchToTabbedView)
+        self.actionSwitch_To_SubWindow_View.triggered.connect(self.switchToSubWindowView)
         self.treeViewDataPoints.doubleClicked.connect(self.openPointfromTree)
+
+        #On adapte la taille de la fenêtre principale à l'écran
+        screenSize = QtWidgets.QDesktopWidget().screenGeometry(-1)
+        self.setGeometry(screenSize)
 
     def createStudy(self):
         dlg = DialogStudy()
@@ -60,22 +73,23 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
             
     def openStudy(self):
-        if self.currentStudy == None :
+        if self.currentStudy == None : #si on ne vient pas de créer une étude
             dlg = DialogFindStudy()
             res = dlg.exec_()
             if res == QtWidgets.QDialog.Accepted:
-                self.currentStudy = Study(rootDir=dlg.getRootDir())
-                self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
-                self.currentStudy.loadPressureSensors(self.pSensorModel)
-                self.currentStudy.loadShafts(self.shaftModel)
-                self.currentStudy.loadThermometers(self.thermometersModel)
-                self.currentStudy.loadPoints(self.pointModel)
-        else : #si une nouvelle étude a été créée
-            self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
-            self.currentStudy.loadPressureSensors(self.pSensorModel)
-            self.currentStudy.loadShafts(self.shaftModel)
-            self.currentStudy.loadThermometers(self.thermometersModel)
-            self.currentStudy.loadPoints(self.pointModel)
+                try :
+                    self.currentStudy = Study(rootDir=dlg.getRootDir())
+                except FileNotFoundError :
+                    displayCriticalMessage("No such directory \n Please try again")
+        self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
+        self.currentStudy.loadPressureSensors(self.pSensorModel)
+        self.currentStudy.loadShafts(self.shaftModel)
+        self.currentStudy.loadThermometers(self.thermometersModel)
+        self.currentStudy.loadPoints(self.pointModel)
+        self.menuPoint.setEnabled(True)
+        #on n'autorise pas l'ouverture ou la création d'une étude s'il y a déjà une étude ouverte
+        self.actionOpen_Study.setEnabled(False) 
+        self.actionCreate_Study.setEnabled(False)
 
     def importPoint(self):
 
@@ -85,15 +99,9 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             
             name, infofile, prawfile, trawfile, noticefile, configfile  = dlg.getPointInfo()
             
-            psensorname = pd.read_csv(infofile, sep=';', index_col=0).iloc[0][0]
-            print(psensorname)
-            psensor = self.pSensorModel.findItems(psensorname)[0].data(QtCore.Qt.UserRole)
-            pointDir = self.currentStudy.addPoint(name, infofile, prawfile, trawfile, noticefile, configfile, psensor) #psensor nécessaire pour la conversion
-            
-            point = Point(name, pointDir)
-            point.loadPointFromDir()
+            point = self.currentStudy.addPoint(name, infofile, prawfile, trawfile, noticefile, configfile, self.pSensorModel) 
             point.loadPoint(self.pointModel)
-    
+           
     def openPoint(self):
         dlg = DialogOpenPoint()
         dlg.setPointsList(self.pointModel)
@@ -101,18 +109,29 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         if res == QtWidgets.QDialog.Accepted:
             pointname = dlg.getPointName()
             point = self.pointModel.findItems(pointname)[0].data(QtCore.Qt.UserRole)
-            
-            pointDir = point.pointDir #pas ok en encapulation, juste pour tester
-            
-            sub = QtWidgets.QMdiSubWindow()
-            sub.setWidget(WidgetPoint(pointDir))
-            self.mdi.addSubWindow(sub)
-            sub.show()
+            self.openPointView(point)
 
-            #point.openWidget()
-            #self.wdg = WidgetPoint(point.name, point.pointDir, point.sensor)
-            #self.wdg.show()
+    def openPointfromTree(self):
+        point = self.treeViewDataPoints.selectedIndexes()[0].data(QtCore.Qt.UserRole)
+        self.openPointView(point)
 
+    def openPointView(self, point):
+ 
+        subWin = SubWindow(point)
+        subWin.setPointWidget()
+
+        if self.mdi.viewMode() == QtWidgets.QMdiArea.SubWindowView:
+            self.mdi.addSubWindow(subWin)
+            subWin.show()
+            self.mdi.tileSubWindows()
+
+        elif self.mdi.viewMode() == QtWidgets.QMdiArea.TabbedView:
+            self.switchToSubWindowView()
+            self.mdi.addSubWindow(subWin)
+            subWin.show()
+            self.mdi.tileSubWindows()
+            self.switchToTabbedView()
+        
     def removePoint(self):
         dlg = DialogRemovePoint()
         dlg.setPointsList(self.pointModel)
@@ -127,20 +146,25 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             pointIndex = self.pointModel.indexFromItem(pointItem)
             self.pointModel.removeRow(pointIndex.row()) #supprime l'item du model
 
-            point.closeWidget()
+            #On ferme la fenêtre associée au point qu'on enlève
+            openedSubWindows = self.mdi.subWindowList()
+            for subWin in openedSubWindows:
+                if subWin.getName() == pointName:
+                    subWin.close()
             
             displayInfoMessage("Point successfully removed")
 
-    def openPointfromTree(self):
-        point = self.treeViewDataPoints.selectedIndexes()[0].data(QtCore.Qt.UserRole)
-        pointDir = point.pointDir #pas ok en encapulation, juste pour tester
-            
-        sub = QtWidgets.QMdiSubWindow()
-        sub.setWidget(WidgetPoint(pointDir))
-        self.mdi.addSubWindow(sub)
-        sub.show()
+    def switchToTabbedView(self):
+        self.mdi.setViewMode(QtWidgets.QMdiArea.TabbedView)
+        self.actionSwitch_To_Tabbed_View.setEnabled(False)
+        self.actionSwitch_To_SubWindow_View.setEnabled(True)
 
-
+    def switchToSubWindowView(self):
+        self.mdi.setViewMode(QtWidgets.QMdiArea.SubWindowView)
+        self.mdi.tileSubWindows()
+        self.actionSwitch_To_Tabbed_View.setEnabled(True)
+        self.actionSwitch_To_SubWindow_View.setEnabled(False)
+        
 
 
 if __name__ == '__main__':

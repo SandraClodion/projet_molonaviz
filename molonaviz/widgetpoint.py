@@ -6,19 +6,21 @@ import pandas as pd
 from pandasmodel import PandasModel
 from dialogcleanup import DialogCleanup
 from usefulfonctions import displayInfoMessage
+from point import Point
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
 class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     
-    def __init__(self, pointDir):
+    def __init__(self, point):
         # Call constructor of parent classes
         super(WidgetPoint, self).__init__()
         QtWidgets.QWidget.__init__(self)
         
         self.setupUi(self)
         
-        self.pointDir = pointDir
+        self.point = point
+        print(self.point)
 
         # Link every button to their function
 
@@ -27,55 +29,57 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
 
+    def setInfoTab(self):
         # Set the "Infos" tab
+        pointDir = self.point.getPointDir()
             #Installation
-        self.labelSchema.setPixmap(QPixmap(self.pointDir + "/info_data" + "/config.png"))
+        self.labelSchema.setPixmap(QPixmap(pointDir + "/info_data" + "/config.png"))
             #Notice
-        file = open(self.pointDir + "/info_data" + "/notice.txt")
-        self.notice = file.read()
-        self.plainTextEditNotice.setPlainText(self.notice)
+        file = open(pointDir + "/info_data" + "/notice.txt")
+        notice = file.read()
+        self.plainTextEditNotice.setPlainText(notice)
         file.close()
             #Infos
-        self.infosDir = self.pointDir + "/info_data" + "/info.csv"
-        dfinfo = pd.read_csv(self.infosDir, sep=';')
-        self.infos = PandasModel(dfinfo)
-        self.tableViewInfos.setModel(self.infos)
+        infoFile = pointDir + "/info_data" + "/info.csv"
+        dfinfo = pd.read_csv(infoFile, sep=';', header=None)
+        self.infosModel = PandasModel(dfinfo)
+        self.tableViewInfos.setModel(self.infosModel)
 
+    def setPressureAndTemperatureModels(self):
         # Set the Temperature and Pressure models
         self.currentdata = "processed"
+        pointDir = self.point.getPointDir()
 
-        self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
-        self.PressureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
+        self.TemperatureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
+        self.PressureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
 
-        #self.currentPressureModel = PandasModel(self.PressureDir)
         dfpress = pd.read_csv(self.PressureDir, index_col=0)
         self.currentPressureModel = PandasModel(dfpress)
         self.tableViewPress.setModel(self.currentPressureModel)
         self.tableViewPress.resizeColumnsToContents()
 
-        #self.currentTemperatureModel = PandasModel(self.TemperatureDir)
         dftemp = pd.read_csv(self.TemperatureDir, index_col=0)
         self.currentTemperatureModel = PandasModel(dftemp)
         self.tableViewTemp.setModel(self.currentTemperatureModel)
         self.tableViewTemp.resizeColumnsToContents()
 
-    def setWidgetInfos(self, pointName, pointSensor):
+    def setWidgetInfos(self):
+        pointName = self.point.getName()
+        pointPressureSensor = self.point.getPressureSensor()
+        pointShaft = self.point.getShaft()
+
         self.setWindowTitle(pointName)
-        self.lineEditSensor.setText(pointSensor)
-
-    #def setCurrentTemperatureModel(self, dftemp):
-        #self.currentTemperatureModel.setData(dftemp) # --> plutot changeData(dftemp)
-        #self.tableViewTemp.resizeColumnsToContents() --> rame un peu
-
-    #def setCurrentPressureModel(self, dfpress):
-        #self.currentPressureModel.setData(dfpress) # --> plutot changeData(dftemp)
-        #self.tableViewPress.resizeColumnsToContents() --> rame un peu
+        self.lineEditSensor.setText(pointPressureSensor)
+        self.lineEditShaft.setText(pointShaft)
 
     def reset(self):
         ## À compléter
         print("reset")
 
     def cleanup(self):
+
+        pointDir = self.pointDir.getPointDir()
+
         if self.currentdata == "raw":
             displayInfoMessage("Please clean-up your processed data.")
         else:
@@ -84,7 +88,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             dlg = DialogCleanup()
             res = dlg.exec_()
             if res == QtWidgets.QDialog.Accepted:
-                new_dft, new_dfp = dlg.executeScript(dft, dfp, self.pointDir)
+                new_dft, new_dfp = dlg.executeScript(dft, dfp, pointDir)
                 #On enregistre les nouvelles dataframe en cvs à la place des anciens
                 os.remove(self.TemperatureDir)
                 os.remove(self.PressureDir)
@@ -97,24 +101,21 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.currentTemperatureModel = PandasModel(self.TemperatureDir)
                 self.tableViewTemp.setModel(self.currentTemperatureModel)
 
-
     def compute(self):
         ## À compléter
         print("compute")
     
     def checkbox(self):
+
+        pointDir = self.point.getPointDir()
+
         if self.checkBoxRaw_Data.isChecked():
             self.currentdata = "raw"
         else :
             self.currentdata = "processed"
 
-        self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
-        self.PressureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
-
-        #self.currentPressureModel = PandasModel(self.PressureDir)
-        #self.tableViewPress.setModel(self.currentPressureModel)
-        #self.currentTemperatureModel = PandasModel(self.TemperatureDir)
-        #self.tableViewTemp.setModel(self.currentTemperatureModel)
+        self.TemperatureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
+        self.PressureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
 
         if self.currentdata == "processed":
             dfTemp = pd.read_csv(self.TemperatureDir, index_col=0)
@@ -125,13 +126,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.tableViewPress.resizeColumnsToContents()
         
         elif self.currentdata == "raw":
-            dfTemp = pd.read_csv(self.TemperatureDir, sep=';')
-            dfPress = pd.read_csv(self.PressureDir, sep=';')
+            dfTemp = pd.read_csv(self.TemperatureDir, index_col=0, header=1)
+            dfPress = pd.read_csv(self.PressureDir, sep=';') #à modifier à reception des dataloggers de pression
             self.currentTemperatureModel.setData(dfTemp)
             self.currentPressureModel.setData(dfPress)  
             self.tableViewTemp.resizeColumnsToContents()
             self.tableViewPress.resizeColumnsToContents() 
-
 
 """ 
 if __name__ == '__main__':

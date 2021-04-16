@@ -1,2 +1,0 @@
-Name: Étude test Sandra 
-SensorsDirectory: /Users/sandraclodion/Downloads/EXEMPLES FICHIERS/Sensors

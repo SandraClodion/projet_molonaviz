@@ -20,7 +20,6 @@ class PressureSensor(object):
         self.calibrationDate = calibrationDate
 
     def tensionToPressure(self, prawfile, pprocessedfile):
-        print(prawfile)
         df = pd.read_csv(prawfile, sep=';')
         columnsNames = list(df.head(0))
         time = columnsNames[0]
@@ -31,10 +30,10 @@ class PressureSensor(object):
         df[temperature] = df[temperature] + 273.15 #conversion en Kelvin
         a, b, c = self.intercept, self.dudh, self.dudt
         df['Pression différentielle (m)'] = (1/b)*(df[tension] - c*df[temperature] - a)
-        df.drop([tension, temperature], axis=1)
+        df.drop([tension, temperature], axis=1, inplace=True)
         df.to_csv(pprocessedfile)
-    
-    def loadPressureSensor(self, csv, sensorModel):
+        
+    def setPressureSensor(self, csv):
 
         df = pd.read_csv(csv, sep=';', header=None, index_col=0)
         self.name = df.iloc[0].at[1] #pas nécessaire ici puisqu'on a déjà le nom
@@ -44,6 +43,10 @@ class PressureSensor(object):
         self.dudh = float(df.iloc[4].at[1])
         self.dudt = float(df.iloc[5].at[1])
         self.sigma = float(df.iloc[6].at[1])
+    
+    def loadPressureSensor(self, csv, sensorModel):
+
+        self.setPressureSensor(csv)
                     
         item = QtGui.QStandardItem(self.name)
         item.setData(self, QtCore.Qt.UserRole) 
@@ -54,6 +57,8 @@ class PressureSensor(object):
         item.appendRow(QtGui.QStandardItem(f"dudh = {self.dudh:.2f}"))
         item.appendRow(QtGui.QStandardItem(f"dudt = {self.dudt:.2f}"))
         item.appendRow(QtGui.QStandardItem(f"sigma = {self.sigma:.2f}"))
+
+    
    
 
 

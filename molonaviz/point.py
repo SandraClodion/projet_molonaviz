@@ -1,10 +1,9 @@
 import os, glob, shutil
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
-from usefulfonctions import clean_filename
-from widgetpoint import WidgetPoint
 import pandas as pd
 from numpy import NaN
-#from pandasmodel import PandasModel
+from usefulfonctions import clean_filename, celsiusToKelvin
+from sensors import PressureSensor
 
 class Point(object):
     
@@ -20,6 +19,18 @@ class Point(object):
         self.deltaH = deltaH
         self.dftemp = pd.DataFrame()
         self.dfpress = pd.DataFrame()
+    
+    def getName(self):
+        return self.name
+
+    def getPointDir(self):
+        return self.pointDir
+
+    def getPressureSensor(self):
+        return self.psensor
+
+    def getShaft(self):
+        return self.shaft    
 
     def loadPointFromDir(self):
         
@@ -33,7 +44,7 @@ class Point(object):
         self.shaft = df.iloc[2].at[1]
         self.deltaH = float(df.iloc[6].at[1])
         self.dftemp = pd.read_csv(tempcsv, sep=';')
-        self.dfpress = pd.read_csv(presscsv, sep=';')
+        self.dfpress = pd.read_csv(presscsv, sep=';') #à modifier à réception des dataloggers
 
     def loadPoint(self, pointModel): 
         item = QtGui.QStandardItem(self.name)
@@ -43,13 +54,17 @@ class Point(object):
     def delete(self):
         shutil.rmtree(self.pointDir)
 
-    def openWidget(self):
-        self.wdgpoint = WidgetPoint(self.pointDir)
-        self.wdgpoint.setWidgetInfos(self.name, self.psensor)
-        # à terme, à remplacer par self.wdgpoint.setWidgetInfos(self.dataframeinfos) ?
-        #self.wdgpoint.setCurrentTemperatureModel(self.dftemp)
-        #self.wdgpoint.setCurrentPressureModel(self.dfpress)
-        self.wdgpoint.show()
+    def processData(self, pSensorModel):
+        
+        trawfile = os.path.join(self.pointDir, "raw_data", "raw_temperatures.csv")
+        tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
+        celsiusToKelvin(trawfile, tprocessedfile)
+        
+        prawfile = os.path.join(self.pointDir, "raw_data", "raw_pressures.csv")
+        pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
+        
+        psensor = pSensorModel.findItems(self.psensor)[0].data(QtCore.Qt.UserRole)
+        psensor.tensionToPressure(prawfile, pprocessedfile)
 
-    def closeWidget(self):
-        self.wdgpoint.close()
+        self.dftemp = pd.read_csv(tprocessedfile, sep=';')
+        self.dfpress = pd.read_csv(pprocessedfile, sep=';')
