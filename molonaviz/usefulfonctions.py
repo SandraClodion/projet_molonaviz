@@ -49,3 +49,21 @@ def displayWarningMessage(message):
     msg.setIcon(QtWidgets.QMessageBox.Warning)
     msg.setText(message)
     msg.exec_() 
+
+def time_convert(date):
+    #Date est une str yyyy/mm/dd hh:mm:ss
+    #Retourne le temps en secondes
+    year = int(date[0:4])
+    mon = int(date[5:7])
+    mday = int(date[8:10])
+    hour = int(date[12:14])
+    minu = int(date[15:17])
+    sec = int(date[18:20])
+    #On calcule le nombre de secondes écoulées depuis le 01/01/00 à 00:00
+    res = (year - 2000) * 12
+    res = (res + mon - 1) * 30.5
+    res = (res + mday - 1) * 24
+    res = (res + hour) * 60
+    res = (res + minu) * 60
+    res = res + sec
+    return(res)
