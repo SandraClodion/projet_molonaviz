@@ -66,8 +66,8 @@ class Point(object):
         psensor = pSensorModel.findItems(self.psensor)[0].data(QtCore.Qt.UserRole)
         psensor.tensionToPressure(prawfile, self.pprocessedfile)
 
-        self.dftemp = pd.read_csv(tprocessedfile)
-        self.dfpress = pd.read_csv(pprocessedfile)
+        self.dftemp = pd.read_csv(self.tprocessedfile)
+        self.dfpress = pd.read_csv(self.pprocessedfile)
 
     def cleanup(self, script, dft, dfp):
 
