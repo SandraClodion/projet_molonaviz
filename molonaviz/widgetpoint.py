@@ -77,8 +77,15 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.lineEditShaft.setText(pointShaft)
 
     def reset(self):
-        ## À compléter
-        print("reset")
+        point.processData(self.pSensor)
+        #On actualise les modèles
+        self.dfpress = pd.read_csv(self.PressureDir, index_col=0)
+        self.dftemp = pd.read_csv(self.TemperatureDir, index_col=0)
+        self.currentTemperatureModel.setData(self.dftemp)
+        self.currentPressureModel.setData(self.dfpress)
+        self.tableViewTemp.resizeColumnsToContents()
+        self.tableViewPress.resizeColumnsToContents()
+
 
     def cleanup(self):
 
@@ -93,17 +100,20 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             res = dlg.exec_()
             if res == QtWidgets.QDialog.Accepted:
                 new_dft, new_dfp = dlg.executeScript(dft, dfp, pointDir)
-                #On enregistre les nouvelles dataframe en cvs à la place des anciens
+                #On enregistre les nouvelles dataframe en cvs à la place des anciens -- Est-ce qu'on enfreint la séparation entre données et visualisation ?
+                #On peut en faire une méthode de la classe Point plutôt !
                 os.remove(self.TemperatureDir)
                 os.remove(self.PressureDir)
                 new_dft.to_csv(self.TemperatureDir)
                 new_dfp.to_csv(self.PressureDir)
                 displayInfoMessage("Data successfully cleaned !")
                 #On actualise les modèles
-                self.currentPressureModel = PandasModel(self.PressureDir)
-                self.tableViewPress.setModel(self.currentPressureModel)
-                self.currentTemperatureModel = PandasModel(self.TemperatureDir)
-                self.tableViewTemp.setModel(self.currentTemperatureModel)
+                self.dftemp = new_dft
+                self.dfpress = new_dfp
+                self.currentTemperatureModel.setData(self.dftemp)
+                self.currentPressureModel.setData(self.dfpress)
+                self.tableViewTemp.resizeColumnsToContents()
+                self.tableViewPress.resizeColumnsToContents()
 
     def compute(self):
         ## À compléter
