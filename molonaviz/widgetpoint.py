@@ -70,7 +70,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
         self.setWindowTitle(pointName)
         self.lineEditSensor.setText(pointPressureSensor)
-        #self.lineEditShaft.setText()
+        self.lineEditShaft.setText(pointShaft)
 
     def reset(self):
         ## À compléter

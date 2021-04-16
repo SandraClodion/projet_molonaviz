@@ -20,7 +20,6 @@ class PressureSensor(object):
         self.calibrationDate = calibrationDate
 
     def tensionToPressure(self, prawfile, pprocessedfile):
-        print(prawfile)
         df = pd.read_csv(prawfile, sep=';')
         columnsNames = list(df.head(0))
         time = columnsNames[0]

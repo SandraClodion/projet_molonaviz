@@ -34,15 +34,19 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
 
         self.pSensorModel = QtGui.QStandardItemModel()
         self.treeViewPressureSensors.setModel(self.pSensorModel)
+        self.treeViewPressureSensors.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
         self.shaftModel = QtGui.QStandardItemModel()
         self.treeViewShafts.setModel(self.shaftModel)
+        self.treeViewShafts.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
         self.thermometersModel = QtGui.QStandardItemModel()
         self.treeViewThermometers.setModel(self.thermometersModel)
-
+        self.treeViewThermometers.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        
         self.pointModel = QtGui.QStandardItemModel()
         self.treeViewDataPoints.setModel(self.pointModel)
+        self.treeViewDataPoints.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
         self.menubar.setNativeMenuBar(False) #Permet d'afficher la barre de menu dans la fenêtre
 
@@ -69,27 +73,23 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
             
     def openStudy(self):
-        if self.currentStudy == None :
+        if self.currentStudy == None : #si on ne vient pas de créer une étude
             dlg = DialogFindStudy()
             res = dlg.exec_()
             if res == QtWidgets.QDialog.Accepted:
                 try :
                     self.currentStudy = Study(rootDir=dlg.getRootDir())
-                    self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
-                    self.currentStudy.loadPressureSensors(self.pSensorModel)
-                    self.currentStudy.loadShafts(self.shaftModel)
-                    self.currentStudy.loadThermometers(self.thermometersModel)
-                    self.currentStudy.loadPoints(self.pointModel)
-                    self.menuPoint.setEnabled(True)
                 except FileNotFoundError :
                     displayCriticalMessage("No such directory \n Please try again")
-        else : #si une nouvelle étude a été créée
-            self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
-            self.currentStudy.loadPressureSensors(self.pSensorModel)
-            self.currentStudy.loadShafts(self.shaftModel)
-            self.currentStudy.loadThermometers(self.thermometersModel)
-            self.currentStudy.loadPoints(self.pointModel)
-            self.menuPoint.setEnabled(True)
+        self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
+        self.currentStudy.loadPressureSensors(self.pSensorModel)
+        self.currentStudy.loadShafts(self.shaftModel)
+        self.currentStudy.loadThermometers(self.thermometersModel)
+        self.currentStudy.loadPoints(self.pointModel)
+        self.menuPoint.setEnabled(True)
+        #on n'autorise pas l'ouverture ou la création d'une étude s'il y a déjà une étude ouverte
+        self.actionOpen_Study.setEnabled(False) 
+        self.actionCreate_Study.setEnabled(False)
 
     def importPoint(self):
 
