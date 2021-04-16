@@ -122,15 +122,15 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
         if self.currentdata == "processed":
             self.dftemp = pd.read_csv(self.TemperatureDir)
-            self.dfpress = pd.read_csv(self.PressureDir, index_col=0)
+            self.dfpress = pd.read_csv(self.PressureDir)
             self.currentTemperatureModel.setData(self.dftemp)
             self.currentPressureModel.setData(self.dfpress)
             self.tableViewTemp.resizeColumnsToContents()
             self.tableViewPress.resizeColumnsToContents()
         
         elif self.currentdata == "raw":
-            self.dftemp = pd.read_csv(self.TemperatureDir, header=1)
-            self.dfpress = pd.read_csv(self.PressureDir, sep=';') #à modifier à reception des dataloggers de pression
+            self.dftemp = pd.read_csv(self.TemperatureDir)
+            self.dfpress = pd.read_csv(self.PressureDir) #à modifier à reception des dataloggers de pression
             self.currentTemperatureModel.setData(self.dftemp)
             self.currentPressureModel.setData(self.dfpress)  
             self.tableViewTemp.resizeColumnsToContents()
