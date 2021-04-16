@@ -5,8 +5,9 @@ from PyQt5.QtGui import QPixmap
 import pandas as pd
 from pandasmodel import PandasModel
 from dialogcleanup import DialogCleanup
-from usefulfonctions import displayInfoMessage
+from usefulfonctions import displayInfoMessage, time_plots
 from point import Point
+from timeaxisitem import TimeAxisItem
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
@@ -28,6 +29,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.pushButtonCleanUp.clicked.connect(self.cleanup)
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
+        self.setPressureAndTemperatureModels()
+        self.plots()
 
     def setInfoTab(self):
         # Set the "Infos" tab
@@ -53,13 +56,13 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.TemperatureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
         self.PressureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
 
-        dfpress = pd.read_csv(self.PressureDir, index_col=0)
-        self.currentPressureModel = PandasModel(dfpress)
+        self.dfpress = pd.read_csv(self.PressureDir, index_col=0)
+        self.currentPressureModel = PandasModel(self.dfpress)
         self.tableViewPress.setModel(self.currentPressureModel)
         self.tableViewPress.resizeColumnsToContents()
 
-        dftemp = pd.read_csv(self.TemperatureDir, index_col=0)
-        self.currentTemperatureModel = PandasModel(dftemp)
+        self.dftemp = pd.read_csv(self.TemperatureDir, index_col=0)
+        self.currentTemperatureModel = PandasModel(self.dftemp)
         self.tableViewTemp.setModel(self.currentTemperatureModel)
         self.tableViewTemp.resizeColumnsToContents()
 
@@ -118,20 +121,30 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.PressureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
 
         if self.currentdata == "processed":
-            dfTemp = pd.read_csv(self.TemperatureDir, index_col=0)
-            dfPress = pd.read_csv(self.PressureDir, index_col=0)
-            self.currentTemperatureModel.setData(dfTemp)
-            self.currentPressureModel.setData(dfPress)
+            self.dftemp = pd.read_csv(self.TemperatureDir, index_col=0)
+            self.dfpress = pd.read_csv(self.PressureDir, index_col=0)
+            self.currentTemperatureModel.setData(self.dftemp)
+            self.currentPressureModel.setData(self.dfpress)
             self.tableViewTemp.resizeColumnsToContents()
             self.tableViewPress.resizeColumnsToContents()
         
         elif self.currentdata == "raw":
-            dfTemp = pd.read_csv(self.TemperatureDir, index_col=0, header=1)
-            dfPress = pd.read_csv(self.PressureDir, sep=';') #à modifier à reception des dataloggers de pression
-            self.currentTemperatureModel.setData(dfTemp)
-            self.currentPressureModel.setData(dfPress)  
+            self.dftemp = pd.read_csv(self.TemperatureDir, index_col=0, header=1)
+            self.dfpress = pd.read_csv(self.PressureDir, sep=';') #à modifier à reception des dataloggers de pression
+            self.currentTemperatureModel.setData(self.dftemp)
+            self.currentPressureModel.setData(self.dfpress)  
             self.tableViewTemp.resizeColumnsToContents()
-            self.tableViewPress.resizeColumnsToContents() 
+            self.tableViewPress.resizeColumnsToContents()
+
+    def plots(self):
+        date_axis = TimeAxisItem(orientation='bottom')
+        #On commence par les pressions:
+        graphpressure = time_plots(self.dfpress, date_axis, Temp=False)
+        vbox = QtWidgets.QVBoxLayout()
+        self.groupBoxPress.setLayout(vbox)
+        vbox.addWidget(graphpressure)
+
+
 
 """ 
 if __name__ == '__main__':

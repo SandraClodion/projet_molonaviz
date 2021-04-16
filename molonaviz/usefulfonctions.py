@@ -3,6 +3,7 @@ import string
 import pandas as pd
 from PyQt5 import QtWidgets
 from datetime import datetime
+import pyqtgraph as pg
 
 valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
 char_limit = 255
@@ -58,7 +59,22 @@ def listtime_convert(dates):
     for date in dates :
         new_dates.append(datetime.strptime(date, "%Y/%m/%d %H:%M:%S"))
     return(new_dates)
-    
+
+def time_plots(pd, date_axis, Temp=False):
+    graph = pg.PlotWidget(axisItems = {'bottom': date_axis})
+    Timestr = list(pd.index)
+    Time = listtime_convert(Timestr)
+    if Temp:
+        #On plot les 4 courbes de température
+        for i in range(4):
+            Temperatures = pd[pd.columns[i]].values.tolist()
+            graph.plot(x=[t.timestamp() for t in Time], y=Temperatures, pen=None, symbol='o')
+    else:
+        #On plot la courbe de pression
+        Pressures = pd[pd.columns[0]].values.tolist()
+        graph.plot(x=[t.timestamp() for t in Time], y=Pressures, pen=None, symbol='o')
+    return(graph)
+
 def displayCriticalMessage(message):
     msg = QtWidgets.QMessageBox()
     msg.setIcon(QtWidgets.QMessageBox.Critical)

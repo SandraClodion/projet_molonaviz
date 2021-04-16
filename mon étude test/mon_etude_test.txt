@@ -1,2 +1,0 @@
-Name: Mon étude test 
-SensorsDirectory: /Users/charlottedemaillynesle/Desktop/Cours Mines/2A/MOLONARI/Interface/projet_molonaviz/sensors
