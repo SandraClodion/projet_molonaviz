@@ -12,7 +12,7 @@ From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widget
 
 class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     
-    def __init__(self, point):
+    def __init__(self, point, pSensor):
         # Call constructor of parent classes
         super(WidgetPoint, self).__init__()
         QtWidgets.QWidget.__init__(self)
@@ -20,7 +20,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.setupUi(self)
         
         self.point = point
-        print(self.point)
+        self.pSensor = pSensor
 
         # Link every button to their function
 

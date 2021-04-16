@@ -116,8 +116,9 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.openPointView(point)
 
     def openPointView(self, point):
- 
-        subWin = SubWindow(point)
+        
+        pSensor = self.pSensorModel.findItems(point.getPressureSensor())[0].data(QtCore.Qt.UserRole)
+        subWin = SubWindow(point, pSensor)
         subWin.setPointWidget()
 
         if self.mdi.viewMode() == QtWidgets.QMdiArea.SubWindowView:

@@ -20,6 +20,10 @@ class PressureSensor(object):
         self.calibrationDate = calibrationDate
 
     def tensionToPressure(self, prawfile, pprocessedfile):
+        """
+        Prend en argument le chemin d'accès vers le fichier raw et celui vers le fichier process
+        Écrit le fichier processed à l'endroit demandé
+        """
         df = pd.read_csv(prawfile, sep=';')
         columnsNames = list(df.head(0))
         time = columnsNames[0]
