@@ -24,7 +24,7 @@ class PressureSensor(object):
         Prend en argument le chemin d'accès vers le fichier raw et celui vers le fichier process
         Écrit le fichier processed à l'endroit demandé
         """
-        df = pd.read_csv(prawfile, sep=';')
+        df = pd.read_csv(prawfile)
         columnsNames = list(df.head(0))
         time = columnsNames[0]
         tension = columnsNames[1]
@@ -35,7 +35,7 @@ class PressureSensor(object):
         a, b, c = self.intercept, self.dudh, self.dudt
         df['Pression différentielle (m)'] = (1/b)*(df[tension] - c*df[temperature] - a)
         df.drop([tension, temperature], axis=1, inplace=True)
-        df.to_csv(pprocessedfile)
+        df.to_csv(pprocessedfile, index=False)
         
     def setPressureSensor(self, csv):
 
