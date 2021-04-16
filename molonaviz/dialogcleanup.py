@@ -14,18 +14,9 @@ class DialogCleanup(QtWidgets.QDialog, From_DialogCleanup):
         self.setupUi(self)
 
 
-    def executeScript(self, dft, dfp, dir):
-        self.scriptpartiel = self.plainTextEdit.toPlainText()
-        self.scriptindente = self.scriptpartiel.replace("\n", "\n   ")
-        self.script = "def fonction(dft, dfp): \n   " + self.scriptindente + "\n" + "   return(dft, dfp)"
-
-        scriptDir = dir + "/script.py"
-        sys.path.append(dir)
-        with open(scriptDir, "w") as f:
-            f.write(self.script)
-            f.close()
-
-        from script import fonction
-        new_dft, new_dfp = fonction(dft, dfp)
-        return(new_dft, new_dfp)
-        os.remove(scriptDir)
+    def getScript(self):
+        scriptpartiel = self.plainTextEdit.toPlainText()
+        scriptindente = scriptpartiel.replace("\n", "\n   ")
+        script = "def fonction(dft, dfp): \n   " + scriptindente + "\n" + "   return(dft, dfp)"
+        return(script)
+        
