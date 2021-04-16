@@ -1,4 +1,4 @@
-import os, glob, shutil
+import os, glob, shutil, sys
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 import pandas as pd
 from numpy import NaN
@@ -19,6 +19,8 @@ class Point(object):
         self.deltaH = deltaH
         self.dftemp = pd.DataFrame()
         self.dfpress = pd.DataFrame()
+        self.tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
+        self.pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
     
     def getName(self):
         return self.name
@@ -57,14 +59,32 @@ class Point(object):
     def processData(self, pSensorModel):
         
         trawfile = os.path.join(self.pointDir, "raw_data", "raw_temperatures.csv")
-        tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
-        celsiusToKelvin(trawfile, tprocessedfile)
+        celsiusToKelvin(trawfile, self.tprocessedfile)
         
         prawfile = os.path.join(self.pointDir, "raw_data", "raw_pressures.csv")
-        pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
         
         psensor = pSensorModel.findItems(self.psensor)[0].data(QtCore.Qt.UserRole)
-        psensor.tensionToPressure(prawfile, pprocessedfile)
+        psensor.tensionToPressure(prawfile, self.pprocessedfile)
 
         self.dftemp = pd.read_csv(tprocessedfile)
         self.dfpress = pd.read_csv(pprocessedfile)
+
+    def cleanup(self, script, dft, dfp):
+
+        scriptDir = self.pointDir + "/script.py"
+        sys.path.append(self.pointDir)
+        with open(scriptDir, "w") as f:
+            f.write(script)
+            f.close()
+
+        from script import fonction
+        new_dft, new_dfp = fonction(dft, dfp)
+        os.remove(scriptDir)
+
+        #On réécrit les csv:
+        os.remove(self.tprocessedfile)
+        os.remove(self.pprocessedfile)
+        new_dft.to_csv(self.tprocessedfile, index=False)
+        new_dfp.to_csv(self.pprocessedfile, index=False)
+
+        return(new_dft, new_dfp)

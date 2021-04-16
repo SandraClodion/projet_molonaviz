@@ -57,12 +57,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.TemperatureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
         self.PressureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
 
-        self.dfpress = pd.read_csv(self.PressureDir, index_col=0)
+        self.dfpress = pd.read_csv(self.PressureDir)
         self.currentPressureModel = PandasModel(self.dfpress)
         self.tableViewPress.setModel(self.currentPressureModel)
         self.tableViewPress.resizeColumnsToContents()
 
-        self.dftemp = pd.read_csv(self.TemperatureDir, index_col=0)
+        self.dftemp = pd.read_csv(self.TemperatureDir)
         self.currentTemperatureModel = PandasModel(self.dftemp)
         self.tableViewTemp.setModel(self.currentTemperatureModel)
         self.tableViewTemp.resizeColumnsToContents()
@@ -77,39 +77,28 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.lineEditShaft.setText(pointShaft)
 
     def reset(self):
-        point.processData(self.pSensor)
+        self.point.processData(self.pSensor)
         #On actualise les modèles
-        self.dfpress = pd.read_csv(self.PressureDir, index_col=0)
-        self.dftemp = pd.read_csv(self.TemperatureDir, index_col=0)
+        self.dfpress = pd.read_csv(self.PressureDir)
+        self.dftemp = pd.read_csv(self.TemperatureDir)
         self.currentTemperatureModel.setData(self.dftemp)
         self.currentPressureModel.setData(self.dfpress)
         self.tableViewTemp.resizeColumnsToContents()
         self.tableViewPress.resizeColumnsToContents()
+        displayInfoMessage("Data successfully reset !")
 
 
     def cleanup(self):
-
-        pointDir = self.pointDir.getPointDir()
-
         if self.currentdata == "raw":
             displayInfoMessage("Please clean-up your processed data.")
         else:
-            dft = self.currentTemperatureModel.getpdData()
-            dfp = self.currentPressureModel.getpdData()
             dlg = DialogCleanup()
             res = dlg.exec_()
             if res == QtWidgets.QDialog.Accepted:
-                new_dft, new_dfp = dlg.executeScript(dft, dfp, pointDir)
-                #On enregistre les nouvelles dataframe en cvs à la place des anciens -- Est-ce qu'on enfreint la séparation entre données et visualisation ?
-                #On peut en faire une méthode de la classe Point plutôt !
-                os.remove(self.TemperatureDir)
-                os.remove(self.PressureDir)
-                new_dft.to_csv(self.TemperatureDir)
-                new_dfp.to_csv(self.PressureDir)
+                script = dlg.getScript()
+                self.dftemp, self.dfpress = self.point.cleanup(script, self.dftemp, self.dfpress)
                 displayInfoMessage("Data successfully cleaned !")
                 #On actualise les modèles
-                self.dftemp = new_dft
-                self.dfpress = new_dfp
                 self.currentTemperatureModel.setData(self.dftemp)
                 self.currentPressureModel.setData(self.dfpress)
                 self.tableViewTemp.resizeColumnsToContents()
@@ -132,7 +121,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.PressureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
 
         if self.currentdata == "processed":
-            self.dftemp = pd.read_csv(self.TemperatureDir, index_col=0)
+            self.dftemp = pd.read_csv(self.TemperatureDir)
             self.dfpress = pd.read_csv(self.PressureDir, index_col=0)
             self.currentTemperatureModel.setData(self.dftemp)
             self.currentPressureModel.setData(self.dfpress)
@@ -140,7 +129,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.tableViewPress.resizeColumnsToContents()
         
         elif self.currentdata == "raw":
-            self.dftemp = pd.read_csv(self.TemperatureDir, index_col=0, header=1)
+            self.dftemp = pd.read_csv(self.TemperatureDir, header=1)
             self.dfpress = pd.read_csv(self.PressureDir, sep=';') #à modifier à reception des dataloggers de pression
             self.currentTemperatureModel.setData(self.dftemp)
             self.currentPressureModel.setData(self.dfpress)  
