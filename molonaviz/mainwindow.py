@@ -62,6 +62,8 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         #On adapte la taille de la fenêtre principale à l'écran
         screenSize = QtWidgets.QDesktopWidget().screenGeometry(-1)
         self.setGeometry(screenSize)
+        self.setMaximumWidth(self.geometry().width())
+        self.setMaximumHeight(self.geometry().height())
 
     def createStudy(self):
         dlg = DialogStudy()
