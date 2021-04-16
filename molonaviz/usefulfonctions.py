@@ -53,26 +53,31 @@ def displayWarningMessage(message):
     msg.exec_() 
 
 def listtime_convert(dates):
-    #Date est une str yyyy/mm/dd hh:mm:ss
+    #Date est une str yy/mm/dd hh:mm:ss
     #Retourne une datetime
     new_dates = []
     for date in dates :
-        new_dates.append(datetime.strptime(date, "%Y/%m/%d %H:%M:%S"))
+        new_dates.append(datetime.strptime(date, "%y/%m/%d %H:%M:%S"))
     return(new_dates)
 
 def time_plots(pd, date_axis, Temp=False):
-    graph = pg.PlotWidget(axisItems = {'bottom': date_axis})
-    Timestr = list(pd.index)
+    Timestr = pd[pd.columns[0]].values.tolist()
     Time = listtime_convert(Timestr)
     if Temp:
         #On plot les 4 courbes de température
+        graph = [0]*4
+        GRAPH = []
         for i in range(4):
-            Temperatures = pd[pd.columns[i]].values.tolist()
-            graph.plot(x=[t.timestamp() for t in Time], y=Temperatures, pen=None, symbol='o')
+            graph[i] = pg.PlotWidget(axisItems = {'bottom': date_axis[i]}) # crée une instance qui ne se recrée visiblement pas
+            Temperatures = pd[pd.columns[i+1]].values.tolist()
+            curve = graph.plot(x=[t.timestamp() for t in Time], y=Temperatures, symbol='o')
+            GRAPH.append(curve)
+        return(GRAPH)
     else:
         #On plot la courbe de pression
-        Pressures = pd[pd.columns[0]].values.tolist()
-        graph.plot(x=[t.timestamp() for t in Time], y=Pressures, pen=None, symbol='o')
+        graph = pg.PlotWidget(axisItems = {'bottom': date_axis[0]})
+        Pressures = pd[pd.columns[1]].values.tolist()
+        graph.plot(x=[t.timestamp() for t in Time], y=Pressures, symbol='o')
     return(graph)
 
 def displayCriticalMessage(message):

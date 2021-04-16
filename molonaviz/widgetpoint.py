@@ -8,6 +8,7 @@ from dialogcleanup import DialogCleanup
 from usefulfonctions import displayInfoMessage, time_plots
 from point import Point
 from timeaxisitem import TimeAxisItem
+import pyqtgraph as pg
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
@@ -30,7 +31,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
         self.setPressureAndTemperatureModels()
-        self.plots()
+        #self.plots()
 
     def setInfoTab(self):
         # Set the "Infos" tab
@@ -137,12 +138,19 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.tableViewPress.resizeColumnsToContents()
 
     def plots(self):
-        date_axis = TimeAxisItem(orientation='bottom')
+        date_axis = [TimeAxisItem(orientation='bottom')]*4
+        pg.setConfigOption('background', 'w')
         #On commence par les pressions:
         graphpressure = time_plots(self.dfpress, date_axis, Temp=False)
-        vbox = QtWidgets.QVBoxLayout()
-        self.groupBoxPress.setLayout(vbox)
-        vbox.addWidget(graphpressure)
+        vbox1 = QtWidgets.QVBoxLayout()
+        self.groupBoxPress.setLayout(vbox1)
+        vbox1.addWidget(graphpressure)
+        #On suit avec les températures:
+        graphtemp = time_plots(self.dftemp, date_axis, Temp=True)
+        vbox2 = QtWidgets.QVBoxLayout()
+        self.groupBoxTemp.setLayout(vbox2)
+        for graph in graphtemp:
+            vbox2.addWidget(graph)
 
 
 
