@@ -96,9 +96,10 @@ class Study(object):
         df_info = pd.read_csv(infofile, sep=";", header=None, index_col=0)
         psensor = df_info.iloc[1].at[1]
         shaft = df_info.iloc[2].at[1]
+        rivBed = float(df_info.iloc[5].at[1])
         deltaH = float(df_info.iloc[6].at[1])
         
-        point = Point(name, pointDir, psensor, shaft, deltaH)
+        point = Point(name, pointDir, psensor, shaft, rivBed, deltaH)
 
         os.mkdir(pointDir)
         rawDataDir = os.path.join(pointDir, "raw_data")

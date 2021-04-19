@@ -37,7 +37,7 @@ class PressureSensor(object):
         df.drop([tension, temperature], axis=1, inplace=True)
         df.to_csv(pprocessedfile, index=False)
         
-    def setPressureSensor(self, csv):
+    def setPressureSensorFromFile(self, csv):
 
         df = pd.read_csv(csv, sep=';', header=None, index_col=0)
         self.name = df.iloc[0].at[1] #pas nécessaire ici puisqu'on a déjà le nom
@@ -50,7 +50,7 @@ class PressureSensor(object):
     
     def loadPressureSensor(self, csv, sensorModel):
 
-        self.setPressureSensor(csv)
+        self.setPressureSensorFromFile(csv)
                     
         item = QtGui.QStandardItem(self.name)
         item.setData(self, QtCore.Qt.UserRole) 
@@ -73,14 +73,21 @@ class Shaft(object):
         self.datalogger = datalogger
         self.tSensorName = tSensorName
         self.depths = depths
-
-    def loadShaft(self, csv, sensorModel):
+    
+    def getDepths(self):
+        return self.depths
+    
+    def setShaftFromFile(self, csv):
 
         df = pd.read_csv(csv, sep=';', header=None, index_col=0)
         self.name = df.iloc[0].at[1] #pas nécessaire ici puisqu'on a déjà le nom
         self.datalogger = df.iloc[1].at[1]
         self.tSensorName = df.iloc[2].at[1] 
         self.depths = ast.literal_eval(df.iloc[3].at[1])
+
+    def loadShaft(self, csv, sensorModel):
+
+        self.setShaftFromFile(csv)
                     
         item = QtGui.QStandardItem(self.name)
         item.setData(self, QtCore.Qt.UserRole) 
@@ -98,14 +105,18 @@ class Thermometer(object):
         self.consName = consName
         self.ref = ref
         self.sigma = sigma
-
-    def loadThermometer(self, csv, sensorModel):
+    
+    def setThermometerFromFile(self, csv):
 
         df = pd.read_csv(csv, sep=';', header=None, index_col=0)
         self.consName = df.iloc[0].at[1] 
         self.ref = df.iloc[1].at[1]
         self.name = df.iloc[2].at[1] #pas nécessaire ici puisqu'on a déjà le nom
         self.sigma = float(df.iloc[3].at[1])
+
+    def loadThermometer(self, csv, sensorModel):
+
+        self.setThermometerFromFile(csv)
                     
         item = QtGui.QStandardItem(self.name)
         item.setData(self, QtCore.Qt.UserRole) 

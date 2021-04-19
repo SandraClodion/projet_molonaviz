@@ -3,7 +3,9 @@ from PyQt5 import QtWidgets, QtGui, QtCore, uic
 import pandas as pd
 from numpy import NaN
 from usefulfonctions import clean_filename, celsiusToKelvin
-from sensors import PressureSensor
+from sensors import PressureSensor, Shaft
+from pyheatmy import *
+
 
 class Point(object):
     
@@ -11,16 +13,18 @@ class Point(object):
     classdocs
     '''
 
-    def __init__(self, name="", pointDir="", psensor="", shaft="", deltaH=NaN):
+    def __init__(self, name="", pointDir="", psensor="", shaft="", rivBed=NaN, deltaH=NaN):
         self.name = name
         self.pointDir = pointDir
         self.psensor = psensor #nom du capteur de pression associé
         self.shaft = shaft #nom de la tige de température associée
+        self.rivBed = rivBed
         self.deltaH = deltaH
         self.dftemp = pd.DataFrame()
         self.dfpress = pd.DataFrame()
         self.tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
         self.pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
+        self.infofile = os.path.join(self.pointDir, "processed_data"
     
     def getName(self):
         return self.name
@@ -44,6 +48,7 @@ class Point(object):
         #self.oldName = df.iloc[0].at[1] 
         self.psensor = df.iloc[1].at[1]
         self.shaft = df.iloc[2].at[1]
+        self.rivBed = float(df.iloc[5].at[1])
         self.deltaH = float(df.iloc[6].at[1])
         self.dftemp = pd.read_csv(tempcsv)
         self.dfpress = pd.read_csv(presscsv) #à modifier à réception des dataloggers
@@ -88,3 +93,23 @@ class Point(object):
         new_dfp.to_csv(self.pprocessedfile, index=False)
 
         return(new_dft, new_dfp)
+    
+    def setColumn(self):
+
+        psensor = PressureSensor(self.psensor)
+        shaft = Shaft(self.shaft)
+
+        col_dict = {
+	        "river_bed": 1., 
+            "depth_sensors": self.
+	        "offset": self.deltaH,
+            "dH_measures": list(zip(times,list(zip(.01*np.random.rand(500), temps[:,0])))),
+	        "T_measures": list(zip(times, temps[:,1:])),
+            "sigma_meas_P": None, #float
+            "sigma_meas_T": None, #float
+            }
+        
+        col = Column.from_dict(col_dict)
+        
+        return col
+
