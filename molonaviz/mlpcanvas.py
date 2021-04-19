@@ -23,7 +23,6 @@ class MplCanvas(FigureCanvasQTAgg):
         self.pdf = pdf
         self.setTime()
         self.setCurves()
-        self.axes.legend()
 
     def setTime(self):
         time = self.pdf[self.pdf.columns[0]].values.tolist()
@@ -40,6 +39,7 @@ class MplCanvas(FigureCanvasQTAgg):
             for i in range(1,5):
                 data = self.pdf[self.pdf.columns[i]].values.tolist()
                 self.axes.plot(self.x, data, label=f"Capteur n°{i}")
+            self.axes.legend(loc='best')
             self.axes.set_ylabel("Températures (K)")
 
         else:
