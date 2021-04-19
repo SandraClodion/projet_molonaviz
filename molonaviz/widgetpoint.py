@@ -30,7 +30,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
         self.setPressureAndTemperatureModels()
-        self.plots()
+        self.setPlots()
 
     def setInfoTab(self):
         # Set the "Infos" tab
@@ -84,6 +84,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.currentPressureModel.setData(self.dfpress)
         self.tableViewTemp.resizeColumnsToContents()
         self.tableViewPress.resizeColumnsToContents()
+        self.graphpress.update_(self.dfpress)
+        self.graphtemp.update_(self.dftemp)
         displayInfoMessage("Data successfully reset !")
 
 
@@ -102,6 +104,9 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.currentPressureModel.setData(self.dfpress)
                 self.tableViewTemp.resizeColumnsToContents()
                 self.tableViewPress.resizeColumnsToContents()
+                self.graphpress.update_(self.dfpress)
+                self.graphtemp.update_(self.dftemp)
+
 
     def compute(self):
         ## À compléter
@@ -135,17 +140,19 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.tableViewTemp.resizeColumnsToContents()
             self.tableViewPress.resizeColumnsToContents()
 
-    def plots(self):
+    def setPlots(self):
         #Commençons par la pression :
-        graphpress = MplCanvas(self.dfpress)
+        self.graphpress = MplCanvas(self.dfpress)
         vbox = QtWidgets.QVBoxLayout()
+        #vbox.setContentsMargins(0, 0, 0, 0)
         self.groupBoxPress.setLayout(vbox)
-        vbox.addWidget(graphpress)
+        vbox.addWidget(self.graphpress)
         #Maintenant les températures :
-        graphtemp = MplCanvas(self.dftemp, temp=True)
+        self.graphtemp = MplCanvas(self.dftemp, temp=True)
         vbox2 = QtWidgets.QVBoxLayout()
+        #vbox2.setContentsMargins(0, 0, 0, 0)
         self.groupBoxTemp.setLayout(vbox2)
-        vbox2.addWidget(graphtemp)
+        vbox2.addWidget(self.graphtemp)
 
 
 """ 
