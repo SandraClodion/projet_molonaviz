@@ -5,6 +5,7 @@ from PyQt5.QtGui import QPixmap
 import pandas as pd
 from pandasmodel import PandasModel
 from dialogcleanup import DialogCleanup
+from dialogcompute import DialogCompute
 from usefulfonctions import displayInfoMessage
 from point import Point
 from mlpcanvas import MplCanvas
@@ -104,8 +105,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.tableViewPress.resizeColumnsToContents()
 
     def compute(self):
-        ## À compléter
-        print("compute")
+        dlg = DialogCompute()
+        res = dlg.exec()
+        if res == 0 : 
+            params, nb_cells = dlg.getInputDirectModel()
+        if res == 1 :
+            nb_iter, priors, nb_cells = dlg.getInputMCMC()
     
     def checkbox(self):
 
