@@ -18,6 +18,9 @@ class Study(object):
     def getRootDir(self):
         return self.rootDir
     
+    def getSensorDir(self):
+        return self.sensorDir
+    
     def loadPressureSensors(self, sensorModel):
         sdir = os.path.join(self.sensorDir, "Pressure")
         files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
@@ -116,7 +119,7 @@ class Study(object):
         shutil.copyfile(configfile, os.path.join(infoDataDir, "config.png"))
         
         os.mkdir(processedDataDir)  
-        point.processData(pSensorModel)
+        point.processData(self.sensorDir)
 
         return point
 

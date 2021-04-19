@@ -6,7 +6,6 @@ from usefulfonctions import clean_filename, celsiusToKelvin
 from sensors import PressureSensor, Shaft
 from pyheatmy import *
 
-
 class Point(object):
     
     '''
@@ -24,7 +23,7 @@ class Point(object):
         self.dfpress = pd.DataFrame()
         self.tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
         self.pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
-        self.infofile = os.path.join(self.pointDir, "processed_data"
+        self.infofile = os.path.join(self.pointDir, "processed_data")
     
     def getName(self):
         return self.name
@@ -61,14 +60,17 @@ class Point(object):
     def delete(self):
         shutil.rmtree(self.pointDir)
 
-    def processData(self, pSensorModel):
+    def processData(self, sensorDir):
         
         trawfile = os.path.join(self.pointDir, "raw_data", "raw_temperatures.csv")
         celsiusToKelvin(trawfile, self.tprocessedfile)
         
         prawfile = os.path.join(self.pointDir, "raw_data", "raw_pressures.csv")
         
-        psensor = pSensorModel.findItems(self.psensor)[0].data(QtCore.Qt.UserRole)
+        #psensor = pSensorModel.findItems(self.psensor)[0].data(QtCore.Qt.UserRole)
+        psensor = PressureSensor(self.psensor)
+        info_csv = os.path.join(sensorDir, 'Pressure', f'{self.psensor}.csv')
+        psensor.setPressureSensorFromFile(info_csv)
         psensor.tensionToPressure(prawfile, self.pprocessedfile)
 
         self.dftemp = pd.read_csv(self.tprocessedfile)
@@ -101,7 +103,7 @@ class Point(object):
 
         col_dict = {
 	        "river_bed": 1., 
-            "depth_sensors": self.
+            "depth_sensors": None,
 	        "offset": self.deltaH,
             "dH_measures": list(zip(times,list(zip(.01*np.random.rand(500), temps[:,0])))),
 	        "T_measures": list(zip(times, temps[:,1:])),

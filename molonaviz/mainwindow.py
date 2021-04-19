@@ -119,8 +119,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
 
     def openPointView(self, point):
         
-        pSensor = self.pSensorModel
-        subWin = SubWindow(point, pSensor)
+        subWin = SubWindow(point, self.currentStudy)
         subWin.setPointWidget()
 
         if self.mdi.viewMode() == QtWidgets.QMdiArea.SubWindowView:

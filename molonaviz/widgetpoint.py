@@ -14,7 +14,7 @@ From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widget
 
 class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     
-    def __init__(self, point, pSensor):
+    def __init__(self, point, study):
         # Call constructor of parent classes
         super(WidgetPoint, self).__init__()
         QtWidgets.QWidget.__init__(self)
@@ -22,7 +22,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.setupUi(self)
         
         self.point = point
-        self.pSensor = pSensor
+        self.study = study
 
         # Link every button to their function
 
@@ -77,7 +77,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.lineEditShaft.setText(pointShaft)
 
     def reset(self):
-        self.point.processData(self.pSensor)
+        self.point.processData(self.study.getSensorDir())
         #On actualise les modèles
         self.dfpress = pd.read_csv(self.PressureDir)
         self.dftemp = pd.read_csv(self.TemperatureDir)
@@ -116,6 +116,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             params, nb_cells = dlg.getInputDirectModel()
         if res == 1 :
             nb_iter, priors, nb_cells = dlg.getInputMCMC()
+        #INCOMPLET
     
     def checkbox(self):
 
