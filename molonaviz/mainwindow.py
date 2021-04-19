@@ -10,7 +10,7 @@ from dialogfindstudy import DialogFindStudy
 from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
 from dialogremovepoint import DialogRemovePoint
-from usefulfonctions import displayInfoMessage, displayCriticalMessage
+from usefulfonctions import *
 #from widgetpoint import WidgetPoint
 from subwindow import SubWindow
 
@@ -138,23 +138,34 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         dlg = DialogRemovePoint()
         dlg.setPointsList(self.pointModel)
         res = dlg.exec()
+        
         if res == QtWidgets.QDialog.Accepted:
-            pointName = dlg.getPointToDelete()
-            pointItem = self.pointModel.findItems(pointName)[0]
             
-            point = pointItem.data(QtCore.Qt.UserRole)
-            point.delete() #supprime le dossier du rootDir
-
-            pointIndex = self.pointModel.indexFromItem(pointItem)
-            self.pointModel.removeRow(pointIndex.row()) #supprime l'item du model
-
-            #On ferme la fenêtre associée au point qu'on enlève
-            openedSubWindows = self.mdi.subWindowList()
-            for subWin in openedSubWindows:
-                if subWin.getName() == pointName:
-                    subWin.close()
+            title = "Warning ! You are about to delete a point"
+            message = "All point data will be deleted. Are you sure you want to proceed ?"
+            msgBox = displayConfirmationMessage(title, message)
             
-            displayInfoMessage("Point successfully removed")
+            print(msgBox)
+
+            if msgBox == QtWidgets.QMessageBox.Ok:
+                pointName = dlg.getPointToDelete()
+                pointItem = self.pointModel.findItems(pointName)[0]
+                
+                point = pointItem.data(QtCore.Qt.UserRole)
+                point.delete() #supprime le dossier du rootDir
+
+                pointIndex = self.pointModel.indexFromItem(pointItem)
+                self.pointModel.removeRow(pointIndex.row()) #supprime l'item du model
+
+                #On ferme la fenêtre associée au point qu'on enlève
+                openedSubWindows = self.mdi.subWindowList()
+                for subWin in openedSubWindows:
+                    if subWin.getName() == pointName:
+                        subWin.close()
+                
+                displayInfoMessage("Point successfully removed")
+            else : 
+                displayInfoMessage("Point removal aborted")
 
     def switchToTabbedView(self):
         self.mdi.setViewMode(QtWidgets.QMdiArea.TabbedView)

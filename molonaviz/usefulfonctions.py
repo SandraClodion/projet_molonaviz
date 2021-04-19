@@ -52,6 +52,14 @@ def displayWarningMessage(message):
     msg.setText(message)
     msg.exec_() 
 
+def displayConfirmationMessage(title, message):
+    msg = QtWidgets.QMessageBox()
+    msg.setText(title)
+    msg.setIcon(QtWidgets.QMessageBox.Warning)  
+    msg.setInformativeText(message)
+    msg.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+    msg.setDefaultButton(QtWidgets.QMessageBox.Cancel)
+    return msg.exec_()
 
 def displayCriticalMessage(message):
     msg = QtWidgets.QMessageBox()
