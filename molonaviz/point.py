@@ -3,7 +3,8 @@ from PyQt5 import QtWidgets, QtGui, QtCore, uic
 import pandas as pd
 from numpy import NaN
 from usefulfonctions import clean_filename, celsiusToKelvin
-from sensors import PressureSensor, Shaft
+from sensors import PressureSensor, Shaft, Thermometer
+from datetime import datetime
 from pyheatmy import *
 
 class Point(object):
@@ -50,7 +51,7 @@ class Point(object):
         self.rivBed = float(df.iloc[5].at[1])
         self.deltaH = float(df.iloc[6].at[1])
         self.dftemp = pd.read_csv(tempcsv)
-        self.dfpress = pd.read_csv(presscsv) #à modifier à réception des dataloggers
+        self.dfpress = pd.read_csv(presscsv)
 
     def loadPoint(self, pointModel): 
         item = QtGui.QStandardItem(self.name)
@@ -95,20 +96,44 @@ class Point(object):
         new_dfp.to_csv(self.pprocessedfile, index=False)
 
         return(new_dft, new_dfp)
+
     
-    def setColumn(self):
+    def setColumn(self, sensorDir):
+
+        df = self.dftemp
+        temperatures = df.drop(columns=df.columns[0], axis=1).to_numpy()
+        df = self.dfpress
+        pressures_and_temperatures = list(df.drop(columns=df.columns[0], axis=1).itertuples(index=False, name=None))
+
+        # Assuming times are matching
+        times = df[df.columns[0]].values.tolist() 
+        times = [datetime.strptime(t, '%y/%m/%d %H:%M:%S') for t in times]
+
+        # Getting sensors info
 
         psensor = PressureSensor(self.psensor)
+        infofile = os.path.join(sensorDir, 'Pressure', f'{self.psensor}.csv')
+        psensor.setPressureSensorFromFile(infofile)
+        
         shaft = Shaft(self.shaft)
+        infofile = os.path.join(sensorDir, 'Shafts', f'{self.shaft}.csv')
+        shaft.setShaftFromFile(infofile)
+
+        thermometerName = shaft.getThermometer()
+        thermometer = Thermometer(thermometerName)
+        infofile = os.path.join(sensorDir, 'Thermometers', f'{thermometerName}.csv')
+        thermometer.setThermometerFromFile(infofile)
+
+        # Setting dictionnary
 
         col_dict = {
-	        "river_bed": 1., 
-            "depth_sensors": None,
+	        "river_bed": self.rivBed, 
+            "depth_sensors": shaft.getDepths(),
 	        "offset": self.deltaH,
-            "dH_measures": list(zip(times,list(zip(.01*np.random.rand(500), temps[:,0])))),
-	        "T_measures": list(zip(times, temps[:,1:])),
-            "sigma_meas_P": None, #float
-            "sigma_meas_T": None, #float
+            "dH_measures": list(zip(times, pressures_and_temperatures)),
+	        "T_measures": list(zip(times, temperatures)),
+            "sigma_meas_P": psensor.getSigma(),
+            "sigma_meas_T": thermometer.getSigma()
             }
         
         col = Column.from_dict(col_dict)

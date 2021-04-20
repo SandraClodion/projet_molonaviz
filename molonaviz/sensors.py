@@ -18,6 +18,9 @@ class PressureSensor(object):
         self.sigma = sigma
         self.datalogger = datalogger
         self.calibrationDate = calibrationDate
+    
+    def getSigma(self):
+        return self.sigma
 
     def tensionToPressure(self, prawfile, pprocessedfile):
         """
@@ -27,14 +30,16 @@ class PressureSensor(object):
         df = pd.read_csv(prawfile)
         columnsNames = list(df.head(0))
         time = columnsNames[0]
-        tension = columnsNames[1]
-        temperature = columnsNames[2]
+        temperature = columnsNames[1]
+        tension = columnsNames[2]
         df.dropna(inplace=True)
         df = df.astype({temperature : np.float, tension : np.float})
         df[temperature] = df[temperature] + 273.15 #conversion en Kelvin
         a, b, c = self.intercept, self.dudh, self.dudt
         df['Pression différentielle (m)'] = (1/b)*(df[tension] - c*df[temperature] - a)
-        df.drop([tension, temperature], axis=1, inplace=True)
+        df.drop([tension], axis=1, inplace=True)
+        df = df[[time, 'Pression différentielle (m)', temperature]] #on réordonne les colonnes
+        df.rename(columns={temperature: 'Temperature (K)'}, inplace=True)
         df.to_csv(pprocessedfile, index=False)
         
     def setPressureSensorFromFile(self, csv):
@@ -77,6 +82,9 @@ class Shaft(object):
     def getDepths(self):
         return self.depths
     
+    def getThermometer(self):
+        return self.tSensorName
+    
     def setShaftFromFile(self, csv):
 
         df = pd.read_csv(csv, sep=';', header=None, index_col=0)
@@ -105,6 +113,9 @@ class Thermometer(object):
         self.consName = consName
         self.ref = ref
         self.sigma = sigma
+    
+    def getSigma(self):
+        return self.sigma
     
     def setThermometerFromFile(self, csv):
 

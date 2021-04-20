@@ -44,7 +44,7 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         self.pushButtonDirect.clicked.connect(self.getInputDirectModel)
         self.pushButtonMCMC.clicked.connect(self.getInputMCMC)
 
-        self.pushButtonRestoreDefault.connect(self.setDefaultValues)
+        self.pushButtonRestoreDefault.clicked.connect(self.setDefaultValues)
 
 
     def setDefaultValues(self):

@@ -1,9 +1,183 @@
 from pyheatmy import *
 from point import Point
+import os, shutil
+import numpy as np
+import pandas as pd
+from datetime import datetime
 
-def computeMCMC(point, nb_iter, priors, nb_cells):
 
+class Compute(object):
+
+
+    def __init__(self, point: Point=None):
+        self.point = point
 
     
+    def setColumn(self, sensorDir):
+        self.col = self.point.setColumn(sensorDir)
+
+        
+    def computeMCMC(self, nb_iter, priors, nb_cells, sensorDir):
+    
+        # Initialisation de la colonne
+        self.setColumn(sensorDir)
+
+        # Lancement de la MCMC
+        self.col.compute_mcmc(nb_iter, priors, nb_cells, quantile = (.05, .5, .95))
+        best_params = self.col.get_best_param()
+
+        # Sauvegarde des résultats de la MCMC
+        resultsDir = os.path.join(self.point.getPointDir(), 'results')
+        self.saveBestParams(resultsDir)
+        self.saveAllParams(resultsDir)
+        
+        # Lancement du modèle direct avec les paramètres inférés
+        self.col.compute_solve_transi(best_params, nb_cells)
+        
+        # Sauvegarde des différents résultats du modèle direct
+        self.saveResults(resultsDir)
+
+        # Sauvegarde des quantiles
+        self.saveFlowsQuantiles(resultsDir)
+        
+
+    def computeDirectModel(self, params, nb_cells, sensorDir):
+
+        # Initialisation de la colonne
+        self.setColumn(sensorDir)
+
+        # Lancement du modèle direct
+        self.col.compute_solve_transi(params, nb_cells)
+
+        # Sauvegarde des différents résultats du modèle direct
+        resultsDir = os.path.join(self.point.getPointDir(), 'results')
+        shutil.rmtree(resultsDir)
+        os.mkdir(resultsDir)
+        self.saveResults(resultsDir)
 
     
+    def saveBestParams(self, resultsDir: str):
+        """
+        Sauvegarde les meilleurs paramètres inférés par la MMC dans un fichier csv en local
+        Pour accéder au fichier : pointDir --> results --> MCMC_best_params.csv
+        """
+
+        best_params = self.col.get_best_param()
+
+        best_params_dict = {
+            'moinslog10K':[best_params[0]], 
+            'n':[best_params[1]], 
+            'lambda_s':[best_params[2]], 
+            'rhos_cs':[best_params[3]]
+        }
+
+        df_best_params = pd.DataFrame.from_dict(best_params_dict)
+
+        best_params_file = os.path.join(resultsDir, 'MCMC_best_params.csv')
+        df_best_params.to_csv(best_params_file, index=True)
+
+    def saveAllParams(self, resultsDir: str):
+
+        all_moins10logK = self.col.get_all_moinslog10K()
+        all_n = self.col.get_all_n()
+        all_lambda_s = self.col.get_all_lambda_s()
+        all_rhos_cs = self.col.get_all_rhos_cs()
+
+        all_params_dict = {
+            'moinslog10K': all_moins10logK, 
+            'n': all_n, 
+            'lambda_s': all_lambda_s, 
+            'rhos_cs': all_rhos_cs
+        }
+
+        df_all_params = pd.DataFrame.from_dict(all_params_dict)
+
+        all_params_file = os.path.join(resultsDir, 'MCMC_all_params.csv')
+        df_all_params.to_csv(all_params_file, index=True)
+    
+    def saveFlowsQuantiles(self, resultsDir: str):
+
+        times = self.col.times_solve
+
+        quantile05 = self.col.get_flows_quantile(0.05)
+        quantile50 = self.col.get_flows_quantile(0.5)
+        quantile95 = self.col.get_flows_quantile(0.95)
+
+        # Formatage des dates
+        n_dates = len(times)
+        times_string = np.zeros((n_dates,1))
+        times_string = times_string.astype('str')
+        for i in range(n_dates):
+            times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
+
+        # Création du dataframe
+        np_flows_quantiles = np.zeros((n_dates,3))
+        for i in range(n_dates):
+            np_flows_quantiles[i,0] = quantile05[i]
+            np_flows_quantiles[i,1] = quantile50[i]
+            np_flows_quantiles[i,2] = quantile95[i]
+        np_flows_times_and_quantiles = np.concatenate((times_string, np_flows_quantiles), axis=1)
+        df_flows_quantiles = pd.DataFrame(np_flows_times_and_quantiles, 
+        columns=["Date Heure, GMT+01:00", 
+        "Débit d'eau échangé (m/s) - quantile 5%",
+        "Débit d'eau échangé (m/s) - quantile 50%",
+        "Débit d'eau échangé (m/s) - quantile 95%"])
+    
+        # Sauvegarde sous forme d'un fichier csv
+        flows_quantiles_file = os.path.join(resultsDir, 'MCMC_flows_quantiles.csv')
+        df_flows_quantiles.to_csv(flows_quantiles_file, index=False)
+
+
+    def saveResults(self, resultsDir: str):
+
+        """
+        Sauvegarde les différents résultats calculés sous forme de fichiers csv en local :
+        - profils de températures calculés aux différentes profondeurs
+        - chronique des flux d'eau échangés entre la nappe et la rivière
+
+        Les résultats sont disponibles respectivement dans les fichiers suivants :
+        - pointDir --> results --> solved_temperatures.csv
+        - pointDir --> results --> solved_flows.csv
+
+        Prend en argument :
+        - la colonne sur laquelle les calculs ont été faits (type: Column)
+        - le chemin d'accès vers le dossier 'results' du point (type: str)
+        Ne retourne rien
+        """
+        
+        temps = self.col.temps_solve
+        times = self.col.times_solve
+        flows = self.col.flows_solve
+        depths = self.col.get_depths_solve()
+        
+        ## Formatage des dates
+        n_dates = len(times)
+        times_string = np.zeros((n_dates,1))
+        times_string = times_string.astype('str')
+        for i in range(n_dates):
+            times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
+
+
+        ## Profils de températures
+
+        # Création du dataframe
+        np_temps_solve = np.concatenate((times_string, temps), axis=1)
+        df_temps_solve = pd.DataFrame(np_temps_solve, columns=['Date Heure, GMT+01:00 \ Depth(m)']+[f'{depth}' for depth in depths])
+        
+        # Sauvegarde sous forme d'un fichier csv
+        temps_solve_file = os.path.join(resultsDir, 'solved_temperatures.csv')
+        df_temps_solve.to_csv(temps_solve_file, index=False)
+
+
+        ## Flux d'eau échangés entre la nappe et la rivière
+
+        # Création du dataframe
+        np_flows = np.zeros((n_dates,1))
+        for i in range(n_dates):
+            np_flows[i,0] = flows[i]
+        np_flows_solve = np.concatenate((times_string, np_flows), axis=1)
+        df_flows_solve = pd.DataFrame(np_flows_solve, columns=["Date Heure, GMT+01:00", "Débit d'eau échangé (m/s)"])
+
+        # Sauvegarde sous forme d'un fichier csv
+        flows_solve_file = os.path.join(resultsDir, 'solved_flows.csv')
+        df_flows_solve.to_csv(flows_solve_file, index=False)

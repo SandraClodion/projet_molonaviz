@@ -108,6 +108,7 @@ class Study(object):
         rawDataDir = os.path.join(pointDir, "raw_data")
         processedDataDir = os.path.join(pointDir, "processed_data")
         infoDataDir = os.path.join(pointDir, "info_data")
+        resultsDir = os.path.join(pointDir, "results")
 
         os.mkdir(rawDataDir)
         shutil.copyfile(prawfile, os.path.join(rawDataDir, "raw_pressures.csv"))
@@ -120,6 +121,9 @@ class Study(object):
         
         os.mkdir(processedDataDir)  
         point.processData(self.sensorDir)
+
+        os.mkdir(resultsDir)
+        #Dossier vide tant que le compute n'est pas lancé
 
         return point
 

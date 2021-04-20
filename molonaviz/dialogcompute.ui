@@ -374,6 +374,9 @@
          <height>0</height>
         </size>
        </property>
+       <property name="text">
+        <string>0.01</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -387,6 +390,9 @@
          <height>0</height>
         </size>
        </property>
+       <property name="text">
+        <string>5</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -399,6 +405,9 @@
          <width>100</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="text">
+        <string>0.005</string>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -448,6 +457,9 @@
          <height>0</height>
         </size>
        </property>
+       <property name="text">
+        <string>1000</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -468,6 +480,9 @@
          <height>0</height>
         </size>
        </property>
+       <property name="text">
+        <string>1000</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -480,6 +495,9 @@
          <width>100</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="text">
+        <string>1</string>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -494,6 +512,9 @@
          <height>0</height>
         </size>
        </property>
+       <property name="text">
+        <string>0.005</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -506,6 +527,9 @@
          <width>100</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="text">
+        <string>4000</string>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -527,6 +551,9 @@
          <height>0</height>
         </size>
        </property>
+       <property name="text">
+        <string>2500</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -539,6 +566,9 @@
          <width>100</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="text">
+        <string>0.05</string>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -567,6 +597,9 @@
          <height>0</height>
         </size>
        </property>
+       <property name="text">
+        <string>100</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -586,6 +619,9 @@
          <width>100</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="text">
+        <string>100</string>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -613,6 +649,9 @@
          <width>100</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="text">
+        <string>0.25</string>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -663,6 +702,9 @@
        </item>
        <item>
         <widget class="QLineEdit" name="lineEditMoinsLog10KMin">
+         <property name="text">
+          <string>1.5</string>
+         </property>
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -693,6 +735,9 @@
        </item>
        <item>
         <widget class="QLineEdit" name="lineEditMoinsLog10KMax">
+         <property name="text">
+          <string>6</string>
+         </property>
          <property name="readOnly">
           <bool>true</bool>
          </property>

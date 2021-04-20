@@ -9,6 +9,8 @@ from dialogcompute import DialogCompute
 from usefulfonctions import displayInfoMessage
 from point import Point
 from mlpcanvas import MplCanvas
+from compute import Compute
+import numpy as np 
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
@@ -108,15 +110,24 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.graphpress.update_(self.dfpress)
                 self.graphtemp.update_(self.dftemp)
 
-
     def compute(self):
+        
+        sensorDir = self.study.getSensorDir()
+
         dlg = DialogCompute()
         res = dlg.exec()
+
         if res == 0 : 
             params, nb_cells = dlg.getInputDirectModel()
+            compute = Compute(self.point)
+            compute.computeDirectModel(params, nb_cells, sensorDir)
+            # ajouter fonction plot
+ 
         if res == 1 :
             nb_iter, priors, nb_cells = dlg.getInputMCMC()
-        #INCOMPLET
+            compute = Compute(self.point)
+            compute.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
+            # ajouter fonction plot
     
     def checkbox(self):
 
