@@ -193,6 +193,10 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.vboxwaterMCMC = QtWidgets.QVBoxLayout()
         self.groupBoxWaterMCMC.setLayout(self.vboxwaterMCMC)
         self.waterdir = self.directmodelDir + "/solved_flows.csv"
+        #La frise de température
+        self.vboxfrisetemp = QtWidgets.QVBoxLayout()
+        self.groupBoxFriseTemp.setLayout(self.vboxfrisetemp)
+        self.solvedtempdir = self.directmodelDir + "/solved_temperatures.csv"
 
         if self.modeldirectiscomputed:
             #Le flux d'eau:
@@ -201,6 +205,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.toolbarwater = NavigationToolbar(self.graphwater, self)
             self.vboxwatersimple.addWidget(self.graphwater)
             self.vboxwatersimple.addWidget(self.toolbarwater)
+            #La frise de température
+            dfsolvedtemp = pd.read_csv(self.solvedtempdir)
+            self.graphsolvedtemp = MplCanvas(dfsolvedtemp, "frise")
+            self.toolbarsolvedtemp = NavigationToolbar(self.graphsolvedtemp, self)
+            self.vboxfrisetemp.addWidget(self.graphsolvedtemp)
+            self.vboxfrisetemp.addWidget(self.toolbarsolvedtemp)
             #Le reste à rajouter plus tard
 
         else:

@@ -10,6 +10,8 @@ from PyQt5 import QtCore, QtWidgets
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 import matplotlib.dates as mdates
+import matplotlib.cm as cm
+import matplotlib.colors as colors
 
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -24,9 +26,11 @@ class MplCanvas(FigureCanvasQTAgg):
 
         self.pdf = pdf
         self.datatype = datatype
+        self.setTime()
         if datatype == "pressure" or datatype == "temperature" or datatype == "water flow":
-            self.setTime()
             self.setCurves()
+        elif datatype == "frise":
+            self.setFrises()
 
     def setTime(self):
         time = self.pdf[self.pdf.columns[0]].values.tolist()
@@ -53,6 +57,12 @@ class MplCanvas(FigureCanvasQTAgg):
                 self.axes.set_ylabel("Pression différentielle (m)")
             elif self.datatype == "water flow":
                 self.axes.set_ylabel("Débit d'eau (m/s)")
+    
+    def setFrises(self):
+        profils = self.pdf.to_numpy()
+        profils = profils[:,1:]
+        image = self.axes.imshow(profils, cmap=cm.Spectral_r, aspect="auto")
+        plt.colorbar(image, ax=self.axes)
 
     def update_(self, new_pdf):
         self.axes.cla()
