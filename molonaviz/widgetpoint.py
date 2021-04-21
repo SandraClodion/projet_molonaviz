@@ -125,12 +125,13 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             compute = Compute(self.point)
             compute.computeDirectModel(params, nb_cells, sensorDir)
             new_dfwater = pd.read_csv(self.waterdir)
-            
+
             if self.modeldirectiscomputed :
                 self.graphwater.update_(new_dfwater)
             else :
                 self.graphwater = MplCanvas(new_dfwater, "water flow")
                 self.toolbarwater = NavigationToolbar(self.graphwater, self)
+                self.vboxwatersimple.removeWidget(self.waterlabel)
                 self.vboxwatersimple.addWidget(self.graphwater)
                 self.vboxwatersimple.addWidget(self.toolbarwater)
  
@@ -183,8 +184,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         vbox2.addWidget(self.toolbarTemp)
         
         #Les résultats
-        self.modeldirectiscomputed = (not len(os.listdir(self.directmodelDir) ) == 0)
-        self.MCMCiscomputed = (not len(os.listdir(self.MCMCDir)) == 0)
+        self.modeldirectiscomputed = len(os.listdir(self.directmodelDir) ) > 1
+        self.MCMCiscomputed = len(os.listdir(self.MCMCDir)) > 1
 
         #Le flux d'eau:
         self.vboxwatersimple = QtWidgets.QVBoxLayout()

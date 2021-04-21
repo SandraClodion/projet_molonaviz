@@ -24,7 +24,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
         self.pdf = pdf
         self.datatype = datatype
-        if datatype == "pressure" or datatype == "temperature":
+        if datatype == "pressure" or datatype == "temperature" or datatype == "water flow":
             self.setTime()
             self.setCurves()
 
