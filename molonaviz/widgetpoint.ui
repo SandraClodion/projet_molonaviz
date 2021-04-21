@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>900</height>
+    <height>786</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_5">
+   <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label">
@@ -90,10 +90,10 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tabInfos">
       <attribute name="title">
@@ -147,7 +147,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>1336</width>
-                 <height>478</height>
+                 <height>364</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -197,7 +197,7 @@
      </widget>
      <widget class="QWidget" name="tabPlot">
       <attribute name="title">
-       <string>Plot</string>
+       <string>Data Plot</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <property name="spacing">
@@ -228,9 +228,63 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tabResults">
+     <widget class="QWidget" name="tabWater">
       <attribute name="title">
-       <string>Results</string>
+       <string>Water Flux</string>
+      </attribute>
+      <widget class="QScrollArea" name="scrollArea_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>1391</width>
+         <height>671</height>
+        </rect>
+       </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>1389</width>
+          <height>669</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="QGroupBox" name="groupBoxWaterSimple">
+           <property name="title">
+            <string>Water Flow computed with given parameters</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBoxWaterMCMC">
+           <property name="title">
+            <string>Water Flow computed with MCMC</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tabSolvedTemp">
+      <attribute name="title">
+       <string>Solved Temperatures</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabHeat">
+      <attribute name="title">
+       <string>Heat Fluxes</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabMCMC">
+      <attribute name="title">
+       <string>MCMC Results</string>
       </attribute>
      </widget>
     </widget>

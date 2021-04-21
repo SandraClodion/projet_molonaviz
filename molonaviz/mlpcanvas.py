@@ -14,15 +14,19 @@ import matplotlib.dates as mdates
 
 class MplCanvas(FigureCanvasQTAgg):
 
-    def __init__(self, pdf, temp=False, parent=None, width=5, height=5, dpi=100):
+    def __init__(self, pdf, datatype, parent=None, width=5, height=5, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111, position=[0.15, 0.225, 0.75, 0.75])
         super(MplCanvas, self).__init__(self.fig)
 
-        self.temp = temp
+        #RAJOUTER UNE NAVIGATION TOOL BAR
+        #DIVISER SUIVANT LE GRAPHIQUE SOUHAITÉ DANS LE INIT AVEC UN DATATYPE = MACHIN MACHIN (FRISE, CHRONIQUE, COURBE)
+
         self.pdf = pdf
-        self.setTime()
-        self.setCurves()
+        self.datatype = datatype
+        if datatype == "pressure" or datatype == "temperature":
+            self.setTime()
+            self.setCurves()
 
     def setTime(self):
         time = self.pdf[self.pdf.columns[0]].values.tolist()
@@ -34,7 +38,7 @@ class MplCanvas(FigureCanvasQTAgg):
         #self.axes.set_xlabel("Dates") Inutile
 
     def setCurves(self):
-        if self.temp:
+        if self.datatype == "temperature":
             #On a 4 colonnes de températures
             for i in range(1,5):
                 data = self.pdf[self.pdf.columns[i]].values.tolist()
@@ -42,10 +46,13 @@ class MplCanvas(FigureCanvasQTAgg):
             self.axes.legend(loc='best')
             self.axes.set_ylabel("Températures (K)")
 
-        else:
+        else :
             data = self.pdf[self.pdf.columns[1]].values.tolist()
             self.axes.plot(self.x, data)
-            self.axes.set_ylabel("Pression différentielle (m)")
+            if self.datatype == "pressure":
+                self.axes.set_ylabel("Pression différentielle (m)")
+            elif self.datatype == "water flow":
+                self.axes.set_ylabel("Débit d'eau (m/s)")
 
     def update_(self, new_pdf):
         self.axes.cla()

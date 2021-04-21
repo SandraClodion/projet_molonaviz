@@ -10,7 +10,8 @@ from usefulfonctions import displayInfoMessage
 from point import Point
 from mlpcanvas import MplCanvas
 from compute import Compute
-import numpy as np 
+import numpy as np
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
@@ -25,6 +26,9 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         
         self.point = point
         self.study = study
+        self.pointDir = self.point.getPointDir()
+        self.directmodelDir = self.pointDir + "/results/direct_model_results"
+        self.MCMCDir = self.pointDir + "/results/MCMC_results"
 
         # Link every button to their function
 
@@ -35,18 +39,18 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.setPressureAndTemperatureModels()
         self.setPlots()
 
+
     def setInfoTab(self):
         # Set the "Infos" tab
-        pointDir = self.point.getPointDir()
             #Installation
-        self.labelSchema.setPixmap(QPixmap(pointDir + "/info_data" + "/config.png"))
+        self.labelSchema.setPixmap(QPixmap(self.pointDir + "/info_data" + "/config.png"))
             #Notice
-        file = open(pointDir + "/info_data" + "/notice.txt")
+        file = open(self.pointDir + "/info_data" + "/notice.txt")
         notice = file.read()
         self.plainTextEditNotice.setPlainText(notice)
         file.close()
             #Infos
-        infoFile = pointDir + "/info_data" + "/info.csv"
+        infoFile = self.pointDir + "/info_data" + "/info.csv"
         dfinfo = pd.read_csv(infoFile, sep=';', header=None)
         self.infosModel = PandasModel(dfinfo)
         self.tableViewInfos.setModel(self.infosModel)
@@ -54,10 +58,9 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     def setPressureAndTemperatureModels(self):
         # Set the Temperature and Pressure models
         self.currentdata = "processed"
-        pointDir = self.point.getPointDir()
 
-        self.TemperatureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
-        self.PressureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
+        self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
+        self.PressureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
 
         self.dfpress = pd.read_csv(self.PressureDir)
         self.currentPressureModel = PandasModel(self.dfpress)
@@ -121,7 +124,15 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             params, nb_cells = dlg.getInputDirectModel()
             compute = Compute(self.point)
             compute.computeDirectModel(params, nb_cells, sensorDir)
-            # ajouter fonction plot
+            new_dfwater = pd.read_csv(self.waterdir)
+            
+            if self.modeldirectiscomputed :
+                self.graphwater.update_(new_dfwater)
+            else :
+                self.graphwater = MplCanvas(new_dfwater, "water flow")
+                self.toolbarwater = NavigationToolbar(self.graphwater, self)
+                self.vboxwatersimple.addWidget(self.graphwater)
+                self.vboxwatersimple.addWidget(self.toolbarwater)
  
         if res == 1 :
             nb_iter, priors, nb_cells = dlg.getInputMCMC()
@@ -131,15 +142,13 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     
     def checkbox(self):
 
-        pointDir = self.point.getPointDir()
-
         if self.checkBoxRaw_Data.isChecked():
             self.currentdata = "raw"
         else :
             self.currentdata = "processed"
 
-        self.TemperatureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
-        self.PressureDir = pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
+        self.TemperatureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_temperatures.csv"
+        self.PressureDir = self.pointDir + "/" + self.currentdata + "_data" + "/" + self.currentdata + "_pressures.csv"
 
         if self.currentdata == "processed":
             self.dftemp = pd.read_csv(self.TemperatureDir)
@@ -158,18 +167,50 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.tableViewPress.resizeColumnsToContents()
 
     def setPlots(self):
-        #Commençons par la pression :
-        self.graphpress = MplCanvas(self.dfpress)
+        #La pression :
+        self.graphpress = MplCanvas(self.dfpress, "pressure")
+        self.toolbarPress = NavigationToolbar(self.graphpress, self)
         vbox = QtWidgets.QVBoxLayout()
-        #vbox.setContentsMargins(0, 0, 0, 0)
         self.groupBoxPress.setLayout(vbox)
         vbox.addWidget(self.graphpress)
-        #Maintenant les températures :
-        self.graphtemp = MplCanvas(self.dftemp, temp=True)
+        vbox.addWidget(self.toolbarPress)
+        #Les températures :
+        self.graphtemp = MplCanvas(self.dftemp, "temperature")
+        self.toolbarTemp = NavigationToolbar(self.graphtemp, self)
         vbox2 = QtWidgets.QVBoxLayout()
-        #vbox2.setContentsMargins(0, 0, 0, 0)
         self.groupBoxTemp.setLayout(vbox2)
         vbox2.addWidget(self.graphtemp)
+        vbox2.addWidget(self.toolbarTemp)
+        
+        #Les résultats
+        self.modeldirectiscomputed = (not len(os.listdir(self.directmodelDir) ) == 0)
+        self.MCMCiscomputed = (not len(os.listdir(self.MCMCDir)) == 0)
+
+        #Le flux d'eau:
+        self.vboxwatersimple = QtWidgets.QVBoxLayout()
+        self.groupBoxWaterSimple.setLayout(self.vboxwatersimple)
+        self.vboxwaterMCMC = QtWidgets.QVBoxLayout()
+        self.groupBoxWaterMCMC.setLayout(self.vboxwaterMCMC)
+        self.waterdir = self.directmodelDir + "/solved_flows.csv"
+
+        if self.modeldirectiscomputed:
+            #Le flux d'eau:
+            dfwater = pd.read_csv(self.waterdir)
+            self.graphwater = MplCanvas(dfwater, "water flow")
+            self.toolbarwater = NavigationToolbar(self.graphwater, self)
+            self.vboxwatersimple.addWidget(self.graphwater)
+            self.vboxwatersimple.addWidget(self.toolbarwater)
+            #Le reste à rajouter plus tard
+
+        else:
+            self.waterlabel = QtWidgets.QLabel("Direct Model has not been computed yet")
+            self.vboxwatersimple.addWidget(self.waterlabel)
+
+        if self.MCMCiscomputed:
+            pass
+        else:
+            self.waterMCMClabel = QtWidgets.QLabel("MCMC has not been computed yet")
+            self.vboxwaterMCMC.addWidget(self.waterMCMClabel)
 
 
 """ 
