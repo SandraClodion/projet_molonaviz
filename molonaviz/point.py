@@ -24,7 +24,7 @@ class Point(object):
         self.dfpress = pd.DataFrame()
         self.tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
         self.pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
-        self.infofile = os.path.join(self.pointDir, "processed_data")
+        self.infofile = os.path.join(self.pointDir, "info_data")
     
     def getName(self):
         return self.name
