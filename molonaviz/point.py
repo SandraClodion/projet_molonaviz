@@ -22,9 +22,6 @@ class Point(object):
         self.deltaH = deltaH
         self.dftemp = pd.DataFrame()
         self.dfpress = pd.DataFrame()
-        self.tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
-        self.pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
-        self.infofile = os.path.join(self.pointDir, "info_data")
     
     def getName(self):
         return self.name
@@ -52,6 +49,7 @@ class Point(object):
         self.deltaH = float(df.iloc[6].at[1])
         self.dftemp = pd.read_csv(tempcsv)
         self.dfpress = pd.read_csv(presscsv)
+        
 
     def loadPoint(self, pointModel): 
         item = QtGui.QStandardItem(self.name)
@@ -62,9 +60,13 @@ class Point(object):
         shutil.rmtree(self.pointDir)
 
     def processData(self, sensorDir):
+
+        # ajout vérification des dates à faire
         
         trawfile = os.path.join(self.pointDir, "raw_data", "raw_temperatures.csv")
-        celsiusToKelvin(trawfile, self.tprocessedfile)
+        tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
+        pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
+        celsiusToKelvin(trawfile, tprocessedfile)
         
         prawfile = os.path.join(self.pointDir, "raw_data", "raw_pressures.csv")
         
@@ -72,10 +74,10 @@ class Point(object):
         psensor = PressureSensor(self.psensor)
         info_csv = os.path.join(sensorDir, 'Pressure', f'{self.psensor}.csv')
         psensor.setPressureSensorFromFile(info_csv)
-        psensor.tensionToPressure(prawfile, self.pprocessedfile)
+        psensor.tensionToPressure(prawfile, pprocessedfile)
 
-        self.dftemp = pd.read_csv(self.tprocessedfile)
-        self.dfpress = pd.read_csv(self.pprocessedfile)
+        self.dftemp = pd.read_csv(tprocessedfile)
+        self.dfpress = pd.read_csv(pprocessedfile)
 
     def cleanup(self, script, dft, dfp):
 

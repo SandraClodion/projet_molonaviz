@@ -76,9 +76,9 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
                     self.lineEditInfo.setText(filePath) 
 
                     df = pd.read_csv(filePath, sep=';', header=None, index_col=0)
+                    self.lineEditName.setText(df.iloc[0].at[1])
                     self.lineEditPressureSensor.setText(df.iloc[1].at[1])
                     self.lineEditShaft.setText(df.iloc[2].at[1])
-                    self.lineEditDeltaH.setText(df.iloc[6].at[1])
                     nPath += 1
 
                 if re.search('config', file):
@@ -110,10 +110,10 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
         filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
         if filePath:
             self.lineEditInfo.setText(filePath) 
-            df = pd.read_csv(filePath)
-            self.lineEditPressureSensor.setText(df.iloc[0][0])
-            self.lineEditShaft.setText(df.iloc[1][0])
-            self.lineEditDeltaH.setText(df.iloc[5][0])
+            df = pd.read_csv(filePath, sep=';', header=None, index_col=0)
+            self.lineEditName.setText(df.iloc[0].at[1])
+            self.lineEditPressureSensor.setText(df.iloc[1].at[1])
+            self.lineEditShaft.setText(df.iloc[2].at[1])
     
     def browsePressures(self):
         filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
