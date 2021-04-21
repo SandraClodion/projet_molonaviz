@@ -123,7 +123,10 @@ class Study(object):
         point.processData(self.sensorDir)
 
         os.mkdir(resultsDir)
-        #Dossier vide tant que le compute n'est pas lancé
+        resultsDirMCMC = os.path.join(pointDir, "results", "MCMC_results")
+        resultsDirDirectModel = os.path.join(pointDir, "results", "direct_model_results")
+        os.mkdir(resultsDirMCMC)
+        os.mkdir(resultsDirDirectModel)
 
         return point
 
