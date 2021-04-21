@@ -27,7 +27,7 @@ class Compute(object):
         best_params = self.col.get_best_param()
 
         # Sauvegarde des résultats de la MCMC
-        resultsDir = os.path.join(self.point.getPointDir(), 'results')
+        resultsDir = os.path.join(self.point.getPointDir(), 'results', 'MCMC_results')
         self.saveBestParams(resultsDir)
         self.saveAllParams(resultsDir)
         
@@ -39,6 +39,7 @@ class Compute(object):
 
         # Sauvegarde des quantiles
         self.saveFlowsQuantiles(resultsDir)
+        self.saveTempsQuantiles(resultsDir)
         
 
     def computeDirectModel(self, params, nb_cells, sensorDir):
@@ -50,9 +51,7 @@ class Compute(object):
         self.col.compute_solve_transi(params, nb_cells)
 
         # Sauvegarde des différents résultats du modèle direct
-        resultsDir = os.path.join(self.point.getPointDir(), 'results')
-        shutil.rmtree(resultsDir)
-        os.mkdir(resultsDir)
+        resultsDir = os.path.join(self.point.getPointDir(), 'results', 'direct_model_results')
         self.saveResults(resultsDir)
 
     
@@ -126,6 +125,39 @@ class Compute(object):
         # Sauvegarde sous forme d'un fichier csv
         flows_quantiles_file = os.path.join(resultsDir, 'MCMC_flows_quantiles.csv')
         df_flows_quantiles.to_csv(flows_quantiles_file, index=False)
+    
+
+    def saveTempsQuantiles(self, resultsDir: str):
+        
+        times = self.col.times_solve
+
+        quantile05 = self.col.get_temps_quantile(0.05)[:,0]
+        quantile50 = self.col.get_temps_quantile(0.5)[:,0]
+        quantile95 = self.col.get_temps_quantile(0.95)[:,0]
+
+        # Formatage des dates
+        n_dates = len(times)
+        times_string = np.zeros((n_dates,1))
+        times_string = times_string.astype('str')
+        for i in range(n_dates):
+            times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
+
+        # Création du dataframe
+        np_temps_quantiles = np.zeros((n_dates,3))
+        for i in range(n_dates):
+            np_temps_quantiles[i,0] = quantile05[i]
+            np_temps_quantiles[i,1] = quantile50[i]
+            np_temps_quantiles[i,2] = quantile95[i]
+        np_temps_times_and_quantiles = np.concatenate((times_string, np_temps_quantiles), axis=1)
+        df_temps_quantiles = pd.DataFrame(np_temps_times_and_quantiles, 
+        columns=["Date Heure, GMT+01:00", 
+        "Température à l'interface (K) - quantile 5%",
+        "Température à l'interface (K) - quantile 50%",
+        "Température à l'interface (K) - quantile 95%"])
+
+        # Sauvegarde sous forme d'un fichier csv
+        temps_quantiles_file = os.path.join(resultsDir, 'MCMC_temps_quantiles.csv')
+        df_temps_quantiles.to_csv(temps_quantiles_file, index=False)
 
 
     def saveResults(self, resultsDir: str):
