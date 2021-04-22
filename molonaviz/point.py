@@ -81,6 +81,7 @@ class Point(object):
         deltaTtemp = datetime.strptime(dftemp.iloc[1,0], '%y/%m/%d %H:%M:%S') - datetime.strptime(dftemp.iloc[0,0], '%y/%m/%d %H:%M:%S')
         deltaTpress = datetime.strptime(dfpress.iloc[1,0], '%y/%m/%d %H:%M:%S') - datetime.strptime(dfpress.iloc[0,0], '%y/%m/%d %H:%M:%S')
         if deltaTtemp != deltaTpress :
+            self.delete()
             raise TimeStepError(deltaTtemp, deltaTpress)
         else : 
             deltaT = deltaTtemp
