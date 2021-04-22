@@ -2,7 +2,7 @@ import sys
 import os
 from PyQt5 import QtWidgets, uic
 
-From_DialogFindStudy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"DialogFindStudy.ui"))[0]
+From_DialogFindStudy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"dialogfindstudy.ui"))[0]
 
 class DialogFindStudy(QtWidgets.QDialog,From_DialogFindStudy):
     
