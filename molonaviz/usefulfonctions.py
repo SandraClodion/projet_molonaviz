@@ -24,14 +24,22 @@ def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
     return cleaned_filename[:char_limit] 
 
 
-def celsiusToKelvin(trawfile, tprocessedfile):
-    df = pd.read_csv(trawfile)
+def celsiusToKelvin(df):
+    
     columnsNames = list(df.head(0))
-    time = columnsNames[0]
+
     temps = [columnsNames[i] for i in range(1,5)]
     for temp in temps:
         df[temp] = df[temp]+273.15
-    df.to_csv(tprocessedfile, index=False)
+    
+    
+def convertDates(df):
+    columnsNames = list(df.head(0))
+    times = columnsNames[0]
+    try : #On vérifie que le format des dates est le bon
+        datetime.strptime(times[0], '%y/%m/%d %H:%M:%S')
+    except ValueError : #Si ce n'est pas le cas on convertit les dates
+        df[times] = pd.to_datetime(df[times]).apply(lambda x:x.strftime('%y/%m/%d %H:%M:%S'))
 
 
 def displayInfoMessage(message):

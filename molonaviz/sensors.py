@@ -22,25 +22,23 @@ class PressureSensor(object):
     def getSigma(self):
         return self.sigma
 
-    def tensionToPressure(self, prawfile, pprocessedfile):
+    def tensionToPressure(self, df):
         """
-        Prend en argument le chemin d'accès vers le fichier raw et celui vers le fichier process
-        Écrit le fichier processed à l'endroit demandé
+        classdoc
         """
-        df = pd.read_csv(prawfile)
         columnsNames = list(df.head(0))
-        time = columnsNames[0]
+
+        times = columnsNames[0]
         temperature = columnsNames[1]
         tension = columnsNames[2]
-        df.dropna(inplace=True)
+        #df.dropna(inplace=True)
         df = df.astype({temperature : np.float, tension : np.float})
         df[temperature] = df[temperature] + 273.15 #conversion en Kelvin
         a, b, c = self.intercept, self.dudh, self.dudt
         df['Pression différentielle (m)'] = (1/b)*(df[tension] - c*df[temperature] - a)
         df.drop([tension], axis=1, inplace=True)
-        df = df[[time, 'Pression différentielle (m)', temperature]] #on réordonne les colonnes
+        df = df[[times, 'Pression différentielle (m)', temperature]] #on réordonne les colonnes
         df.rename(columns={temperature: 'Temperature (K)'}, inplace=True)
-        df.to_csv(pprocessedfile, index=False)
         
     def setPressureSensorFromFile(self, csv):
 

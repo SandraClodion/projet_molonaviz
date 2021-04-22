@@ -2,10 +2,12 @@ import os, glob, shutil, sys
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 import pandas as pd
 from numpy import NaN
-from usefulfonctions import clean_filename, celsiusToKelvin
+from datetime import datetime, timedelta
+
 from sensors import PressureSensor, Shaft, Thermometer
-from datetime import datetime
+from usefulfonctions import *
 from pyheatmy import *
+from errors import *
 
 class Point(object):
     
@@ -60,24 +62,82 @@ class Point(object):
         shutil.rmtree(self.pointDir)
 
     def processData(self, sensorDir):
-
-        # ajout vérification des dates à faire
         
         trawfile = os.path.join(self.pointDir, "raw_data", "raw_temperatures.csv")
+        prawfile = os.path.join(self.pointDir, "raw_data", "raw_pressures.csv")
         tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
         pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
-        celsiusToKelvin(trawfile, tprocessedfile)
+
+        dftemp = pd.read_csv(trawfile)
+        dfpress = pd.read_csv(prawfile)
+
+        # On convertit les dates au format yy/mm/dd HH:mm:ss
+        convertDates(dftemp)
+        convertDates(dfpress)
+
+        # On vérifie qu'on a le même deltaT pour les deux fichiers
+        # La référence sera l'écart entre les deux premières lignes pour chaque fichier 
+        # --> Demander à l'utilisateur de vérifier que c'est ok
+        deltaTtemp = datetime.strptime(dftemp.iloc[1,0], '%y/%m/%d %H:%M:%S') - datetime.strptime(dftemp.iloc[0,0], '%y/%m/%d %H:%M:%S')
+        deltaTpress = datetime.strptime(dfpress.iloc[1,0], '%y/%m/%d %H:%M:%S') - datetime.strptime(dfpress.iloc[0,0], '%y/%m/%d %H:%M:%S')
+        if deltaTtemp != deltaTpress :
+            raise TimeStepError(deltaTtemp, deltaTpress)
+        else : 
+            deltaT = deltaTtemp
+
+        # On fait en sorte que les deux fichiers aient le même t0 et le même tf
+        dftemp_t0 = datetime.strptime(dftemp.iloc[0,0], '%y/%m/%d %H:%M:%S')
+        dfpress_t0 = datetime.strptime(dfpress.iloc[0,0], '%y/%m/%d %H:%M:%S')
+        dftemp_tf = datetime.strptime(dftemp.iloc[-1,0], '%y/%m/%d %H:%M:%S')
+        dfpress_tf = datetime.strptime(dfpress.iloc[-1,0], '%y/%m/%d %H:%M:%S')
+
+        if dfpress_t0 < dftemp_t0 : 
+            while dfpress_t0 != dftemp_t0:
+                dfpress.drop(index=0, inplace=True)
+                dfpress_t0= datetime.strptime(dfpress.iloc[0,0], '%y/%m/%d %H:%M:%S')
+        elif dfpress_t0 > dftemp_t0 : 
+            while dfpress_t0 != dftemp_t0:
+                dftemp.drop(index=0, inplace=True)
+                dftemp_t0= datetime.strptime(dftemp.iloc[0,0], '%y/%m/%d %H:%M:%S')
+
+        if dfpress_tf > dftemp_tf:
+            while dfpress_tf != dftemp_tf :
+                dfpress.drop(dfpress.tail(1).index,inplace=True)
+                dfpress_tf= datetime.strptime(dfpress.iloc[-1,0], '%y/%m/%d %H:%M:%S')
+        elif dfpress_tf < dftemp_tf:
+            while dfpress_tf != dftemp_tf :
+                dftemp.drop(dftemp.tail(1).index,inplace=True)
+                dftemp_tf= datetime.strptime(dftemp.iloc[-1,0], '%y/%m/%d %H:%M:%S')
+
+        # On supprime les lignes qui ne respecteraient pas le deltaT
+        i = 1
+        while i<dftemp.shape[0]:
+            if ( datetime.strptime(dftemp.iloc[i,0], '%y/%m/%d %H:%M:%S') - datetime.strptime(dftemp.iloc[i-1,0], '%y/%m/%d %H:%M:%S') ) % deltaT != timedelta(minutes=0) :
+                dftemp.drop(dftemp.iloc[i].name,  inplace=True)
+            else :
+                i += 1
+        i = 1
+        while i<dfpress.shape[0]:
+            if ( datetime.strptime(dfpress.iloc[i,0], '%y/%m/%d %H:%M:%S') - datetime.strptime(dfpress.iloc[i-1,0], '%y/%m/%d %H:%M:%S') ) % deltaT != timedelta(minutes=0) :
+                dfpress.drop(dfpress.iloc[i].name,  inplace=True)
+            else :
+                i += 1
+
+        # On convertit les températures en Kelvin
+        celsiusToKelvin(dftemp)
         
-        prawfile = os.path.join(self.pointDir, "raw_data", "raw_pressures.csv")
-        
-        #psensor = pSensorModel.findItems(self.psensor)[0].data(QtCore.Qt.UserRole)
+        # On convertit les tensions en pression
         psensor = PressureSensor(self.psensor)
         info_csv = os.path.join(sensorDir, 'Pressure', f'{self.psensor}.csv')
         psensor.setPressureSensorFromFile(info_csv)
-        psensor.tensionToPressure(prawfile, pprocessedfile)
+        psensor.tensionToPressure(dfpress)
 
-        self.dftemp = pd.read_csv(tprocessedfile)
-        self.dfpress = pd.read_csv(pprocessedfile)
+        dftemp.to_csv(tprocessedfile, index=False)
+        self.dftemp = dftemp
+
+        dfpress.to_csv(pprocessedfile, index=False)
+        self.dfpress = dfpress
+
 
     def cleanup(self, script, dft, dfp):
 
