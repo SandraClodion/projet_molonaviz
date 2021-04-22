@@ -8,7 +8,7 @@ from dialogcleanup import DialogCleanup
 from dialogcompute import DialogCompute
 from usefulfonctions import displayInfoMessage
 from point import Point
-from mlpcanvas import MplCanvas
+from mplcanvas import MplCanvas
 from compute import Compute
 import numpy as np
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
