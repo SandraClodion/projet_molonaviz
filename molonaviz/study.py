@@ -55,7 +55,6 @@ class Study(object):
         rdir = self.rootDir
         dirs = [ name for name in os.listdir(rdir) if os.path.isdir(os.path.join(rdir, name)) ] #no file
         dirs = list(filter(('.DS_Store').__ne__, dirs)) 
-        print(dirs)
         #permet de ne pas prendre en compte les fichier '.DS_Store' 
         for mydir in dirs:
             pointDir = os.path.join(self.rootDir, mydir)
