@@ -125,12 +125,13 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             compute = Compute(self.point)
             compute.computeDirectModel(params, nb_cells, sensorDir)
             new_dfwater = pd.read_csv(self.waterdir)
-            
+
             if self.modeldirectiscomputed :
                 self.graphwater.update_(new_dfwater)
             else :
                 self.graphwater = MplCanvas(new_dfwater, "water flow")
                 self.toolbarwater = NavigationToolbar(self.graphwater, self)
+                self.vboxwatersimple.removeWidget(self.waterlabel)
                 self.vboxwatersimple.addWidget(self.graphwater)
                 self.vboxwatersimple.addWidget(self.toolbarwater)
  
@@ -183,8 +184,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         vbox2.addWidget(self.toolbarTemp)
         
         #Les résultats
-        self.modeldirectiscomputed = (not len(os.listdir(self.directmodelDir) ) == 0)
-        self.MCMCiscomputed = (not len(os.listdir(self.MCMCDir)) == 0)
+        self.modeldirectiscomputed = len(os.listdir(self.directmodelDir) ) > 1
+        self.MCMCiscomputed = len(os.listdir(self.MCMCDir)) > 1
 
         #Le flux d'eau:
         self.vboxwatersimple = QtWidgets.QVBoxLayout()
@@ -192,6 +193,10 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.vboxwaterMCMC = QtWidgets.QVBoxLayout()
         self.groupBoxWaterMCMC.setLayout(self.vboxwaterMCMC)
         self.waterdir = self.directmodelDir + "/solved_flows.csv"
+        #La frise de température
+        self.vboxfrisetemp = QtWidgets.QVBoxLayout()
+        self.groupBoxFriseTemp.setLayout(self.vboxfrisetemp)
+        self.solvedtempdir = self.directmodelDir + "/solved_temperatures.csv"
 
         if self.modeldirectiscomputed:
             #Le flux d'eau:
@@ -200,6 +205,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.toolbarwater = NavigationToolbar(self.graphwater, self)
             self.vboxwatersimple.addWidget(self.graphwater)
             self.vboxwatersimple.addWidget(self.toolbarwater)
+            #La frise de température
+            dfsolvedtemp = pd.read_csv(self.solvedtempdir)
+            self.graphsolvedtemp = MplCanvas(dfsolvedtemp, "frise")
+            self.toolbarsolvedtemp = NavigationToolbar(self.graphsolvedtemp, self)
+            self.vboxfrisetemp.addWidget(self.graphsolvedtemp)
+            self.vboxfrisetemp.addWidget(self.toolbarsolvedtemp)
             #Le reste à rajouter plus tard
 
         else:
