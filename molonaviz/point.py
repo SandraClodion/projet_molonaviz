@@ -131,7 +131,7 @@ class Point(object):
         psensor = PressureSensor(self.psensor)
         info_csv = os.path.join(sensorDir, 'Pressure', f'{self.psensor}.csv')
         psensor.setPressureSensorFromFile(info_csv)
-        psensor.tensionToPressure(dfpress)
+        dfpress = psensor.tensionToPressure(dfpress)
 
         dftemp.to_csv(tprocessedfile, index=False)
         self.dftemp = dftemp

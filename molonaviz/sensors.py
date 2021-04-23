@@ -39,6 +39,8 @@ class PressureSensor(object):
         df.drop([tension], axis=1, inplace=True)
         df = df[[times, 'Pression différentielle (m)', temperature]] #on réordonne les colonnes
         df.rename(columns={temperature: 'Temperature (K)'}, inplace=True)
+        return df
+
         
     def setPressureSensorFromFile(self, csv):
 
