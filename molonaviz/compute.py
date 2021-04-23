@@ -53,8 +53,8 @@ class Compute(object):
         # Sauvegarde des différents résultats du modèle direct
         resultsDir = os.path.join(self.point.getPointDir(), 'results', 'direct_model_results')
         self.saveResults(resultsDir)
-
     
+  
     def saveBestParams(self, resultsDir: str):
         """
         Sauvegarde les meilleurs paramètres inférés par la MMC dans un fichier csv en local
@@ -94,6 +94,8 @@ class Compute(object):
         all_params_file = os.path.join(resultsDir, 'MCMC_all_params.csv')
         df_all_params.to_csv(all_params_file, index=True)
     
+
+
     def saveFlowWithQuantiles(self, resultsDir: str):
 
         times = self.col.times_solve
@@ -186,6 +188,8 @@ class Compute(object):
         temps = self.col.temps_solve
         times = self.col.times_solve
         flows = self.col.flows_solve
+        advective_flux = self.col.get_advec_flows_solve()
+        conductive_flux = self.col.get_conduc_flows_solve()
         depths = self.col.get_depths_solve()
         
         ## Formatage des dates
@@ -194,17 +198,40 @@ class Compute(object):
         times_string = times_string.astype('str')
         for i in range(n_dates):
             times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
-
+        
+        ## Profondeurs
+        df_depths = pd.DataFrame(depths, columns=['Depth (m)'])
+        depths_file = os.path.join(resultsDir, 'depths.csv')
+        df_depths.to_csv(depths_file, index=False)
 
         ## Profils de températures
 
         # Création du dataframe
         np_temps_solve = np.concatenate((times_string, temps), axis=1)
-        df_temps_solve = pd.DataFrame(np_temps_solve, columns=['Date Heure, GMT+01:00 \ Depth(m)']+[f'{depth}' for depth in depths])
-        
+        df_temps_solve = pd.DataFrame(np_temps_solve, columns=['Date Heure, GMT+01:00']+[f'Température (K) pour la profondeur {depth:.4f} m' for depth in depths])
         # Sauvegarde sous forme d'un fichier csv
         temps_solve_file = os.path.join(resultsDir, 'solved_temperatures.csv')
         df_temps_solve.to_csv(temps_solve_file, index=False)
+
+
+        ## Flux d'énergie advectifs
+
+        # Création du dataframe
+        np_advective_flux = np.concatenate((times_string, advective_flux), axis=1)
+        df_advective_flux = pd.DataFrame(np_advective_flux, columns=['Date Heure, GMT+01:00']+[f'Flux advectif (W/m2) pour la profondeur {depth:.4f} m' for depth in depths])
+        # Sauvegarde sous forme d'un fichier csv
+        advective_flux_file = os.path.join(resultsDir, 'advective_flux.csv')
+        df_advective_flux.to_csv(advective_flux_file, index=False)
+
+
+        ## Flux d'énergie conductifs
+
+        # Création du dataframe
+        np_conductive_flux = np.concatenate((times_string, conductive_flux), axis=1)
+        df_conductive_flux = pd.DataFrame(np_conductive_flux, columns=['Date Heure, GMT+01:00']+[f'Flux conductif (W/m2) pour la profondeur {depth:.4f} m' for depth in depths])
+        # Sauvegarde sous forme d'un fichier csv
+        conductive_flux_file = os.path.join(resultsDir, 'conductive_flux.csv')
+        df_conductive_flux.to_csv(conductive_flux_file, index=False)
 
 
         ## Flux d'eau échangés entre la nappe et la rivière
@@ -215,7 +242,8 @@ class Compute(object):
             np_flows[i,0] = flows[i]
         np_flows_solve = np.concatenate((times_string, np_flows), axis=1)
         df_flows_solve = pd.DataFrame(np_flows_solve, columns=["Date Heure, GMT+01:00", "Débit d'eau échangé (m/s)"])
-
         # Sauvegarde sous forme d'un fichier csv
         flows_solve_file = os.path.join(resultsDir, 'solved_flows.csv')
         df_flows_solve.to_csv(flows_solve_file, index=False)
+
+
