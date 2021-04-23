@@ -128,41 +128,24 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             compute.computeDirectModel(params, nb_cells, sensorDir)
             new_dfwater = pd.read_csv(self.waterdir)
             new_dfsolvedtemp = pd.read_csv(self.solvedtempdir)
-            new_dfadvective = pd.read_csv(self.advectivedir)
-            new_dfconductive = pd.read_csv(self.conductivedir)
             new_dfdepths = pd.read_csv(self.directdepthsdir)
 
             if self.modeldirectiscomputed :
                 self.graphwater.update_(new_dfwater)
                 self.graphsolvedtemp.update_(new_dfsolvedtemp, new_dfdepths)
-                self.graphAdvective.update_(new_dfadvective, new_dfdepths)
-                self.graphConductive.update_(new_dfconductive, new_dfdepths)
             else :
                 #Flux d'eau
                 self.graphwater = MplCanvas(new_dfwater, "water flow")
                 self.toolbarwater = NavigationToolbar(self.graphwater, self)
-                self.vboxwatersimple.removeWidget(self.nomodellabel[0])
+                self.vboxwatersimple.removeWidget(self.nomodellabel)
                 self.vboxwatersimple.addWidget(self.graphwater)
                 self.vboxwatersimple.addWidget(self.toolbarwater)
                 #Frise de température
                 self.graphsolvedtemp = MplCanvas(new_dfsolvedtemp, "frise", new_dfdepths)
                 self.toolbarsolvedtemp = NavigationToolbar(self.graphsolvedtemp, self)
-                self.vboxfrisetemp.removeWidget(self.nomodellabel[1])
+                self.vboxfrisetemp.removeWidget(self.nomodellabel)
                 self.vboxfrisetemp.addWidget(self.graphsolvedtemp)
                 self.vboxfrisetemp.addWidget(self.toolbarsolvedtemp)
-                #Les flux d'énergie
-                self.graphAdvective = MplCanvas(new_dfadvective, "frise", new_dfdepths)
-                self.toolbarAdvective = NavigationToolbar(self.graphAdvective, self)
-                self.vboxAdvective.removeWidget(self.nomodellabel[2])
-                self.vboxAdvective.addWidget(self.graphAdvective)
-                self.vboxConductive.addWidget(self.toolbarAdvective)
-
-                self.graphConductive = MplCanvas(new_dfconductive, "frise", new_dfdepths)
-                self.toolbarConductive = NavigationToolbar(self.graphConductive, self)
-                self.vboxConductive.removeWidget(self.nomodellabel[3])
-                self.vboxConductive.addWidget(self.graphConductive)
-                self.vboxConductive.addWidget(self.toolbarConductive)
-
     
         if res == 1 :
             nb_iter, priors, nb_cells = dlg.getInputMCMC()
@@ -230,16 +213,6 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.vboxTempMCMC = QtWidgets.QVBoxLayout()
         self.groupBoxTempMCMC.setLayout(self.vboxTempMCMC)
         self.tempmcmcdir = self.MCMCDir + "/MCMC_temps_quantile.csv"
-        #Les flux d'énergie
-        self.vboxAdvective = QtWidgets.QVBoxLayout()
-        self.groupBoxAdvective.setLayout(self.vboxAdvective)
-        self.advectivedir = self.directmodelDir + "/advective_flux.csv"
-        self.vboxConductive = QtWidgets.QVBoxLayout()
-        self.groupBoxConductive.setLayout(self.vboxConductive)
-        self.conductivedir = self.directmodelDir + "/conductive_flux.csv"
-        self.vboxTotEnergy = QtWidgets.QVBoxLayout()
-        self.groupBoxTotEnergy.setLayout(self.vboxTotEnergy)
-        #RAJOUTER SON DIRECTORY
 
 
         if self.modeldirectiscomputed:
@@ -258,27 +231,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.vboxfrisetemp.addWidget(self.graphsolvedtemp)
             self.vboxfrisetemp.addWidget(self.toolbarsolvedtemp)
 
-            #Les flux d'énergie
-            dfadvective = pd.read_csv(self.advectivedir)
-            self.graphAdvective = MplCanvas(dfadvective, "frise", depths)
-            self.toolbarAdvective = NavigationToolbar(self.graphAdvective, self)
-            self.vboxAdvective.addWidget(self.graphAdvective)
-            self.vboxConductive.addWidget(self.toolbarAdvective)
-
-            dfconductive = pd.read_csv(self.conductivedir)
-            self.graphConductive = MplCanvas(dfconductive, "frise", depths)
-            self.toolbarConductive = NavigationToolbar(self.graphConductive, self)
-            self.vboxConductive.addWidget(self.graphConductive)
-            self.vboxConductive.addWidget(self.toolbarConductive)
-
-            #Énergie totale à rajouter
+            #Le reste à rajouter plus tard
 
         else:
-            self.nomodellabel = [QtWidgets.QLabel("Direct Model has not been computed yet")]*5
-            self.vboxwatersimple.addWidget(self.nomodellabel[0])
-            self.vboxfrisetemp.addWidget(self.nomodellabel[1])
-            self.vboxAdvective.addWidget(self.nomodellabel[2])
-            self.vboxConductive.addWidget(self.nomodellabel[3])
+            self.nomodellabel = QtWidgets.QLabel("Direct Model has not been computed yet")
+            self.vboxwatersimple.addWidget(self.nomodellabel)
+            self.vboxfrisetemp.addWidget(self.nomodellabel)
 
         if self.MCMCiscomputed:
             pass
