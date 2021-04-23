@@ -31,7 +31,7 @@ class PressureSensor(object):
         times = columnsNames[0]
         temperature = columnsNames[1]
         tension = columnsNames[2]
-        #df.dropna(inplace=True)
+
         df = df.astype({temperature : np.float, tension : np.float})
         df[temperature] = df[temperature] + 273.15 #conversion en Kelvin
         a, b, c = self.intercept, self.dudh, self.dudt
