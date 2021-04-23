@@ -38,8 +38,8 @@ class Compute(object):
         self.saveResults(resultsDir)
 
         # Sauvegarde des quantiles
-        self.saveFlowsQuantiles(resultsDir)
-        self.saveTempsQuantiles(resultsDir)
+        self.saveFlowWithQuantiles(resultsDir)
+        self.saveTempWithQuantiles(resultsDir)
         
 
     def computeDirectModel(self, params, nb_cells, sensorDir):
@@ -94,10 +94,11 @@ class Compute(object):
         all_params_file = os.path.join(resultsDir, 'MCMC_all_params.csv')
         df_all_params.to_csv(all_params_file, index=True)
     
-    def saveFlowsQuantiles(self, resultsDir: str):
+    def saveFlowWithQuantiles(self, resultsDir: str):
 
         times = self.col.times_solve
 
+        flows = self.col.flows_solve
         quantile05 = self.col.get_flows_quantile(0.05)
         quantile50 = self.col.get_flows_quantile(0.5)
         quantile95 = self.col.get_flows_quantile(0.95)
@@ -110,14 +111,16 @@ class Compute(object):
             times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
 
         # Création du dataframe
-        np_flows_quantiles = np.zeros((n_dates,3))
+        np_flows_quantiles = np.zeros((n_dates,4))
         for i in range(n_dates):
-            np_flows_quantiles[i,0] = quantile05[i]
-            np_flows_quantiles[i,1] = quantile50[i]
-            np_flows_quantiles[i,2] = quantile95[i]
+            np_flows_quantiles[i,0] = flows[i]
+            np_flows_quantiles[i,1] = quantile05[i]
+            np_flows_quantiles[i,2] = quantile50[i]
+            np_flows_quantiles[i,3] = quantile95[i]
         np_flows_times_and_quantiles = np.concatenate((times_string, np_flows_quantiles), axis=1)
         df_flows_quantiles = pd.DataFrame(np_flows_times_and_quantiles, 
         columns=["Date Heure, GMT+01:00", 
+        "Débit d'eau échangé (m/s) - pour les meilleurs paramètres",
         "Débit d'eau échangé (m/s) - quantile 5%",
         "Débit d'eau échangé (m/s) - quantile 50%",
         "Débit d'eau échangé (m/s) - quantile 95%"])
@@ -127,10 +130,11 @@ class Compute(object):
         df_flows_quantiles.to_csv(flows_quantiles_file, index=False)
     
 
-    def saveTempsQuantiles(self, resultsDir: str):
+    def saveTempWithQuantiles(self, resultsDir: str):
         
         times = self.col.times_solve
 
+        temp = self.col.temps_solve[:,0] #température à l'interface
         quantile05 = self.col.get_temps_quantile(0.05)[:,0]
         quantile50 = self.col.get_temps_quantile(0.5)[:,0]
         quantile95 = self.col.get_temps_quantile(0.95)[:,0]
@@ -143,14 +147,16 @@ class Compute(object):
             times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
 
         # Création du dataframe
-        np_temps_quantiles = np.zeros((n_dates,3))
+        np_temps_quantiles = np.zeros((n_dates,4))
         for i in range(n_dates):
-            np_temps_quantiles[i,0] = quantile05[i]
-            np_temps_quantiles[i,1] = quantile50[i]
-            np_temps_quantiles[i,2] = quantile95[i]
+            np_temps_quantiles[i,0] = temp[i]
+            np_temps_quantiles[i,1] = quantile05[i]
+            np_temps_quantiles[i,2] = quantile50[i]
+            np_temps_quantiles[i,3] = quantile95[i]
         np_temps_times_and_quantiles = np.concatenate((times_string, np_temps_quantiles), axis=1)
         df_temps_quantiles = pd.DataFrame(np_temps_times_and_quantiles, 
         columns=["Date Heure, GMT+01:00", 
+        "Température à l'interface (K) - pour les meilleurs paramètres",
         "Température à l'interface (K) - quantile 5%",
         "Température à l'interface (K) - quantile 50%",
         "Température à l'interface (K) - quantile 95%"])
