@@ -151,8 +151,6 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             message = "All point data will be deleted. Are you sure you want to proceed ?"
             msgBox = displayConfirmationMessage(title, message)
             
-            print(msgBox)
-
             if msgBox == QtWidgets.QMessageBox.Ok:
                 pointName = dlg.getPointToDelete()
                 pointItem = self.pointModel.findItems(pointName)[0]
