@@ -51,12 +51,16 @@ class Point(object):
         self.deltaH = float(df.iloc[6].at[1])
         self.dftemp = pd.read_csv(tempcsv)
         self.dfpress = pd.read_csv(presscsv)
+        self.tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
+        self.pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
         
 
     def loadPoint(self, pointModel): 
         item = QtGui.QStandardItem(self.name)
         item.setData(self, QtCore.Qt.UserRole)
         pointModel.appendRow(item)
+        self.tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
+        self.pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
     
     def delete(self):
         shutil.rmtree(self.pointDir)
