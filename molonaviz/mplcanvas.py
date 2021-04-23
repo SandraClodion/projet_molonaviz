@@ -33,7 +33,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def setTime(self):
         time = self.pdf[self.pdf.columns[0]].values.tolist()
-        print(time)
+        #print(time)
         a = [datetime.strptime(t, '%y/%m/%d %H:%M:%S') for t in time]
         self.x = mdates.date2num(a)
         formatter = mdates.DateFormatter("%y/%m/%d %H:%M:%S")
@@ -62,17 +62,19 @@ class MplCanvas(FigureCanvasQTAgg):
     def setFrises(self):
         profils = self.pdf.to_numpy()
         profils = profils[:,1:].astype(np.float)
-        #print(profils[0,0]), print(type(profils[0,0]))
-        image = self.axes.imshow(profils, cmap=cm.Spectral_r, aspect="auto", data="float")
-        #Rajouter l'extent avec la profondeur de la rivière, et la date maximale
+        depths = list(self.pdf.columns)[1:]
+        image = self.axes.imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[0]), float(depths[-1])], data="float")
+        self.axes.xaxis_date()
         plt.colorbar(image, ax=self.axes)
 
     def update_(self, new_pdf):
         self.axes.cla()
         self.pdf = new_pdf
         self.setTime()
-        self.setCurves()
-        self.draw()
+        if datatype == "pressure" or datatype == "temperature" or datatype == "water flow":
+            self.setCurves()
+        elif datatype == "frise":
+            self.setFrises()
 
 """
 class MainWindow(QtWidgets.QMainWindow):
