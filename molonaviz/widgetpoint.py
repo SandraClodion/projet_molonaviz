@@ -125,16 +125,25 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             compute = Compute(self.point)
             compute.computeDirectModel(params, nb_cells, sensorDir)
             new_dfwater = pd.read_csv(self.waterdir)
+            new_dfsolvedtemp = pd.read_csv(self.solvedtempdir)
 
             if self.modeldirectiscomputed :
                 self.graphwater.update_(new_dfwater)
+                self.graphsolvedtemp.update_(new_dfsolvedtemp)
             else :
+                #Flux d'eau
                 self.graphwater = MplCanvas(new_dfwater, "water flow")
                 self.toolbarwater = NavigationToolbar(self.graphwater, self)
-                self.vboxwatersimple.removeWidget(self.waterlabel)
+                self.vboxwatersimple.removeWidget(self.nomodellabel)
                 self.vboxwatersimple.addWidget(self.graphwater)
                 self.vboxwatersimple.addWidget(self.toolbarwater)
- 
+                #Frise de température
+                self.graphsolvedtemp = MplCanvas(new_dfsolvedtemp, "frise")
+                self.toolbarsolvedtemp = NavigationToolbar(self.graphsolvedtemp, self)
+                self.vboxfrisetemp.removeWidget(self.nomodellabel)
+                self.vboxfrisetemp.addWidget(self.graphsolvedtemp)
+                self.vboxfrisetemp.addWidget(self.toolbarsolvedtemp)
+    
         if res == 1 :
             nb_iter, priors, nb_cells = dlg.getInputMCMC()
             compute = Compute(self.point)
@@ -205,23 +214,27 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.toolbarwater = NavigationToolbar(self.graphwater, self)
             self.vboxwatersimple.addWidget(self.graphwater)
             self.vboxwatersimple.addWidget(self.toolbarwater)
+
             #La frise de température
             dfsolvedtemp = pd.read_csv(self.solvedtempdir)
             self.graphsolvedtemp = MplCanvas(dfsolvedtemp, "frise")
             self.toolbarsolvedtemp = NavigationToolbar(self.graphsolvedtemp, self)
             self.vboxfrisetemp.addWidget(self.graphsolvedtemp)
             self.vboxfrisetemp.addWidget(self.toolbarsolvedtemp)
+            
             #Le reste à rajouter plus tard
 
         else:
-            self.waterlabel = QtWidgets.QLabel("Direct Model has not been computed yet")
-            self.vboxwatersimple.addWidget(self.waterlabel)
+            self.nomodellabel = QtWidgets.QLabel("Direct Model has not been computed yet")
+            self.vboxwatersimple.addWidget(self.nomodellabel)
+            self.vboxfrisetemp.addWidget(self.nomodellabel)
 
         if self.MCMCiscomputed:
             pass
         else:
-            self.waterMCMClabel = QtWidgets.QLabel("MCMC has not been computed yet")
-            self.vboxwaterMCMC.addWidget(self.waterMCMClabel)
+            self.noMCMClabel = QtWidgets.QLabel("MCMC has not been computed yet")
+            self.vboxwaterMCMC.addWidget(self.noMCMClabel)
+            self.groupBoxTempMMC.addWidget(self.noMCMClabel)
 
 
 """ 

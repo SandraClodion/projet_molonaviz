@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>785</height>
+    <height>779</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -146,8 +146,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>1336</width>
-                 <height>364</height>
+                 <width>98</width>
+                 <height>40</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -262,7 +262,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_5">
+        <widget class="QGroupBox" name="groupBoxTempMMC">
          <property name="title">
           <string>GroupBox</string>
          </property>
