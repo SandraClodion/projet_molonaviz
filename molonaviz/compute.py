@@ -236,7 +236,8 @@ class Compute(object):
         ## Flux d'énergie totaux
 
         # Création du dataframe
-        df_total_flux = pd.DataFrame(np_conductive_flux+np_advective_flux, columns=['Date Heure, GMT+01:00']+[f"Flux d'énergie total (W/m2) pour la profondeur {depth:.4f} m" for depth in depths])
+        np_total_flux = np.concatenate((times_string, advective_flux+conductive_flux), axis=1)
+        df_total_flux = pd.DataFrame(np_total_flux, columns=['Date Heure, GMT+01:00']+[f"Flux d'énergie total (W/m2) pour la profondeur {depth:.4f} m" for depth in depths])
         # Sauvegarde sous forme d'un fichier csv
         total_flux_file = os.path.join(resultsDir, 'total_flux.csv')
         df_total_flux.to_csv(total_flux_file, index=False)
