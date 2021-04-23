@@ -20,7 +20,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please write below your Python code to clean-up your data. You may use the following predefined variables : &lt;/p&gt;&lt;p&gt;- &lt;span style=&quot; font-weight:600;&quot;&gt;dft&lt;/span&gt; for temperatures data frame&lt;/p&gt;&lt;p&gt;- &lt;span style=&quot; font-weight:600;&quot;&gt;dfp&lt;/span&gt; for pressure data frame&lt;/p&gt;&lt;p&gt;Note :&lt;/p&gt;&lt;p&gt;??? À COMPLÉTER QUAND JE SAURAI CODER CETTE HORREUR&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please write below your Python code to clean-up your data. You may use the following predefined variables : &lt;/p&gt;&lt;p&gt;- &lt;span style=&quot; font-weight:600;&quot;&gt;dft&lt;/span&gt; for temperatures data frame&lt;/p&gt;&lt;p&gt;- &lt;span style=&quot; font-weight:600;&quot;&gt;dfp&lt;/span&gt; for pressure data frame&lt;/p&gt;&lt;p&gt;Vous pouvez vous aider des exemples fournis&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::AutoText</enum>
@@ -34,7 +34,17 @@
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="plainTextEdit"/>
+    <widget class="QPlainTextEdit" name="plainTextEdit">
+     <property name="plainText">
+      <string>#Pour enlever les 5 premières valeurs:
+dft = dft.iloc[5:]
+dfp = dfp.iloc[5:]
+
+#Pour enlever la 6ème valeur:
+dft.drop([6])
+dfp.drop([6])</string>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

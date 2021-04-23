@@ -146,8 +146,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>98</width>
-                 <height>40</height>
+                 <width>1336</width>
+                 <height>357</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -262,7 +262,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBoxTempMMC">
+        <widget class="QGroupBox" name="groupBoxTempMCMC">
          <property name="title">
           <string>GroupBox</string>
          </property>
