@@ -12,18 +12,17 @@ from matplotlib.figure import Figure
 import matplotlib.dates as mdates
 import matplotlib.cm as cm
 import matplotlib.colors as colors
+import numpy as np
+from matplotlib.ticker import MaxNLocator
 
 
 class MplCanvas(FigureCanvasQTAgg):
 
     def __init__(self, pdf, datatype, parent=None, width=5, height=5, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = self.fig.add_subplot(111, position=[0.15, 0.225, 0.75, 0.75])
+        self.axes = self.fig.add_subplot(111)
         super(MplCanvas, self).__init__(self.fig)
-
-        #RAJOUTER UNE NAVIGATION TOOL BAR
-        #DIVISER SUIVANT LE GRAPHIQUE SOUHAITÉ DANS LE INIT AVEC UN DATATYPE = MACHIN MACHIN (FRISE, CHRONIQUE, COURBE)
-
+        self.fig.tight_layout(h_pad=5, pad=5)
         self.pdf = pdf
         self.datatype = datatype
         self.setTime()
@@ -34,10 +33,12 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def setTime(self):
         time = self.pdf[self.pdf.columns[0]].values.tolist()
+        print(time)
         a = [datetime.strptime(t, '%y/%m/%d %H:%M:%S') for t in time]
         self.x = mdates.date2num(a)
         formatter = mdates.DateFormatter("%y/%m/%d %H:%M:%S")
         self.axes.xaxis.set_major_formatter(formatter)
+        self.axes.xaxis.set_major_locator(MaxNLocator(4))
         plt.setp(self.axes.get_xticklabels(), rotation = 15)
         #self.axes.set_xlabel("Dates") Inutile
 
@@ -60,8 +61,10 @@ class MplCanvas(FigureCanvasQTAgg):
     
     def setFrises(self):
         profils = self.pdf.to_numpy()
-        profils = profils[:,1:]
-        image = self.axes.imshow(profils, cmap=cm.Spectral_r, aspect="auto")
+        profils = profils[:,1:].astype(np.float)
+        #print(profils[0,0]), print(type(profils[0,0]))
+        image = self.axes.imshow(profils, cmap=cm.Spectral_r, aspect="auto", data="float")
+        #Rajouter l'extent avec la profondeur de la rivière, et la date maximale
         plt.colorbar(image, ax=self.axes)
 
     def update_(self, new_pdf):
