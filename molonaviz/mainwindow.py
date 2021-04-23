@@ -1,18 +1,17 @@
-import sys
-import os
-import shutil
+import sys, os, shutil
 import pandas as pd
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from study import Study
 from point import Point
+from subwindow import SubWindow
 from dialogstudy import DialogStudy
 from dialogfindstudy import DialogFindStudy
 from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
 from dialogremovepoint import DialogRemovePoint
 from usefulfonctions import *
-#from widgetpoint import WidgetPoint
-from subwindow import SubWindow
+from errors import *
+
 
 From_MainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__),"mainwindow.ui"))[0]
 
@@ -69,11 +68,18 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         dlg = DialogStudy()
         res = dlg.exec_()
         if res == QtWidgets.QDialog.Accepted:
-            self.currentStudy = dlg.setStudy()
-            self.currentStudy.saveStudyToText()
-            displayInfoMessage("New study successfully created")
-            self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
-            
+            try :
+                self.currentStudy = dlg.setStudy()
+                self.currentStudy.saveStudyToText()
+                displayInfoMessage("New study successfully created")
+                self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
+            except EmptyFieldError as e:
+                displayCriticalMessage(f"{str(e)}, please try again")
+                self.createStudy()
+            except FileNotFoundError as e:
+                displayCriticalMessage(f"{str(e)}, please try again")
+                self.createStudy()
+
     def openStudy(self):
         if self.currentStudy == None : #si on ne vient pas de créer une étude
             dlg = DialogFindStudy()
