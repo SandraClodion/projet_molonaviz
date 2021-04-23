@@ -27,9 +27,9 @@ class MplCanvas(FigureCanvasQTAgg):
         self.datatype = datatype
         self.depths = depths
         self.setTime()
-        if datatype == "pressure" or datatype == "temperature" or datatype == "water flow":
+        if self.datatype == "pressure" or self.datatype == "temperature" or self.datatype == "water flow":
             self.setCurves()
-        elif datatype == "frise":
+        elif self.datatype == "frise":
             self.setFrises()
 
     def setTime(self):
@@ -63,8 +63,8 @@ class MplCanvas(FigureCanvasQTAgg):
     def setFrises(self):
         profils = self.pdf.to_numpy()
         profils = profils[:,1:].astype(np.float)
-        depths = self.depths.values.tolist()
-        image = self.axes.imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[0]), float(depths[-1])], data="float")
+        depths = self.depths[self.depths.columns[0]].values.tolist()
+        image = self.axes.imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.axes.xaxis_date()
         plt.colorbar(image, ax=self.axes)
 
@@ -73,9 +73,9 @@ class MplCanvas(FigureCanvasQTAgg):
         self.pdf = new_pdf
         self.depths = depths
         self.setTime()
-        if datatype == "pressure" or datatype == "temperature" or datatype == "water flow":
+        if self.datatype == "pressure" or self.datatype == "temperature" or self.datatype == "water flow":
             self.setCurves()
-        elif datatype == "frise":
+        elif self.datatype == "frise":
             self.setFrises()
 
 """

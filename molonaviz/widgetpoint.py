@@ -141,7 +141,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.vboxwatersimple.addWidget(self.graphwater)
                 self.vboxwatersimple.addWidget(self.toolbarwater)
                 #Frise de température
-                self.graphsolvedtemp = MplCanvas(new_dfsolvedtemp, "frise")
+                self.graphsolvedtemp = MplCanvas(new_dfsolvedtemp, "frise", new_dfdepths)
                 self.toolbarsolvedtemp = NavigationToolbar(self.graphsolvedtemp, self)
                 self.vboxfrisetemp.removeWidget(self.nomodellabel)
                 self.vboxfrisetemp.addWidget(self.graphsolvedtemp)
