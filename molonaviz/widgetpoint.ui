@@ -93,7 +93,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="tabInfos">
       <attribute name="title">
@@ -274,6 +274,29 @@
       <attribute name="title">
        <string>Heat Fluxes</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <item>
+        <widget class="QGroupBox" name="groupBoxAdvective">
+         <property name="title">
+          <string>Advective flux</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBoxConductive">
+         <property name="title">
+          <string>Conductive flux</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBoxTotEnergy">
+         <property name="title">
+          <string>Total Energy flux</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="tabMCMC">
       <attribute name="title">
