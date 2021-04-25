@@ -135,7 +135,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         point = self.treeViewDataPoints.selectedIndexes()[0].data(QtCore.Qt.UserRole)
         self.openPointView(point)
 
-    def openPointView(self, point):
+    def openPointView(self, point: Point):
         
         subWin = SubWindow(point, self.currentStudy)
         subWin.setPointWidget()
