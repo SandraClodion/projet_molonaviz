@@ -1,9 +1,0 @@
-#pressure_sensor
-p533
-#depth river bed - river tube [cm]
-6.5
-#depth river bed - hyporheic tube [cm]
-5.5
-#temperature_depths[cm]
-10;20;30;40
-

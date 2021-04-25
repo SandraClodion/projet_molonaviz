@@ -1,0 +1,2 @@
+Name: Étude Sandra 
+SensorsDirectory: /Users/sandraclodion/Downloads/EXEMPLES FICHIERS/Sensors
