@@ -42,6 +42,7 @@ class Study(object):
         if  filesNumber != 1:
             raise TextFileError(filesNumber)
         else : 
+            textFile = textFiles[0]
             with open(textFile, 'r') as studyText:
                 lines = studyText.read().splitlines() 
                 nameLine = lines[0]
@@ -50,8 +51,8 @@ class Study(object):
                 sensorDir = sensorDirLine.split(' ', 1)[1]
             self.name = name
             self.sensorDir = sensorDir
-            if not os.path.isdir(sensorsdir):
-                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), sensorsdir)
+            if not os.path.isdir(sensorDir):
+                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), sensorDir)
     
     def addPoint(self, name: str, infofile: str, prawfile: str, trawfile: str, noticefile: str, configfile: str):
 

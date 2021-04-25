@@ -43,13 +43,22 @@ def convertDates(df: pd.DataFrame):
     """
     Inplace
     """
-    
+
     columnsNames = list(df.head(0))
     times = columnsNames[0]
     try : #On vérifie que le format des dates est le bon
         datetime.strptime(times[0], '%y/%m/%d %H:%M:%S')
     except ValueError : #Si ce n'est pas le cas on convertit les dates
         df[times] = pd.to_datetime(df[times]).apply(lambda x:x.strftime('%y/%m/%d %H:%M:%S'))
+
+        
+def clearLayout(layout):
+    while layout.count():
+        child = layout.takeAt(0)
+        if child.widget() is not None:
+            child.widget().deleteLater()
+        elif child.layout() is not None:
+            clearLayout(child.layout())
 
 
 def displayInfoMessage(mainMessage: str, infoMessage: str=''):

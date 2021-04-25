@@ -153,7 +153,10 @@ class Point(object):
             f.close()
 
         from script import fonction
-        new_dft, new_dfp = fonction(dft, dfp)
+        try :
+            new_dft, new_dfp = fonction(dft, dfp)
+        except :
+            pass
         os.remove(scriptDir)
 
         #On réécrit les csv:

@@ -119,7 +119,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             
             name, infofile, prawfile, trawfile, noticefile, configfile  = dlg.getPointInfo()
             
-            point = self.currentStudy.addPoint(name, infofile, prawfile, trawfile, noticefile, configfile, self.pSensorModel) 
+            point = self.currentStudy.addPoint(name, infofile, prawfile, trawfile, noticefile, configfile) 
             point.loadPoint(self.pointModel)
            
     def openPoint(self):

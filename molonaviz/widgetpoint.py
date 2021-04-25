@@ -8,16 +8,18 @@ from dialogcleanup import DialogCleanup
 from dialogcompute import DialogCompute
 from usefulfonctions import displayInfoMessage
 from point import Point
-from mplcanvas import MplCanvas
+from study import Study
+from mplcanvas import MplCanvas, MplCanvasHisto, MplCanvaHeatFluxes
 from compute import Compute
 import numpy as np
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from usefulfonctions import clearLayout
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
 class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     
-    def __init__(self, point, study):
+    def __init__(self, point: Point, study: Study):
         # Call constructor of parent classes
         super(WidgetPoint, self).__init__()
         QtWidgets.QWidget.__init__(self)
@@ -32,14 +34,19 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.directdepthsdir = self.directmodelDir + "/depths.csv"
         self.MCMCdepthsdir = self.MCMCDir + "/depths.csv"
 
+        self.directmodeliscomputed = len(os.listdir(self.directmodelDir) ) > 1
+        self.MCMCiscomputed = len(os.listdir(self.MCMCDir)) > 1
+
         # Link every button to their function
 
         self.pushButtonReset.clicked.connect(self.reset)
         self.pushButtonCleanUp.clicked.connect(self.cleanup)
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
+        
         self.setPressureAndTemperatureModels()
-        self.setPlots()
+        self.setDataPlots()
+        self.setResultsPlots()
 
 
     def setInfoTab(self):
@@ -56,6 +63,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         dfinfo = pd.read_csv(infoFile, sep=';', header=None)
         self.infosModel = PandasModel(dfinfo)
         self.tableViewInfos.setModel(self.infosModel)
+
 
     def setPressureAndTemperatureModels(self):
         # Set the Temperature and Pressure models
@@ -74,6 +82,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.tableViewTemp.setModel(self.currentTemperatureModel)
         self.tableViewTemp.resizeColumnsToContents()
 
+
     def setWidgetInfos(self):
         pointName = self.point.getName()
         pointPressureSensor = self.point.getPressureSensor()
@@ -82,76 +91,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.setWindowTitle(pointName)
         self.lineEditSensor.setText(pointPressureSensor)
         self.lineEditShaft.setText(pointShaft)
-
-    def reset(self):
-        self.point.processData(self.study.getSensorDir())
-        #On actualise les modèles
-        self.dfpress = pd.read_csv(self.PressureDir)
-        self.dftemp = pd.read_csv(self.TemperatureDir)
-        self.currentTemperatureModel.setData(self.dftemp)
-        self.currentPressureModel.setData(self.dfpress)
-        self.tableViewTemp.resizeColumnsToContents()
-        self.tableViewPress.resizeColumnsToContents()
-        self.graphpress.update_(self.dfpress)
-        self.graphtemp.update_(self.dftemp)
-        displayInfoMessage("Data successfully reset !")
-
-
-    def cleanup(self):
-        if self.currentdata == "raw":
-            displayInfoMessage("Please clean-up your processed data.")
-        else:
-            dlg = DialogCleanup()
-            res = dlg.exec_()
-            if res == QtWidgets.QDialog.Accepted:
-                script = dlg.getScript()
-                self.dftemp, self.dfpress = self.point.cleanup(script, self.dftemp, self.dfpress)
-                displayInfoMessage("Data successfully cleaned !")
-                #On actualise les modèles
-                self.currentTemperatureModel.setData(self.dftemp)
-                self.currentPressureModel.setData(self.dfpress)
-                self.tableViewTemp.resizeColumnsToContents()
-                self.tableViewPress.resizeColumnsToContents()
-                self.graphpress.update_(self.dfpress)
-                self.graphtemp.update_(self.dftemp)
-
-    def compute(self):
-        
-        sensorDir = self.study.getSensorDir()
-
-        dlg = DialogCompute()
-        res = dlg.exec()
-
-        if res == 0 : 
-            params, nb_cells = dlg.getInputDirectModel()
-            compute = Compute(self.point)
-            compute.computeDirectModel(params, nb_cells, sensorDir)
-            new_dfwater = pd.read_csv(self.waterdir)
-            new_dfsolvedtemp = pd.read_csv(self.solvedtempdir)
-            new_dfdepths = pd.read_csv(self.directdepthsdir)
-
-            if self.modeldirectiscomputed :
-                self.graphwater.update_(new_dfwater)
-                self.graphsolvedtemp.update_(new_dfsolvedtemp, new_dfdepths)
-            else :
-                #Flux d'eau
-                self.graphwater = MplCanvas(new_dfwater, "water flow")
-                self.toolbarwater = NavigationToolbar(self.graphwater, self)
-                self.vboxwatersimple.removeWidget(self.nomodellabel)
-                self.vboxwatersimple.addWidget(self.graphwater)
-                self.vboxwatersimple.addWidget(self.toolbarwater)
-                #Frise de température
-                self.graphsolvedtemp = MplCanvas(new_dfsolvedtemp, "frise", new_dfdepths)
-                self.toolbarsolvedtemp = NavigationToolbar(self.graphsolvedtemp, self)
-                self.vboxfrisetemp.removeWidget(self.nomodellabel)
-                self.vboxfrisetemp.addWidget(self.graphsolvedtemp)
-                self.vboxfrisetemp.addWidget(self.toolbarsolvedtemp)
     
-        if res == 1 :
-            nb_iter, priors, nb_cells = dlg.getInputMCMC()
-            compute = Compute(self.point)
-            compute.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
-            # ajouter fonction plot
     
     def checkbox(self):
 
@@ -179,7 +119,125 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.tableViewTemp.resizeColumnsToContents()
             self.tableViewPress.resizeColumnsToContents()
 
-    def setPlots(self):
+
+    def reset(self):
+        self.point.processData(self.study.getSensorDir())
+        #On actualise les modèles
+        self.dfpress = pd.read_csv(self.PressureDir)
+        self.dftemp = pd.read_csv(self.TemperatureDir)
+        self.currentTemperatureModel.setData(self.dftemp)
+        self.currentPressureModel.setData(self.dfpress)
+        self.tableViewTemp.resizeColumnsToContents()
+        self.tableViewPress.resizeColumnsToContents()
+        self.graphpress.update_(self.dfpress)
+        self.graphtemp.update_(self.dftemp)
+        displayInfoMessage("Data successfully reset !")
+
+
+    def cleanup(self):
+        if self.currentdata == "raw":
+            displayInfoMessage("Please clean-up your processed data.")
+        else:
+            dlg = DialogCleanup()
+            res = dlg.exec_()
+            if res == QtWidgets.QDialog.Accepted:
+                script = dlg.getScript()
+                self.dftemp, self.dfpress = self.point.cleanup(script, self.dftemp, self.dfpress)
+                displayInfoMessage("Data successfully cleaned !")
+                
+                #On actualise les modèles
+                self.currentTemperatureModel.setData(self.dftemp)
+                self.currentPressureModel.setData(self.dfpress)
+                self.tableViewTemp.resizeColumnsToContents()
+                self.tableViewPress.resizeColumnsToContents()
+                self.graphpress.update_(self.dfpress)
+                self.graphtemp.update_(self.dftemp)
+    
+
+    def compute(self):
+        
+        sensorDir = self.study.getSensorDir()
+
+        dlg = DialogCompute()
+        res = dlg.exec()
+
+        if res == 0 : #Direct Model
+            params, nb_cells = dlg.getInputDirectModel()
+            compute = Compute(self.point)
+            compute.computeDirectModel(params, nb_cells, sensorDir)
+
+            self.setDataFrames('DirectModel')
+
+            if self.directmodeliscomputed :
+                print('Direct Model is computed')
+                self.graphwaterdirect.update_(self.dfwater)
+                self.graphsolvedtempdirect.update_(self.dfsolvedtemp, self.dfdepths)
+                self.graphintertempdirect.update_(self.dfintertemp)
+                self.graphfluxesdirect.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
+
+            else :
+
+                #Flux d'eau
+                clearLayout(self.vboxwaterdirect)
+                self.plotWaterFlowsDirect(self.dfwater)
+
+                #Flux d'énergie
+                clearLayout(self.vboxfluxesdirect)
+                self.plotFriseHeatFluxesDirect(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
+
+                #Frise de température
+                clearLayout(self.vboxfrisetempdirect)
+                self.plotFriseTempDirect(self.dfsolvedtemp, self.dfdepths)
+
+                #Température à l'interface
+                clearLayout(vboxintertempdirect)
+                self.plotInterfaceTempDirect(self.dfintertemp)
+
+                self.directmodeliscomputed = True
+
+    
+        if res == 1 : #MCMC
+            nb_iter, priors, nb_cells = dlg.getInputMCMC()
+            compute = Compute(self.point)
+            compute.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
+
+            self.setDataFrames('MCMC')
+
+            if self.MCMCiscomputed :
+                print('MCMC is computed')
+                self.graphwaterMCMC.update_(self.dfwater)
+                self.graphsolvedtempMCMC.update_(self.dfsolvedtemp, self.dfdepths)
+                self.graphintertempMCMC.update_(self.dfintertemp)
+                self.graphfluxesMCMC.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
+                self.histos.update_(self.dfallparams)
+
+            else :
+
+                #Flux d'eau
+                clearLayout(self.vboxwaterMCMC)
+                self.plotWaterFlowsMCMC(self.dfwater)
+
+                #Flux d'énergie
+                clearLayout(self.vboxfluxesMCMC)
+                self.plotFriseHeatFluxesMCMC(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
+
+                #Frise de température
+                clearLayout(self.vboxfrisetempMCMC)
+                self.plotFriseTempMCMC(self.dfsolvedtemp, self.dfdepths)
+
+                #Température à l'interface
+                clearLayout(self.vboxintertempMCMC)
+                self.plotInterfaceTempMCMC(self.dfintertemp)
+
+                #Histogrammes
+                clearLayout(self.vboxhistos)
+                self.histos(self.dfallparams)
+
+                self.MCMCiscomputed = True
+
+
+    def setDataPlots(self):
+
         #La pression :
         self.graphpress = MplCanvas(self.dfpress, "pressure")
         self.toolbarPress = NavigationToolbar(self.graphpress, self)
@@ -187,6 +245,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.groupBoxPress.setLayout(vbox)
         vbox.addWidget(self.graphpress)
         vbox.addWidget(self.toolbarPress)
+
         #Les températures :
         self.graphtemp = MplCanvas(self.dftemp, "temperature")
         self.toolbarTemp = NavigationToolbar(self.graphtemp, self)
@@ -194,56 +253,155 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.groupBoxTemp.setLayout(vbox2)
         vbox2.addWidget(self.graphtemp)
         vbox2.addWidget(self.toolbarTemp)
-        
-        #Les résultats
-        self.modeldirectiscomputed = len(os.listdir(self.directmodelDir) ) > 1
-        self.MCMCiscomputed = len(os.listdir(self.MCMCDir)) > 1
+    
+
+    def setResultsPlots(self):
+
+        ## Création des layouts
 
         #Le flux d'eau:
-        self.vboxwatersimple = QtWidgets.QVBoxLayout()
-        self.groupBoxWaterSimple.setLayout(self.vboxwatersimple)
+        self.vboxwaterdirect = QtWidgets.QVBoxLayout()
+        self.groupBoxWaterDirect.setLayout(self.vboxwaterdirect)
         self.vboxwaterMCMC = QtWidgets.QVBoxLayout()
         self.groupBoxWaterMCMC.setLayout(self.vboxwaterMCMC)
-        self.waterdir = self.directmodelDir + "/solved_flows.csv"
+
         #La frise de température
-        self.vboxfrisetemp = QtWidgets.QVBoxLayout()
-        self.groupBoxFriseTemp.setLayout(self.vboxfrisetemp)
-        self.solvedtempdir = self.directmodelDir + "/solved_temperatures.csv"
-        #Les quantiles de température
-        self.vboxTempMCMC = QtWidgets.QVBoxLayout()
-        self.groupBoxTempMCMC.setLayout(self.vboxTempMCMC)
-        self.tempmcmcdir = self.MCMCDir + "/MCMC_temps_quantile.csv"
+        self.vboxfrisetempdirect = QtWidgets.QVBoxLayout()
+        self.groupBoxFriseTempDirect.setLayout(self.vboxfrisetempdirect)
+        self.vboxfrisetempMCMC = QtWidgets.QVBoxLayout()
+        self.groupBoxFriseTempMCMC.setLayout(self.vboxfrisetempMCMC)
+        
+        # Le reste directement dans le fichier .ui (permet de voir les 2 méthodes)
 
+        if self.directmodeliscomputed:
 
-        if self.modeldirectiscomputed:
-            #Le flux d'eau:
-            dfwater = pd.read_csv(self.waterdir)
-            self.graphwater = MplCanvas(dfwater, "water flow")
-            self.toolbarwater = NavigationToolbar(self.graphwater, self)
-            self.vboxwatersimple.addWidget(self.graphwater)
-            self.vboxwatersimple.addWidget(self.toolbarwater)
+            self.setDataFrames('DirectModel')
+            
+            #Le flux d'eau
+            self.plotWaterFlowsDirect(self.dfwater)
+
+            #Les flux d'énergie
+            self.plotFriseHeatFluxesDirect(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
 
             #La frise de température
-            dfsolvedtemp = pd.read_csv(self.solvedtempdir)
-            depths = pd.read_csv(self.directdepthsdir)
-            self.graphsolvedtemp = MplCanvas(dfsolvedtemp, "frise", depths)
-            self.toolbarsolvedtemp = NavigationToolbar(self.graphsolvedtemp, self)
-            self.vboxfrisetemp.addWidget(self.graphsolvedtemp)
-            self.vboxfrisetemp.addWidget(self.toolbarsolvedtemp)
+            self.plotFriseTempDirect(self.dfsolvedtemp, self.dfdepths)
+
+            #La température à l'interface
+            self.plotInterfaceTempDirect(self.dfintertemp)
 
             #Le reste à rajouter plus tard
 
         else:
-            self.nomodellabel = QtWidgets.QLabel("Direct Model has not been computed yet")
-            self.vboxwatersimple.addWidget(self.nomodellabel)
-            self.vboxfrisetemp.addWidget(self.nomodellabel)
+            self.vboxwaterdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
+            self.vboxfrisetempdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
+            self.vboxintertempdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
 
         if self.MCMCiscomputed:
-            pass
+
+            self.setDataFrames('MCMC')
+
+            #Le flux d'eau
+            self.plotWaterFlowsMCMC(self.dfwater)
+
+            #Les flux d'énergie
+            self.plotFriseHeatFluxesMCMC(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
+
+            #La frise de température
+            self.plotFriseTempMCMC(self.dfsolvedtemp, self.dfdepths)
+
+            #La température à l'interface
+            self.plotInterfaceTempMCMC(self.dfintertemp)
+
+            #Les histogrammes
+            self.histos(self.dfallparams)
+
         else:
-            self.noMCMClabel = QtWidgets.QLabel("MCMC has not been computed yet")
-            self.vboxwaterMCMC.addWidget(self.noMCMClabel)
-            
+            self.vboxwaterMCMC.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
+            self.vboxfluxesMCMC.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
+            self.vboxfrisetempMCMC.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
+            self.vboxintertempMCMC.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
+            self.vboxhistos.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
+    
+        
+
+    def setDataFrames(self, mode:str):
+
+        if mode == 'DirectModel':
+            self.dfwater = pd.read_csv(self.directmodelDir + "/solved_flows.csv")
+            self.dfdepths = pd.read_csv(self.directdepthsdir)
+            self.dfsolvedtemp = pd.read_csv(self.directmodelDir + "/solved_temperatures.csv")
+            self.dfintertemp = self.dfsolvedtemp[self.dfsolvedtemp.columns[0:2]]
+            self.dfadvec = pd.read_csv(self.directmodelDir + "/advective_flux.csv")
+            self.dfconduc = pd.read_csv(self.directmodelDir + "/conductive_flux.csv")
+            self.dftot = pd.read_csv(self.directmodelDir + "/total_flux.csv")
+
+        elif mode == 'MCMC':
+            self.dfwater = pd.read_csv(self.MCMCDir + "/solved_flows.csv")
+            self.dfsolvedtemp = pd.read_csv(self.MCMCDir + "/solved_temperatures.csv")
+            self.dfdepths = pd.read_csv(self.MCMCdepthsdir)
+            self.dfintertemp = pd.read_csv(self.MCMCDir + "/MCMC_temps_quantiles.csv")
+            self.dfallparams = pd.read_csv(self.MCMCDir + "/MCMC_all_params.csv")
+            self.dfadvec = pd.read_csv(self.MCMCDir + "/advective_flux.csv")
+            self.dfconduc = pd.read_csv(self.MCMCDir + "/conductive_flux.csv")
+            self.dftot = pd.read_csv(self.MCMCDir + "/total_flux.csv")
+
+
+
+    def plotWaterFlowsDirect(self, dfwater):
+        self.graphwaterdirect = MplCanvas(dfwater, "water flow")
+        self.toolbarwaterdirect = NavigationToolbar(self.graphwaterdirect, self)
+        self.vboxwaterdirect.addWidget(self.graphwaterdirect)
+        self.vboxwaterdirect.addWidget(self.toolbarwaterdirect)
+    
+    def plotWaterFlowsMCMC(self, dfwater):
+        self.graphwaterMCMC = MplCanvas(dfwater, "water flow")
+        self.toolbarwaterMCMC = NavigationToolbar(self.graphwaterMCMC, self)
+        self.vboxwaterMCMC.addWidget(self.graphwaterMCMC)
+        self.vboxwaterMCMC.addWidget(self.toolbarwaterMCMC)
+    
+    def plotFriseHeatFluxesDirect(self, dfadvec, dfconduc, dftot, dfdepths):
+        self.graphfluxesdirect = MplCanvaHeatFluxes(dfadvec, dfconduc, dftot, dfdepths)
+        self.toolbarfluxesdirect = NavigationToolbar(self.graphfluxesdirect, self)
+        self.vboxfluxesdirect.addWidget(self.graphfluxesdirect)
+        self.vboxfluxesdirect.addWidget(self.toolbarfluxesdirect)       
+
+    def plotFriseHeatFluxesMCMC(self, dfadvec, dfconduc, dftot, dfdepths):
+        self.graphfluxesMCMC = MplCanvaHeatFluxes(dfadvec, dfconduc, dftot, dfdepths)
+        self.toolbarfluxesMCMC = NavigationToolbar(self.graphfluxesMCMC, self)
+        self.vboxfluxesMCMC.addWidget(self.graphfluxesMCMC)
+        self.vboxfluxesMCMC.addWidget(self.toolbarfluxesMCMC)      
+    
+    def plotFriseTempDirect(self, dfsolvedtemp, dfdepths):
+        self.graphsolvedtempdirect = MplCanvas(dfsolvedtemp, "frise", dfdepths)
+        self.toolbarsolvedtempdirect = NavigationToolbar(self.graphsolvedtempdirect, self)
+        self.vboxfrisetempdirect.addWidget(self.graphsolvedtempdirect)
+        self.vboxfrisetempdirect.addWidget(self.toolbarsolvedtempdirect)
+
+    def plotFriseTempMCMC(self, dfsolvedtemp, dfdepths):
+        self.graphsolvedtempMCMC = MplCanvas(dfsolvedtemp, "frise", dfdepths)
+        self.toolbarsolvedtempMCMC = NavigationToolbar(self.graphsolvedtempMCMC, self)
+        self.vboxfrisetempMCMC.addWidget(self.graphsolvedtempMCMC)
+        self.vboxfrisetempMCMC.addWidget(self.toolbarsolvedtempMCMC)
+    
+    def plotInterfaceTempDirect(self, dfintertemp):
+        self.graphintertempdirect = MplCanvas(dfintertemp, "temperature interface")
+        self.toolbarintertempdirect = NavigationToolbar(self.graphintertempdirect, self)
+        self.vboxintertempdirect.addWidget(self.graphintertempdirect)
+        self.vboxintertempdirect.addWidget(self.toolbarintertempdirect)
+    
+    def plotInterfaceTempMCMC(self, dfintertemp):
+        self.graphintertempMCMC = MplCanvas(dfintertemp, "temperature with quantiles")
+        self.toolbarintertempMCMC = NavigationToolbar(self.graphintertempdirect, self)
+        self.vboxintertempMCMC.addWidget(self.graphintertempMCMC)
+        self.vboxintertempMCMC.addWidget(self.toolbarintertempMCMC)
+    
+    def histos(self, dfallparams):
+        self.histos = MplCanvasHisto(dfallparams)
+        self.toolbarhistos = NavigationToolbar(self.histos, self)
+        self.vboxhistos.addWidget(self.histos)
+        self.vboxhistos.addWidget(self.toolbarhistos)
+
+
 
 
 """ 

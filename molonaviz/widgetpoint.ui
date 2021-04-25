@@ -93,7 +93,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>6</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tabInfos">
       <attribute name="title">
@@ -280,7 +280,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_9">
            <item>
-            <widget class="QGroupBox" name="groupBoxWaterSimple">
+            <widget class="QGroupBox" name="groupBoxWaterDirect">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
@@ -288,7 +288,7 @@
               </sizepolicy>
              </property>
              <property name="title">
-              <string>Water Flow computed with given parameters</string>
+              <string>Water Flows computed with given parameters</string>
              </property>
             </widget>
            </item>
@@ -301,59 +301,7 @@
               </sizepolicy>
              </property>
              <property name="title">
-              <string>Water Flow computed with MCMC</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tabSolvedTemp">
-      <attribute name="title">
-       <string>Solved Temperatures</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_6">
-       <item>
-        <widget class="QScrollArea" name="scrollArea_3">
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_4">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>1368</width>
-            <height>649</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_10">
-           <item>
-            <widget class="QGroupBox" name="groupBoxFriseTemp">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="title">
-              <string>Solved Temperature</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBoxTempMCMC">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="title">
-              <string>GroupBox</string>
+              <string>Water Flows computed with MCMC</string>
              </property>
             </widget>
            </item>
@@ -384,7 +332,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_11">
            <item>
-            <widget class="QGroupBox" name="groupBoxAdvective">
+            <widget class="QGroupBox" name="groupBoxFluxesDirect">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
@@ -392,12 +340,120 @@
               </sizepolicy>
              </property>
              <property name="title">
-              <string>Advective flux</string>
+              <string>Solved heat fluxes computed with given parameters</string>
+             </property>
+             <layout class="QVBoxLayout" name="vboxfluxesdirect"/>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxFluxesMCMC">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="title">
+              <string>Solved heat fluxes computed with MCMC</string>
+             </property>
+             <layout class="QVBoxLayout" name="vboxfluxesMCMC"/>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabSolvedInterfaceTemp">
+      <attribute name="title">
+       <string>Solved Interface Temperature</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_16">
+       <item>
+        <widget class="QScrollArea" name="scrollArea_6">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_8">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1368</width>
+            <height>649</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_15">
+           <item>
+            <widget class="QGroupBox" name="groupBoxInterfaceTempDirect">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="title">
+              <string>Interface temperature computed with given parameters</string>
+             </property>
+             <layout class="QVBoxLayout" name="vboxintertempdirect"/>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxInterfaceTempMCMC">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="title">
+              <string>Interface temperature computed with MCMC</string>
+             </property>
+             <layout class="QVBoxLayout" name="vboxintertempMCMC"/>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabSolvedTemp">
+      <attribute name="title">
+       <string>Solved Temperatures</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QScrollArea" name="scrollArea_3">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_4">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1368</width>
+            <height>649</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_10">
+           <item>
+            <widget class="QGroupBox" name="groupBoxFriseTempDirect">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="title">
+              <string>Temperatures computed with given parameters</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBoxConductive">
+            <widget class="QGroupBox" name="groupBoxFriseTempMCMC">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
@@ -405,20 +461,7 @@
               </sizepolicy>
              </property>
              <property name="title">
-              <string>Conductive flux</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBoxTotEnergy">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="title">
-              <string>Total Energy flux</string>
+              <string>Temperatures computed with MCMC</string>
              </property>
             </widget>
            </item>
@@ -447,7 +490,13 @@
             <height>649</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_14"/>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QVBoxLayout" name="vboxhistos"/>
          </widget>
         </widget>
        </item>
