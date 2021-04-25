@@ -118,7 +118,7 @@ class Study(object):
             shaft = Shaft(name=file)
             shaft.loadShaft(csv, sensorModel)  
 
-    def loadThermometers(self, sensorModel):
+    def loadThermometers(self, sensorModel: QtGui.QStandardItemModel):
         sdir = os.path.join(self.sensorDir, "Thermometers")
         files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
         files.sort()
@@ -128,7 +128,7 @@ class Study(object):
             thermometer = Thermometer(name=file)
             thermometer.loadThermometer(csv, sensorModel)  
 
-    def loadPoints(self, pointModel):
+    def loadPoints(self, pointModel: QtGui.QStandardItemModel):
         rdir = self.rootDir
         dirs = [ name for name in os.listdir(rdir) if os.path.isdir(os.path.join(rdir, name)) ] #no file
         dirs = list(filter(('.DS_Store').__ne__, dirs)) 
