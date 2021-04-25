@@ -1,23 +1,32 @@
-from pyheatmy import *
-from point import Point
 import os, shutil
 import numpy as np
 import pandas as pd
 from datetime import datetime
 
+from pyheatmy import *
+from point import Point
 
 class Compute(object):
+
+    """
+    How to use this class : 
+    - Create a Compute object : compute = Compute(point: Point)
+    - Create an associated Column object : compute.setColumn(sensorDir: str)
+    - Launch the computation :
+        - with given parameters : compute.computeDirectModel(params: tuple, nb_cells: int, sensorDir: str)
+        - with parameters inferred from MCMC : compute.computeMCMC(nb_iter: int, priors: dict, nb_cells: str, sensorDir: str)
+    """
 
 
     def __init__(self, point: Point=None):
         self.point = point
-
+        self.col = None
     
-    def setColumn(self, sensorDir):
+    def setColumn(self, sensorDir: str):
         self.col = self.point.setColumn(sensorDir)
 
         
-    def computeMCMC(self, nb_iter, priors, nb_cells, sensorDir):
+    def computeMCMC(self, nb_iter: int, priors: dict, nb_cells: str, sensorDir: str):
     
         # Initialisation de la colonne
         self.setColumn(sensorDir)
@@ -42,7 +51,7 @@ class Compute(object):
         self.saveTempWithQuantiles(resultsDir)
         
 
-    def computeDirectModel(self, params, nb_cells, sensorDir):
+    def computeDirectModel(self, params: tuple, nb_cells: int, sensorDir: str):
 
         # Initialisation de la colonne
         self.setColumn(sensorDir)

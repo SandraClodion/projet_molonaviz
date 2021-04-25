@@ -1,5 +1,4 @@
-import sys
-import os
+import sys, os, errno
 from PyQt5 import QtWidgets, uic
 
 From_DialogFindStudy = uic.loadUiType(os.path.join(os.path.dirname(__file__),"dialogfindstudy.ui"))[0]
@@ -21,5 +20,7 @@ class DialogFindStudy(QtWidgets.QDialog,From_DialogFindStudy):
             self.lineEditRootDir.setText(dirPath)
     
     def getRootDir(self):
-        RootDir = self.lineEditRootDir.text()
-        return(RootDir)
+        rootDir = self.lineEditRootDir.text()
+        if not os.path.isdir(rootDir):
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), rootDir)
+        return(rootDir)

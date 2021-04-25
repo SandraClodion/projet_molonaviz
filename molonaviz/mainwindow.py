@@ -1,6 +1,7 @@
 import sys, os, shutil
 import pandas as pd
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
+
 from study import Study
 from point import Point
 from subwindow import SubWindow
@@ -32,6 +33,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.currentStudy = None
 
         self.pSensorModel = QtGui.QStandardItemModel()
+        print(type(self.pSensorModel))
         self.treeViewPressureSensors.setModel(self.pSensorModel)
         self.treeViewPressureSensors.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
@@ -74,10 +76,10 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                 displayInfoMessage("New study successfully created")
                 self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
             except EmptyFieldError as e:
-                displayCriticalMessage(f"{str(e)}, please try again")
+                displayCriticalMessage(f"{str(e)} \nPlease try again")
                 self.createStudy()
             except FileNotFoundError as e:
-                displayCriticalMessage(f"{str(e)}, please try again")
+                displayCriticalMessage(f"{str(e)} \nPlease try again")
                 self.createStudy()
 
     def openStudy(self):
@@ -87,13 +89,23 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             if res == QtWidgets.QDialog.Accepted:
                 try :
                     self.currentStudy = Study(rootDir=dlg.getRootDir())
-                except FileNotFoundError :
-                    displayCriticalMessage("No such directory \n Please try again")
-        self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
+                except FileNotFoundError as e:
+                    displayCriticalMessage(f"{str(e)} \nPlease try again")
+                    self.openStudy()
+        try :
+            self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
+        except TextFileError as e:
+            infoMessage = f"You might have selected the wrong root directory \n\nIf not, please see the Help section "
+            displayCriticalMessage(str(e), infoMessage)
+            self.currentStudy = None
+            return None
+                
         self.currentStudy.loadPressureSensors(self.pSensorModel)
         self.currentStudy.loadShafts(self.shaftModel)
         self.currentStudy.loadThermometers(self.thermometersModel)
         self.currentStudy.loadPoints(self.pointModel)
+
+        #le menu point n'est pas actif tant qu'aucune étude n'est ouverte et chargée
         self.menuPoint.setEnabled(True)
         #on n'autorise pas l'ouverture ou la création d'une étude s'il y a déjà une étude ouverte
         self.actionOpen_Study.setEnabled(False) 

@@ -1,16 +1,19 @@
 from sensors import PressureSensor, Shaft, Thermometer
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
-import os, glob, shutil
+import os, glob, shutil, errno
 import pandas as pd
+
 from usefulfonctions import clean_filename, celsiusToKelvin
 from point import Point
+from errors import *
 
 class Study(object):
+    
     '''
-    classdocs
+    classdocs : to be written
     '''
 
-    def __init__(self, name="", rootDir="", sensorDir=""):
+    def __init__(self, name: str="", rootDir: str="", sensorDir: str=""):
         self.name = name
         self.rootDir = rootDir
         self.sensorDir = sensorDir
@@ -20,48 +23,6 @@ class Study(object):
     
     def getSensorDir(self):
         return self.sensorDir
-    
-    def loadPressureSensors(self, sensorModel):
-        sdir = os.path.join(self.sensorDir, "Pressure")
-        files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
-        files.sort()
-        #permet de ne pas prendre en compte les fichier '.DS_Store' 
-        for file in files:
-            csv = os.path.join(sdir, file)  
-            psensor = PressureSensor(name=file)
-            psensor.loadPressureSensor(csv, sensorModel)
-        
-    def loadShafts(self, sensorModel):
-        sdir = os.path.join(self.sensorDir, "Shafts")
-        files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
-        files.sort()
-        #permet de ne pas prendre en compte les fichier '.DS_Store' 
-        for file in files:
-            csv = os.path.join(sdir, file)  
-            shaft = Shaft(name=file)
-            shaft.loadShaft(csv, sensorModel)  
-
-    def loadThermometers(self, sensorModel):
-        sdir = os.path.join(self.sensorDir, "Thermometers")
-        files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
-        files.sort()
-        #permet de ne pas prendre en compte les fichier '.DS_Store' 
-        for file in files:
-            csv = os.path.join(sdir, file)  
-            thermometer = Thermometer(name=file)
-            thermometer.loadThermometer(csv, sensorModel)  
-
-    def loadPoints(self, pointModel):
-        rdir = self.rootDir
-        dirs = [ name for name in os.listdir(rdir) if os.path.isdir(os.path.join(rdir, name)) ] #no file
-        dirs = list(filter(('.DS_Store').__ne__, dirs)) 
-        #permet de ne pas prendre en compte les fichier '.DS_Store' 
-        for mydir in dirs:
-            pointDir = os.path.join(self.rootDir, mydir)
-            name = os.path.basename(pointDir)
-            point = Point(name, pointDir)
-            point.loadPointFromDir()
-            point.loadPoint(pointModel)
 
     def saveStudyToText(self):
         pathStudyText = os.path.join(self.rootDir, f"{clean_filename(self.name)}.txt")
@@ -76,18 +37,23 @@ class Study(object):
         SensorsDir: Chemin d'accès du dossier capteurs
         """
         os.chdir(self.rootDir)
-        textFile = glob.glob("*.txt")[0]
-        with open(textFile, 'r') as studyText:
-            lines = studyText.read().splitlines() 
-            nameLine = lines[0]
-            sensorDirLine = lines[1]
-            name = nameLine.split(' ', 1)[1]
-            sensorDir = sensorDirLine.split(' ', 1)[1]
-        self.name = name
-        self.sensorDir = sensorDir
+        textFiles = glob.glob("*.txt")
+        filesNumber = len(textFiles)
+        if  filesNumber != 1:
+            raise TextFileError(filesNumber)
+        else : 
+            with open(textFile, 'r') as studyText:
+                lines = studyText.read().splitlines() 
+                nameLine = lines[0]
+                sensorDirLine = lines[1]
+                name = nameLine.split(' ', 1)[1]
+                sensorDir = sensorDirLine.split(' ', 1)[1]
+            self.name = name
+            self.sensorDir = sensorDir
+            if not os.path.isdir(sensorsdir):
+                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), sensorsdir)
     
-
-    def addPoint(self, name, infofile, prawfile, trawfile, noticefile, configfile, pSensorModel):
+    def addPoint(self, name: str, infofile: str, prawfile: str, trawfile: str, noticefile: str, configfile: str):
 
         """
         Crée, remplit le répertoire du point et retourne l'objet point
@@ -128,7 +94,51 @@ class Study(object):
         os.mkdir(resultsDirDirectModel)
 
         return point
+    
+    
+    # Fonctions utiles seulement dans le cadre de l'utilisation de l'interface graphique : 
 
+    def loadPressureSensors(self, sensorModel: QtGui.QStandardItemModel):
+        sdir = os.path.join(self.sensorDir, "Pressure")
+        files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
+        files.sort()
+        #permet de ne pas prendre en compte les fichier '.DS_Store' 
+        for file in files:
+            csv = os.path.join(sdir, file)  
+            psensor = PressureSensor(name=file)
+            psensor.loadPressureSensor(csv, sensorModel)
+        
+    def loadShafts(self, sensorModel: QtGui.QStandardItemModel):
+        sdir = os.path.join(self.sensorDir, "Shafts")
+        files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
+        files.sort()
+        #permet de ne pas prendre en compte les fichier '.DS_Store' 
+        for file in files:
+            csv = os.path.join(sdir, file)  
+            shaft = Shaft(name=file)
+            shaft.loadShaft(csv, sensorModel)  
+
+    def loadThermometers(self, sensorModel):
+        sdir = os.path.join(self.sensorDir, "Thermometers")
+        files = list(filter(('.DS_Store').__ne__, os.listdir(sdir))) 
+        files.sort()
+        #permet de ne pas prendre en compte les fichier '.DS_Store' 
+        for file in files:
+            csv = os.path.join(sdir, file)  
+            thermometer = Thermometer(name=file)
+            thermometer.loadThermometer(csv, sensorModel)  
+
+    def loadPoints(self, pointModel):
+        rdir = self.rootDir
+        dirs = [ name for name in os.listdir(rdir) if os.path.isdir(os.path.join(rdir, name)) ] #no file
+        dirs = list(filter(('.DS_Store').__ne__, dirs)) 
+        #permet de ne pas prendre en compte les fichier '.DS_Store' 
+        for mydir in dirs:
+            pointDir = os.path.join(self.rootDir, mydir)
+            name = os.path.basename(pointDir)
+            point = Point(name, pointDir)
+            point.loadPointFromDir()
+            point.loadPoint(pointModel)
 
 
         

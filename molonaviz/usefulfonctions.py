@@ -5,10 +5,11 @@ from PyQt5 import QtWidgets
 from datetime import datetime
 import pyqtgraph as pg
 
-valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
-char_limit = 255
 
-def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
+def clean_filename(filename: str, char_limit: int= 255, replace=' '):
+
+    valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+
     # replace spaces
     for r in replace:
         filename = filename.replace(r,'_')
@@ -17,14 +18,18 @@ def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
     cleaned_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode()
     
     # keep only whitelisted chars
-    cleaned_filename = ''.join(c for c in cleaned_filename if c in whitelist)
+    cleaned_filename = ''.join(c for c in cleaned_filename if c in valid_filename_chars)
     if len(cleaned_filename)>char_limit:
         print("Warning, filename truncated because it was over {}. Filenames may no longer be unique".format(char_limit))
     
     return cleaned_filename[:char_limit] 
 
 
-def celsiusToKelvin(df):
+def celsiusToKelvin(df: pd.DataFrame):
+
+    """
+    Inplace
+    """
     
     columnsNames = list(df.head(0))
 
@@ -32,8 +37,13 @@ def celsiusToKelvin(df):
     for temp in temps:
         df[temp] = df[temp]+273.15
     
+
+def convertDates(df: pd.DataFrame):
+
+    """
+    Inplace
+    """
     
-def convertDates(df):
     columnsNames = list(df.head(0))
     times = columnsNames[0]
     try : #On vérifie que le format des dates est le bon
@@ -42,35 +52,39 @@ def convertDates(df):
         df[times] = pd.to_datetime(df[times]).apply(lambda x:x.strftime('%y/%m/%d %H:%M:%S'))
 
 
-def displayInfoMessage(message):
+def displayInfoMessage(mainMessage: str, infoMessage: str=''):
     msg = QtWidgets.QMessageBox()
     msg.setIcon(QtWidgets.QMessageBox.Information)
-    msg.setText(message)
+    msg.setText(mainMessage)
+    msg.setInformativeText(infoMessage)
     msg.exec_() 
 
-def displayInfoMessage(message):
+def displayInfoMessage(mainMessage: str, infoMessage: str=''):
     msg = QtWidgets.QMessageBox()
     msg.setIcon(QtWidgets.QMessageBox.Information)
-    msg.setText(message)
+    msg.setText(mainMessage)
+    msg.setInformativeText(infoMessage)
     msg.exec_() 
 
-def displayWarningMessage(message):
+def displayWarningMessage(mainMessage: str, infoMessage: str=''):
     msg = QtWidgets.QMessageBox()
     msg.setIcon(QtWidgets.QMessageBox.Warning)
-    msg.setText(message)
+    msg.setText(mainMessage)
+    msg.setInformativeText(infoMessage)
     msg.exec_() 
 
-def displayConfirmationMessage(title, message):
+def displayConfirmationMessage(mainMessage: str, infoMessage: str=''):
     msg = QtWidgets.QMessageBox()
-    msg.setText(title)
-    msg.setIcon(QtWidgets.QMessageBox.Warning)  
-    msg.setInformativeText(message)
+    msg.setIcon(QtWidgets.QMessageBox.Warning)
+    msg.setText(mainMessage)
+    msg.setInformativeText(infoMessage)
     msg.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
     msg.setDefaultButton(QtWidgets.QMessageBox.Cancel)
     return msg.exec_()
 
-def displayCriticalMessage(message):
+def displayCriticalMessage(mainMessage: str, infoMessage: str=''):
     msg = QtWidgets.QMessageBox()
     msg.setIcon(QtWidgets.QMessageBox.Critical)
-    msg.setText(message)
+    msg.setText(mainMessage)
+    msg.setInformativeText(infoMessage)
     msg.exec_() 
