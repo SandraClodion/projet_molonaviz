@@ -93,7 +93,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabInfos">
       <attribute name="title">
@@ -118,6 +118,15 @@
            </item>
            <item>
             <widget class="QGroupBox" name="groupBox_3">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="title">
               <string>Infos</string>
              </property>
@@ -450,6 +459,14 @@
              <property name="title">
               <string>Temperatures computed with given parameters</string>
              </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <layout class="QVBoxLayout" name="vboxfrisetempdirect"/>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="vboxsolvedtempdirect"/>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
@@ -463,6 +480,14 @@
              <property name="title">
               <string>Temperatures computed with MCMC</string>
              </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <layout class="QVBoxLayout" name="vboxfrisetempMCMC"/>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="vboxsolvedtempMCMC"/>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
