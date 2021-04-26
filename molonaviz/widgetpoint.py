@@ -143,7 +143,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             if res == QtWidgets.QDialog.Accepted:
                 script = dlg.getScript()
                 self.dftemp, self.dfpress = self.point.cleanup(script, self.dftemp, self.dfpress)
-                displayInfoMessage("Data successfully cleaned !")
+                displayInfoMessage("Data successfully cleaned ! Please wait a moment...")
                 
                 #On actualise les modèles
                 self.currentTemperatureModel.setData(self.dftemp)
@@ -152,6 +152,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.tableViewPress.resizeColumnsToContents()
                 self.graphpress.update_(self.dfpress)
                 self.graphtemp.update_(self.dftemp)
+                displayInfoMessage("Plots successfully updated")
     
 
     def compute(self):
@@ -174,6 +175,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.graphsolvedtempdirect.update_(self.dfsolvedtemp, self.dfdepths)
                 self.graphintertempdirect.update_(self.dfintertemp)
                 self.graphfluxesdirect.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
+                displayInfoMessage("Model successfully updated !")
 
             else :
 
@@ -190,10 +192,11 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.plotFriseTempDirect(self.dfsolvedtemp, self.dfdepths)
 
                 #Température à l'interface
-                clearLayout(vboxintertempdirect)
+                clearLayout(self.vboxintertempdirect)
                 self.plotInterfaceTempDirect(self.dfintertemp)
 
                 self.directmodeliscomputed = True
+                displayInfoMessage("Model successfully created !")
 
     
         if res == 1 : #MCMC
@@ -210,6 +213,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.graphintertempMCMC.update_(self.dfintertemp)
                 self.graphfluxesMCMC.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
                 self.histos.update_(self.dfallparams)
+                displayInfoMessage("Model successfully updated !")
 
             else :
 
@@ -234,6 +238,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.histos(self.dfallparams)
 
                 self.MCMCiscomputed = True
+                displayInfoMessage("Model successfully created !")
 
 
     def setDataPlots(self):
@@ -265,11 +270,11 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.vboxwaterMCMC = QtWidgets.QVBoxLayout()
         self.groupBoxWaterMCMC.setLayout(self.vboxwaterMCMC)
 
-        #La frise de température
-        self.vboxfrisetempdirect = QtWidgets.QVBoxLayout()
-        self.groupBoxFriseTempDirect.setLayout(self.vboxfrisetempdirect)
-        self.vboxfrisetempMCMC = QtWidgets.QVBoxLayout()
-        self.groupBoxFriseTempMCMC.setLayout(self.vboxfrisetempMCMC)
+        #La frise de température Fait directement sur QtDesigner
+        #self.vboxfrisetempdirect = QtWidgets.QVBoxLayout()
+        #self.groupBoxFriseTempDirect.setLayout(self.vboxfrisetempdirect)
+        #self.vboxfrisetempMCMC = QtWidgets.QVBoxLayout()
+        #self.groupBoxFriseTempMCMC.setLayout(self.vboxfrisetempMCMC)
         
         # Le reste directement dans le fichier .ui (permet de voir les 2 méthodes)
 

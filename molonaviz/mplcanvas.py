@@ -79,14 +79,17 @@ class MplCanvas(FigureCanvasQTAgg):
         plt.colorbar(image, ax=self.axes)
 
     def update_(self, new_pdf, depths=None):
-        self.axes.cla()
+        self.axes.clear()
         self.pdf = new_pdf
         self.depths = depths
         self.setTime()
         if self.datatype == "pressure" or self.datatype == "temperature" or self.datatype == "water flow":
+            #print("hello curve")
             self.setCurves()
         elif self.datatype == "frise":
+            #print("hello frise")
             self.setFrises()
+        self.draw()
 
 
 class MplCanvasHisto(FigureCanvasQTAgg):
@@ -111,7 +114,10 @@ class MplCanvasHisto(FigureCanvasQTAgg):
     
     def update_(self, new_df):
         self.df = new_df
+        for ax in self.ax :
+            ax.clear()
         self.setHistos()
+        self.draw()
 
 
 
