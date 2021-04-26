@@ -293,6 +293,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
         else:
             self.vboxwaterdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
+            self.vboxfluxesdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
             self.vboxfrisetempdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
             self.vboxintertempdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
 
