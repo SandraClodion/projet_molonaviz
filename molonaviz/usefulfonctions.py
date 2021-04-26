@@ -3,7 +3,6 @@ import string
 import pandas as pd
 from PyQt5 import QtWidgets
 from datetime import datetime
-import pyqtgraph as pg
 
 
 def clean_filename(filename: str, char_limit: int= 255, replace=' '):
@@ -51,7 +50,7 @@ def convertDates(df: pd.DataFrame):
     except ValueError : #Si ce n'est pas le cas on convertit les dates
         df[times] = pd.to_datetime(df[times]).apply(lambda x:x.strftime('%y/%m/%d %H:%M:%S'))
 
-        
+
 def clearLayout(layout):
     while layout.count():
         child = layout.takeAt(0)
