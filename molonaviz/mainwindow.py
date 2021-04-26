@@ -1,6 +1,7 @@
 import sys, os, shutil
 import pandas as pd
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
+from queue import Queue
 
 from study import Study
 from point import Point
@@ -10,6 +11,7 @@ from dialogfindstudy import DialogFindStudy
 from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
 from dialogremovepoint import DialogRemovePoint
+from queuethread import *
 from usefulfonctions import *
 from errors import *
 
@@ -24,6 +26,11 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         QtWidgets.QMainWindow.__init__(self)
         
         self.setupUi(self)
+        
+        # Create Queue and redirect sys.stdout to this queue
+        self.queue = Queue()
+        sys.stdout = WriteStream(self.queue)
+        print("MolonaViz - 0.0.1beta - 2021-04-26")
 
         self.mdi = QtWidgets.QMdiArea()
         self.setCentralWidget(self.mdi)
@@ -33,7 +40,6 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.currentStudy = None
 
         self.pSensorModel = QtGui.QStandardItemModel()
-        print(type(self.pSensorModel))
         self.treeViewPressureSensors.setModel(self.pSensorModel)
         self.treeViewPressureSensors.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
@@ -52,8 +58,10 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.menubar.setNativeMenuBar(False) #Permet d'afficher la barre de menu dans la fenêtre
         self.setWindowFlags(QtCore.Qt.WindowTitleHint)
 
+        self.actionQuit_MolonaViz.triggered.connect(self.exitApp)
         self.actionOpen_Study.triggered.connect(self.openStudy)
         self.actionCreate_Study.triggered.connect(self.createStudy)
+        self.actionClose_Study.triggered.connect(self.closeStudy)
         self.actionImport_Point.triggered.connect(self.importPoint)
         self.actionOpen_Point.triggered.connect(self.openPoint)
         self.actionRemove_Point.triggered.connect(self.removePoint)
@@ -61,11 +69,24 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.actionSwitch_To_SubWindow_View.triggered.connect(self.switchToSubWindowView)
         self.treeViewDataPoints.doubleClicked.connect(self.openPointfromTree)
 
+        self.pushButtonClear.clicked.connect(self.clearText)
+
         #On adapte la taille de la fenêtre principale à l'écran
         screenSize = QtWidgets.QDesktopWidget().screenGeometry(-1)
         self.setGeometry(screenSize)
         self.setMaximumWidth(self.geometry().width())
         self.setMaximumHeight(self.geometry().height())
+    
+    def appendText(self,text):
+        self.textEditApplicationMessages.moveCursor(QtGui.QTextCursor.End)
+        self.textEditApplicationMessages.insertPlainText(text)
+    
+    def clearText(self):
+        self.textEditApplicationMessages.clear()
+        print("MolonaViz - 0.0.1beta - 2021-04-26")
+    
+    def exitApp(self):
+        QtWidgets.QApplication.quit()
 
     def createStudy(self):
         dlg = DialogStudy()
@@ -74,7 +95,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             try :
                 self.currentStudy = dlg.setStudy()
                 self.currentStudy.saveStudyToText()
-                displayInfoMessage("New study successfully created")
+                print("New study successfully created")
                 self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
             except EmptyFieldError as e:
                 displayCriticalMessage(f"{str(e)} \nPlease try again")
@@ -93,9 +114,11 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                 except FileNotFoundError as e:
                     displayCriticalMessage(f"{str(e)} \nPlease try again")
                     self.openStudy()
+            else :
+                return None
         try :
             self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
-            self.setWindowTitle(f'Molonaviz – {self.currentStudy.getName()}')
+            self.setWindowTitle(f'MolonaViz – {self.currentStudy.getName()}')
         except TextFileError as e:
             infoMessage = f"You might have selected the wrong root directory \n\nIf not, please see the Help section "
             displayCriticalMessage(str(e), infoMessage)
@@ -109,9 +132,34 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
 
         #le menu point n'est pas actif tant qu'aucune étude n'est ouverte et chargée
         self.menuPoint.setEnabled(True)
+        self.actionClose_Study.setEnabled(True)
+
         #on n'autorise pas l'ouverture ou la création d'une étude s'il y a déjà une étude ouverte
         self.actionOpen_Study.setEnabled(False) 
         self.actionCreate_Study.setEnabled(False)
+    
+    def closeStudy(self):
+
+        #On ferme tous les points ouverts
+        openedSubWindows = self.mdi.subWindowList()
+        for subWin in openedSubWindows:
+            subWin.close()
+
+        #On remet les modèles à zéro
+        self.pSensorModel.clear()
+        self.shaftModel.clear()
+        self.thermometersModel.clear()
+        self.pointModel.clear()
+
+        self.setWindowTitle("MolonaViz")
+
+        self.menuPoint.setEnabled(False)
+        self.actionClose_Study.setEnabled(False)
+        self.actionOpen_Study.setEnabled(True) 
+        self.actionCreate_Study.setEnabled(True)
+
+        self.currentStudy = None
+
 
     def importPoint(self):
 
@@ -202,4 +250,13 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()
+
+    # Create thread that will listen on the other end of the queue, and send the text to the textedit in our application
+    thread = QtCore.QThread()
+    my_receiver = MyReceiver(mainWin.queue)
+    my_receiver.mysignal.connect(mainWin.appendText)
+    my_receiver.moveToThread(thread)
+    thread.started.connect(my_receiver.run)
+    thread.start()
+
     sys.exit(app.exec_())
