@@ -50,6 +50,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.treeViewDataPoints.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
         self.menubar.setNativeMenuBar(False) #Permet d'afficher la barre de menu dans la fenêtre
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint)
 
         self.actionOpen_Study.triggered.connect(self.openStudy)
         self.actionCreate_Study.triggered.connect(self.createStudy)

@@ -166,7 +166,7 @@ class MplCanvaHeatFluxes(FigureCanvasQTAgg):
     
     def update_(self, df_advec, df_conduc, df_tot, df_depths):
         for i in range(3):
-            self.ax[i].cla()
+            self.ax[i].clear()
         self.df_advec = df_advec
         self.df_conduc = df_conduc
         self.df_tot = df_tot
