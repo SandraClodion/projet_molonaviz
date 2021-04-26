@@ -217,6 +217,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.graphintertempMCMC.update_(self.dfintertemp)
                 self.graphfluxesMCMC.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
                 self.histos.update_(self.dfallparams)
+                self.parapluiesMCMC.update_(self.dfsolvedtemp, self.dfdepths)
                 displayInfoMessage("Model successfully updated !")
 
             else :
@@ -232,7 +233,9 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 #Frise de température
                 clearLayout(self.vboxfrisetempMCMC)
                 self.plotFriseTempMCMC(self.dfsolvedtemp, self.dfdepths)
-
+                #Parapluies
+                clearLayout(self.vboxsolvedtempMCMC)
+                self.plotParapluiesMCMC(self.fsolvedtemp, self.dfdepths)
                 #Température à l'interface
                 clearLayout(self.vboxintertempMCMC)
                 self.plotInterfaceTempMCMC(self.dfintertemp)
@@ -315,6 +318,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
             #La frise de température
             self.plotFriseTempMCMC(self.dfsolvedtemp, self.dfdepths)
+            #Les parapluies
+            self.plotParapluiesMCMC(self.dfsolvedtemp, self.dfdepths)
 
             #La température à l'interface
             self.plotInterfaceTempMCMC(self.dfintertemp)
@@ -328,6 +333,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.vboxfrisetempMCMC.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
             self.vboxintertempMCMC.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
             self.vboxhistos.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
+            self.vboxsolvedtempMCMC.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
     
         
 
@@ -413,6 +419,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.toolbarparapluies = NavigationToolbar(self.parapluies, self)
         self.vboxsolvedtempdirect.addWidget(self.parapluies)
         self.vboxsolvedtempdirect.addWidget(self.toolbarparapluies)
+    
+    def plotParapluiesMCMC(self, dfsolvedtemp, dfdepths):
+        self.parapluiesMCMC = MplCanvas(dfsolvedtemp, "parapluies", dfdepths)
+        self.toolbarparapluiesMCMC = NavigationToolbar(self.parapluiesMCMC, self)
+        self.vboxsolvedtempMCMC.addWidget(self.parapluiesMCMC)
+        self.vboxsolvedtempMCMC.addWidget(self.toolbarparapluiesMCMC )
 
 
 
