@@ -392,7 +392,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     
     def plotInterfaceTempMCMC(self, dfintertemp):
         self.graphintertempMCMC = MplCanvas(dfintertemp, "temperature with quantiles")
-        self.toolbarintertempMCMC = NavigationToolbar(self.graphintertempdirect, self)
+        self.toolbarintertempMCMC = NavigationToolbar(self.graphintertempMCMC, self)
         self.vboxintertempMCMC.addWidget(self.graphintertempMCMC)
         self.vboxintertempMCMC.addWidget(self.toolbarintertempMCMC)
     
