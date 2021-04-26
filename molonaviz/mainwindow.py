@@ -95,6 +95,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                     self.openStudy()
         try :
             self.currentStudy.loadStudyFromText() #charge le nom de l'étude et son sensorDir
+            self.setWindowTitle(f'Molonaviz – {self.currentStudy.getName()}')
         except TextFileError as e:
             infoMessage = f"You might have selected the wrong root directory \n\nIf not, please see the Help section "
             displayCriticalMessage(str(e), infoMessage)
