@@ -76,7 +76,9 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
                     self.lineEditInfo.setText(filePath) 
 
                     df = pd.read_csv(filePath, sep=';', header=None, index_col=0)
-                    self.lineEditName.setText(df.iloc[0].at[1])
+                    if not self.lineEditName.text(): 
+                    #on n'importe pas le nom si un autre nom a été choisi par l'utilisateur
+                        self.lineEditName.setText(df.iloc[0].at[1])
                     self.lineEditPressureSensor.setText(df.iloc[1].at[1])
                     self.lineEditShaft.setText(df.iloc[2].at[1])
                     nPath += 1
@@ -111,7 +113,9 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
         if filePath:
             self.lineEditInfo.setText(filePath) 
             df = pd.read_csv(filePath, sep=';', header=None, index_col=0)
-            self.lineEditName.setText(df.iloc[0].at[1])
+            if not self.lineEditName.text(): 
+            #on n'importe pas le nom si un autre nom a été choisi par l'utilisateur
+                self.lineEditName.setText(df.iloc[0].at[1])
             self.lineEditPressureSensor.setText(df.iloc[1].at[1])
             self.lineEditShaft.setText(df.iloc[2].at[1])
     
