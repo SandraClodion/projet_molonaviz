@@ -57,6 +57,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
 
         self.menubar.setNativeMenuBar(False) #Permet d'afficher la barre de menu dans la fenêtre
         self.setWindowFlags(QtCore.Qt.WindowTitleHint)
+        self.setWindowTitle("MolonaViz")
 
         self.actionQuit_MolonaViz.triggered.connect(self.exitApp)
         self.actionOpen_Study.triggered.connect(self.openStudy)
@@ -229,7 +230,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                     if subWin.getName() == pointName:
                         subWin.close()
                 
-                displayInfoMessage("Point successfully removed")
+                print("Point successfully removed")
             else : 
                 displayInfoMessage("Point removal aborted")
 
@@ -248,6 +249,8 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
+    #app.setStyle('windows')
+    app.setWindowIcon(QtGui.QIcon("fakeMolonavizIcon.png")) #à modifier quand l'icone est prête
     mainWin = MainWindow()
     mainWin.show()
 
