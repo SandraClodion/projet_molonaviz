@@ -175,6 +175,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.graphsolvedtempdirect.update_(self.dfsolvedtemp, self.dfdepths)
                 self.graphintertempdirect.update_(self.dfintertemp)
                 self.graphfluxesdirect.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
+                self.parapluies.update_(self.dfsolvedtemp, self.dfdepths)
                 displayInfoMessage("Model successfully updated !")
 
             else :
@@ -190,6 +191,9 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 #Frise de température
                 clearLayout(self.vboxfrisetempdirect)
                 self.plotFriseTempDirect(self.dfsolvedtemp, self.dfdepths)
+                #Parapluies
+                clearLayout(self.vboxsolvedtempdirect)
+                self.plotParapluies(self.dfsolvedtemp, self.dfdepths)
 
                 #Température à l'interface
                 clearLayout(self.vboxintertempdirect)
@@ -269,12 +273,6 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.groupBoxWaterDirect.setLayout(self.vboxwaterdirect)
         self.vboxwaterMCMC = QtWidgets.QVBoxLayout()
         self.groupBoxWaterMCMC.setLayout(self.vboxwaterMCMC)
-
-        #La frise de température Fait directement sur QtDesigner
-        #self.vboxfrisetempdirect = QtWidgets.QVBoxLayout()
-        #self.groupBoxFriseTempDirect.setLayout(self.vboxfrisetempdirect)
-        #self.vboxfrisetempMCMC = QtWidgets.QVBoxLayout()
-        #self.groupBoxFriseTempMCMC.setLayout(self.vboxfrisetempMCMC)
         
         # Le reste directement dans le fichier .ui (permet de voir les 2 méthodes)
 
@@ -290,6 +288,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
             #La frise de température
             self.plotFriseTempDirect(self.dfsolvedtemp, self.dfdepths)
+            #Les parapluies
+            self.plotParapluies(self.dfsolvedtemp, self.dfdepths)
 
             #La température à l'interface
             self.plotInterfaceTempDirect(self.dfintertemp)
@@ -301,6 +301,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.vboxfluxesdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
             self.vboxfrisetempdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
             self.vboxintertempdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
+            self.vboxsolvedtempdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
 
         if self.MCMCiscomputed:
 
@@ -406,6 +407,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.toolbarhistos = NavigationToolbar(self.histos, self)
         self.vboxhistos.addWidget(self.histos)
         self.vboxhistos.addWidget(self.toolbarhistos)
+
+    def plotParapluies(self, dfsolvedtemp, dfdepths):
+        self.parapluies = MplCanvas(dfsolvedtemp, "parapluies", dfdepths)
+        self.toolbarparapluies = NavigationToolbar(self.parapluies, self)
+        self.vboxsolvedtempdirect.addWidget(self.parapluies)
+        self.vboxsolvedtempdirect.addWidget(self.toolbarparapluies)
 
 
 

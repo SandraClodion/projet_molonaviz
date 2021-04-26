@@ -26,11 +26,15 @@ class MplCanvas(FigureCanvasQTAgg):
         self.pdf = pdf
         self.datatype = datatype
         self.depths = depths
-        self.setTime()
-        if self.datatype == "pressure" or self.datatype == "temperature" or self.datatype == "water flow" or self.datatype == "temperature interface" or self.datatype == "temperature with quantiles":
+        list_Curves = ["pressure", "temperature", "water flow", "temperature interface", "temperature with quantiles"]
+        if self.datatype in list_Curves:
+            self.setTime()
             self.setCurves()
         elif self.datatype == "frise":
+            self.setTime()
             self.setFrises()
+        elif self.datatype == "parapluies":
+            self.setParapluies()
 
     def setTime(self):
         time = self.pdf[self.pdf.columns[0]].values.tolist()
@@ -59,7 +63,7 @@ class MplCanvas(FigureCanvasQTAgg):
                 self.axes.plot(self.x, data, label=f"{self.pdf.columns[i]}")
             self.axes.legend(loc='best')
             self.axes.set_ylabel("Températures (K)")
-        
+
         else : 
             data = self.pdf[self.pdf.columns[1]].values.tolist()
             self.axes.plot(self.x, data)
@@ -78,17 +82,32 @@ class MplCanvas(FigureCanvasQTAgg):
         self.axes.xaxis_date()
         plt.colorbar(image, ax=self.axes)
 
+    def setParapluies(self):
+        #Détermination du pas pour tracer 10 profils
+        profils = self.pdf.to_numpy()
+        n = profils.shape[0]
+        pas = n // 10
+        self.axes.set_xlabel("Température en K")
+        self.axes.set_ylabel("Profondeur en m")
+        for i in range(10):
+            self.axes.plot(profils[i*10, 1:], self.depths, label=profils[i,0])
+            #print(profils[i, 1:])
+        self.axes.legend(loc='best')
+
     def update_(self, new_pdf, depths=None):
         self.axes.clear()
         self.pdf = new_pdf
         self.depths = depths
-        self.setTime()
         if self.datatype == "pressure" or self.datatype == "temperature" or self.datatype == "water flow":
             #print("hello curve")
+            self.setTime()
             self.setCurves()
         elif self.datatype == "frise":
             #print("hello frise")
+            self.setTime()
             self.setFrises()
+        elif self.datatype == "parapluies":
+            self.setParapluies()
         self.draw()
 
 
