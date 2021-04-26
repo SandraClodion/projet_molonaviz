@@ -18,6 +18,9 @@ class Study(object):
         self.rootDir = rootDir
         self.sensorDir = sensorDir
     
+    def getName(self):
+        return self.name
+    
     def getRootDir(self):
         return self.rootDir
     
