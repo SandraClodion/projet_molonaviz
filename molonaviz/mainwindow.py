@@ -30,7 +30,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         # Create Queue and redirect sys.stdout to this queue
         self.queue = Queue()
         sys.stdout = WriteStream(self.queue)
-        sys.stderr = WriteStream(self.queue)
+        # sys.stderr = WriteStream(self.queue)
         print("MolonaViz - 0.0.1beta - 2021-04-26")
 
         self.mdi = QtWidgets.QMdiArea()
