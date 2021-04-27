@@ -103,16 +103,18 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                 except LoadingError as e :
                     print(e)
                     print('Study creation aborted')
+                    displayCriticalMessage('Study creation aborted', f'An error occured \n Please check "Application messages" for further information')
                     shutil.rmtree(self.currentStudy.getRootDir())
-                    return
+                    return None
                 except Exception as e :
                     try :
                         print(e)
                     except :
                         print('Unknown error')
                     print('Study creation aborted')
+                    displayCriticalMessage('Study creation aborted', f'An error occured. Please check "Application messages" for further information')
                     shutil.rmtree(self.currentStudy.getRootDir())
-                    return 
+                    return None
             except EmptyFieldError as e:
                 displayCriticalMessage(f"{str(e)} \nPlease try again")
                 self.createStudy()
