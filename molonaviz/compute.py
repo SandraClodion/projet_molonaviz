@@ -2,11 +2,34 @@ import os, shutil
 import numpy as np
 import pandas as pd
 from datetime import datetime
+from PyQt5 import QtCore
 
 from pyheatmy import *
 from point import Point
 
-class Compute(object):
+
+class ColumnMCMCRunner(QtCore.QObject):
+    finished = QtCore.pyqtSignal()
+    
+    def __init__(self, col, nb_iter: int, priors: dict, nb_cells: str, quantiles: list):
+        # Call constructor of parent classes
+        super(ColumnMCMCRunner, self).__init__()
+        
+        self.col = col
+        self.nb_iter = nb_iter
+        self.priors = priors
+        self.nb_cells = nb_cells
+        self.quantiles = quantiles
+        
+    def run(self):
+        print("Launching MCMC...")
+        
+        self.col.compute_mcmc(self.nb_iter, self.priors, self.nb_cells, self.quantiles)
+
+        self.finished.emit()
+
+
+class Compute(QtCore.QObject):
 
     """
     How to use this class : 
@@ -16,9 +39,13 @@ class Compute(object):
         - with given parameters : compute.computeDirectModel(params: tuple, nb_cells: int, sensorDir: str)
         - with parameters inferred from MCMC : compute.computeMCMC(nb_iter: int, priors: dict, nb_cells: str, sensorDir: str)
     """
-
+    MCMCFinished = QtCore.pyqtSignal()
 
     def __init__(self, point: Point=None):
+        # Call constructor of parent classes
+        super(Compute, self).__init__()
+        self.thread = QtCore.QThread()
+
         self.point = point
         self.col = None
     
@@ -27,12 +54,30 @@ class Compute(object):
 
         
     def computeMCMC(self, nb_iter: int, priors: dict, nb_cells: str, sensorDir: str):
+        
+        self.nb_cells = nb_cells
+        if self.thread.isRunning():
+            print("Please wait while previous MCMC is finished")
+            return
     
         # Initialisation de la colonne
         self.setColumn(sensorDir)
 
         # Lancement de la MCMC
-        self.col.compute_mcmc(nb_iter, priors, nb_cells, quantile = (.05, .5, .95))
+        #self.col.compute_mcmc(nb_iter, priors, nb_cells, quantile = (.05, .5, .95))
+
+        self.mcmc_runner = ColumnMCMCRunner(self.col, nb_iter, priors, nb_cells, quantiles = (.05, .5, .95))
+        self.mcmc_runner.finished.connect(self.endMCMC)
+        self.mcmc_runner.moveToThread(self.thread)
+        self.thread.started.connect(self.mcmc_runner.run)
+        self.thread.start()
+
+
+    def endMCMC(self):
+
+        self.thread.quit()
+        print("MCMC finished")
+
         best_params = self.col.get_best_param()
 
         # Sauvegarde des résultats de la MCMC
@@ -41,7 +86,7 @@ class Compute(object):
         self.saveAllParams(resultsDir)
         
         # Lancement du modèle direct avec les paramètres inférés
-        self.col.compute_solve_transi(best_params, nb_cells)
+        self.col.compute_solve_transi(best_params, self.nb_cells)
         
         # Sauvegarde des différents résultats du modèle direct
         self.saveResults(resultsDir)
@@ -49,6 +94,8 @@ class Compute(object):
         # Sauvegarde des quantiles
         self.saveFlowWithQuantiles(resultsDir)
         self.saveTempWithQuantiles(resultsDir)
+
+        self.MCMCFinished.emit()
         
 
     def computeDirectModel(self, params: tuple, nb_cells: int, sensorDir: str):

@@ -37,6 +37,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.directmodeliscomputed = len(os.listdir(self.directmodelDir) ) > 1
         self.MCMCiscomputed = len(os.listdir(self.MCMCDir)) > 1
 
+        self.computeEngine = Compute(self.point)
+
         # Link every button to their function
 
         self.pushButtonReset.clicked.connect(self.reset)
@@ -169,8 +171,9 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
         if res == 0 : #Direct Model
             params, nb_cells = dlg.getInputDirectModel()
-            compute = Compute(self.point)
-            compute.computeDirectModel(params, nb_cells, sensorDir)
+            # compute = Compute(self.point)
+            # compute.computeDirectModel(params, nb_cells, sensorDir)
+            self.computeEngine.computeDirectModel(params, nb_cells, sensorDir)
 
             self.setDataFrames('DirectModel')
 
@@ -210,50 +213,54 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     
         if res == 1 : #MCMC
             nb_iter, priors, nb_cells = dlg.getInputMCMC()
-            compute = Compute(self.point)
-            compute.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
+            # compute = Compute(self.point)
+            # compute.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
+            self.computeEngine.MCMCFinished.connect(self.onMCMCFinished)
+            self.computeEngine.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
 
-            self.setDataFrames('MCMC')
+    def onMCMCFinished(self):
 
-            if self.MCMCiscomputed :
-                print('MCMC is computed')
-                self.graphwaterMCMC.update_(self.dfwater)
-                self.graphsolvedtempMCMC.update_(self.dfsolvedtemp, self.dfdepths)
-                self.graphintertempMCMC.update_(self.dfintertemp)
-                self.graphfluxesMCMC.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
-                self.histos.update_(self.dfallparams)
-                self.parapluiesMCMC.update_(self.dfsolvedtemp, self.dfdepths)
-                self.BestParamsModel.setData(self.dfbestparams)
-                print("Model successfully updated !")
+        self.setDataFrames('MCMC')
 
-            else :
+        if self.MCMCiscomputed :
+            print('MCMC is computed')
+            self.graphwaterMCMC.update_(self.dfwater)
+            self.graphsolvedtempMCMC.update_(self.dfsolvedtemp, self.dfdepths)
+            self.graphintertempMCMC.update_(self.dfintertemp)
+            self.graphfluxesMCMC.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
+            self.histos.update_(self.dfallparams)
+            self.parapluiesMCMC.update_(self.dfsolvedtemp, self.dfdepths)
+            self.BestParamsModel.setData(self.dfbestparams)
+            print("Model successfully updated !")
 
-                #Flux d'eau
-                clearLayout(self.vboxwaterMCMC)
-                self.plotWaterFlowsMCMC(self.dfwater)
+        else :
 
-                #Flux d'énergie
-                clearLayout(self.vboxfluxesMCMC)
-                self.plotFriseHeatFluxesMCMC(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
+            #Flux d'eau
+            clearLayout(self.vboxwaterMCMC)
+            self.plotWaterFlowsMCMC(self.dfwater)
 
-                #Frise de température
-                clearLayout(self.vboxfrisetempMCMC)
-                self.plotFriseTempMCMC(self.dfsolvedtemp, self.dfdepths)
-                #Parapluies
-                clearLayout(self.vboxsolvedtempMCMC)
-                self.plotParapluiesMCMC(self.dfsolvedtemp, self.dfdepths)
-                #Température à l'interface
-                clearLayout(self.vboxintertempMCMC)
-                self.plotInterfaceTempMCMC(self.dfintertemp)
+            #Flux d'énergie
+            clearLayout(self.vboxfluxesMCMC)
+            self.plotFriseHeatFluxesMCMC(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
 
-                #Histogrammes
-                clearLayout(self.vboxhistos)
-                self.histos(self.dfallparams)
-                #Les meilleurs paramètres
-                self.setBestParamsModel(self.dfbestparams)
+            #Frise de température
+            clearLayout(self.vboxfrisetempMCMC)
+            self.plotFriseTempMCMC(self.dfsolvedtemp, self.dfdepths)
+            #Parapluies
+            clearLayout(self.vboxsolvedtempMCMC)
+            self.plotParapluiesMCMC(self.dfsolvedtemp, self.dfdepths)
+            #Température à l'interface
+            clearLayout(self.vboxintertempMCMC)
+            self.plotInterfaceTempMCMC(self.dfintertemp)
 
-                self.MCMCiscomputed = True
-                print("Model successfully created !")
+            #Histogrammes
+            clearLayout(self.vboxhistos)
+            self.histos(self.dfallparams)
+            #Les meilleurs paramètres
+            self.setBestParamsModel(self.dfbestparams)
+
+            self.MCMCiscomputed = True
+            print("Model successfully created !")
 
 
     def setDataPlots(self):
