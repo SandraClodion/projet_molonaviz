@@ -42,6 +42,9 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         self.radioButtonDirect.toggled.connect(self.inputDirect)
         self.radioButtonMCMC.toggled.connect(self.inputMCMC)
 
+        #On pré-coche le modèle direct
+        self.radioButtonDirect.setChecked(True)
+
         self.pushButtonDirect.clicked.connect(self.getInputDirectModel)
         self.pushButtonMCMC.clicked.connect(self.getInputMCMC)
 

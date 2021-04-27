@@ -25,6 +25,9 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
         self.pushButtonBrowseNotice.clicked.connect(self.browseNotice)
         self.pushButtonBrowseConfig.clicked.connect(self.browseConfig)
 
+        #On pré-coche l'entrée automatique
+        self.radioButtonAuto.setChecked(True)
+
     def autoEntry(self):
 
         self.pushButtonBrowseDataDir.setEnabled(True)
@@ -73,35 +76,49 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
 
                 if re.search('info', file):
                     filePath = os.path.join(dirPath, file)
-                    self.lineEditInfo.setText(filePath) 
-
-                    df = pd.read_csv(filePath, sep=';', header=None, index_col=0)
-                    if not self.lineEditName.text(): 
-                    #on n'importe pas le nom si un autre nom a été choisi par l'utilisateur
-                        self.lineEditName.setText(df.iloc[0].at[1])
-                    self.lineEditPressureSensor.setText(df.iloc[1].at[1])
-                    self.lineEditShaft.setText(df.iloc[2].at[1])
-                    nPath += 1
+                    try :
+                        self.lineEditInfo.setText(filePath) 
+                        df = pd.read_csv(filePath, sep=';', header=None, index_col=0)
+                        if not self.lineEditName.text(): 
+                        #on n'importe pas le nom si un autre nom a été choisi par l'utilisateur
+                            self.lineEditName.setText(df.iloc[0].at[1])
+                        self.lineEditPressureSensor.setText(df.iloc[1].at[1])
+                        self.lineEditShaft.setText(df.iloc[2].at[1])
+                        nPath += 1
+                    except :
+                        self.lineEditInfo.setText('') 
 
                 if re.search('config', file):
-                    filePath = os.path.join(dirPath, file)
-                    self.lineEditConfig.setText(filePath) 
-                    nPath += 1
+                    try :
+                        filePath = os.path.join(dirPath, file)
+                        self.lineEditConfig.setText(filePath) 
+                        nPath += 1
+                    except :
+                        pass
 
                 if re.search('notice', file):
-                    filePath = os.path.join(dirPath, file)
-                    self.lineEditNotice.setText(filePath) 
-                    nPath += 1
+                    try :
+                        filePath = os.path.join(dirPath, file)
+                        self.lineEditNotice.setText(filePath) 
+                        nPath += 1
+                    except :
+                        pass
 
                 if re.search('P_', file):
-                    filePath = os.path.join(dirPath, file)
-                    self.lineEditPressures.setText(filePath) 
-                    nPath += 1
+                    try :
+                        filePath = os.path.join(dirPath, file)
+                        self.lineEditPressures.setText(filePath) 
+                        nPath += 1
+                    except : 
+                        pass
 
                 if re.search('T_', file):
-                    filePath = os.path.join(dirPath, file)
-                    self.lineEditTemperatures.setText(filePath) 
-                    nPath += 1
+                    try : 
+                        filePath = os.path.join(dirPath, file)
+                        self.lineEditTemperatures.setText(filePath) 
+                        nPath += 1
+                    except :
+                        pass
             
             if nPath<5 : 
                 displayWarningMessage(f'Only {nPath} lines have been successfully filled. Please fill in missing information manually')

@@ -230,7 +230,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                     if subWin.getName() == pointName:
                         subWin.close()
                 
-                print("Point successfully removed")
+                print(f"{pointName} successfully removed")
             else : 
                 #displayInfoMessage("Point removal aborted")
                 print("Point removal aborted")
