@@ -36,6 +36,9 @@ def celsiusToKelvin(df: pd.DataFrame):
     for temp in temps:
         df[temp] = df[temp]+273.15
     
+    # change columns names
+    df.columns = ['Date Heure, GMT+01:00', 'Température 1 (K)', 'Température 2 (K)', 'Température 3 (K)', 'Température 4 (K)']
+    
 
 def convertDates(df: pd.DataFrame):
 
