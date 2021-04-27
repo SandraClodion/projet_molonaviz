@@ -56,4 +56,16 @@ class LoadingError(Exception):
     def __str__(self):
         return f"Error : Couldn't load {self.object}"
 
+class CustomError(Exception) :
+    """
+    classdoc
+    """
+
+    def __init__(self, message: str="Error"):
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+
 

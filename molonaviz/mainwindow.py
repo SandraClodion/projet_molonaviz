@@ -198,15 +198,20 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
 
 
     def importPoint(self):
-
+        point = Point()
         dlg = DialogImportPoint()
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
-            
-            name, infofile, prawfile, trawfile, noticefile, configfile  = dlg.getPointInfo()
-            
-            point = self.currentStudy.addPoint(name, infofile, prawfile, trawfile, noticefile, configfile) 
-            point.loadPoint(self.pointModel)
+            try :
+                name, infofile, prawfile, trawfile, noticefile, configfile  = dlg.getPointInfo()
+                point = self.currentStudy.addPoint(name, infofile, prawfile, trawfile, noticefile, configfile) 
+                point.loadPoint(self.pointModel)
+            except Exception as e :
+                print(f"Point import aborted : {str(e)}")
+                pointDir = point.getPointDir()
+                if os.path.exists(pointDir):
+                    shutil.rmtree(pointDir)
+                displayCriticalMessage('Point import aborted', f"Couldn't import point due to the following error : \n{str(e)}")
            
     def openPoint(self):
         dlg = DialogOpenPoint()

@@ -1,8 +1,9 @@
 import sys, os, shutil, re
 from PyQt5 import QtWidgets, uic
-from usefulfonctions import clean_filename, displayWarningMessage
+from usefulfonctions import clean_filename, displayWarningMessage, displayCriticalMessage
 from point import Point
 import pandas as pd
+from errors import *
 
 From_DialogImportPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"dialogimportpoint.ui"))[0]
 
@@ -129,12 +130,21 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
         filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
         if filePath:
             self.lineEditInfo.setText(filePath) 
-            df = pd.read_csv(filePath, header=None, index_col=0)
-            if not self.lineEditName.text(): 
-            #on n'importe pas le nom si un autre nom a été choisi par l'utilisateur
-                self.lineEditName.setText(df.iloc[0].at[1])
-            self.lineEditPressureSensor.setText(df.iloc[1].at[1])
-            self.lineEditShaft.setText(df.iloc[2].at[1])
+            try :
+                df = pd.read_csv(filePath, header=None, index_col=0)
+                if not self.lineEditName.text(): 
+                #on n'importe pas le nom si un autre nom a été choisi par l'utilisateur
+                    self.lineEditName.setText(df.iloc[0].at[1])
+                self.lineEditPressureSensor.setText(df.iloc[1].at[1])
+                self.lineEditShaft.setText(df.iloc[2].at[1])
+            except KeyError as e:
+                print(f"KeyError : {e}")
+                displayCriticalMessage('Invalid Info File', 'Please check "Application Messages" for further information')
+                self.lineEditInfo.setText('') 
+            except Exception as e :
+                raise e
+            except pd.errors.ParserError :
+                raise CustomError("Parser error. You might have selected the wrong file")
     
     def browsePressures(self):
         filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
@@ -164,3 +174,9 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
         noticefile = self.lineEditNotice.text()
         configfile = self.lineEditConfig.text()
         return name, infofile, prawfile, trawfile, noticefile, configfile
+
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    mainWin = DialogImportPoint()
+    mainWin.show()
+    sys.exit(app.exec_())
