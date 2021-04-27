@@ -175,8 +175,10 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
         configfile = self.lineEditConfig.text()
         return name, infofile, prawfile, trawfile, noticefile, configfile
 
+"""
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     mainWin = DialogImportPoint()
     mainWin.show()
     sys.exit(app.exec_())
+"""
