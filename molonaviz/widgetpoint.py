@@ -212,11 +212,11 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
     
         if res == 1 : #MCMC
-            nb_iter, priors, nb_cells = dlg.getInputMCMC()
+            nb_iter, priors, nb_cells, quantiles = dlg.getInputMCMC()
             # compute = Compute(self.point)
             # compute.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
             self.computeEngine.MCMCFinished.connect(self.onMCMCFinished)
-            self.computeEngine.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
+            self.computeEngine.computeMCMC(nb_iter, priors, nb_cells, sensorDir, quantiles)
 
     def onMCMCFinished(self):
 

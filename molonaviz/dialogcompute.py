@@ -124,9 +124,13 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         "n": ((nmin, nmax), nsigma),
         "lambda_s": ((lambda_s_min, lambda_s_max), lambda_s_sigma),
         "rhos_cs": ((rhos_cs_min, rhos_cs_max), rhos_cs_sigma) }
+
+        quantiles = self.lineEditQuantiles.text()
+        quantiles = quantiles.split(",")
+        quantiles = tuple(quantiles)
         
         self.done(1)
-        return nb_iter, priors, nb_cells
+        return nb_iter, priors, nb_cells, quantiles
 
 
 if __name__ == '__main__':
