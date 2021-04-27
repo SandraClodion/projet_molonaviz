@@ -53,7 +53,7 @@ class Compute(QtCore.QObject):
         self.col = self.point.setColumn(sensorDir)
 
         
-    def computeMCMC(self, nb_iter: int, priors: dict, nb_cells: str, sensorDir: str, quantiles: tuple):
+    def computeMCMC(self, nb_iter: int, priors: dict, nb_cells: str, sensorDir: str):
         
         self.nb_cells = nb_cells
         if self.thread.isRunning():
@@ -62,12 +62,11 @@ class Compute(QtCore.QObject):
     
         # Initialisation de la colonne
         self.setColumn(sensorDir)
-        self.quantiles = quantiles
 
         # Lancement de la MCMC
         #self.col.compute_mcmc(nb_iter, priors, nb_cells, quantile = (.05, .5, .95))
 
-        self.mcmc_runner = ColumnMCMCRunner(self.col, nb_iter, priors, nb_cells, quantiles = self.quantiles)
+        self.mcmc_runner = ColumnMCMCRunner(self.col, nb_iter, priors, nb_cells, quantiles = (.05, .5, .95))
         self.mcmc_runner.finished.connect(self.endMCMC)
         self.mcmc_runner.moveToThread(self.thread)
         self.thread.started.connect(self.mcmc_runner.run)
@@ -158,12 +157,9 @@ class Compute(QtCore.QObject):
         times = self.col.times_solve
 
         flows = self.col.flows_solve
-        #quantile05 = self.col.get_flows_quantile(0.05)
-        #quantile50 = self.col.get_flows_quantile(0.5)
-        #quantile95 = self.col.get_flows_quantile(0.95)
-        QUANTILES = []
-        for quantile in self.quantiles :
-            QUANTILES.append(self.col.get_flows_quantile(quantile))
+        quantile05 = self.col.get_flows_quantile(0.05)
+        quantile50 = self.col.get_flows_quantile(0.5)
+        quantile95 = self.col.get_flows_quantile(0.95)
 
         # Formatage des dates
         n_dates = len(times)
@@ -173,18 +169,19 @@ class Compute(QtCore.QObject):
             times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
 
         # Création du dataframe
-        np_flows_quantiles = np.zeros((n_dates,len(QUANTILES)+1))
+        np_flows_quantiles = np.zeros((n_dates,4))
         for i in range(n_dates):
             np_flows_quantiles[i,0] = flows[i]
-            for k in range(len(QUANTILES)):
-                np_flows_quantiles[i,k+1] = QUANTILES[k][i]
+            np_flows_quantiles[i,1] = quantile05[i]
+            np_flows_quantiles[i,2] = quantile50[i]
+            np_flows_quantiles[i,3] = quantile95[i]
         np_flows_times_and_quantiles = np.concatenate((times_string, np_flows_quantiles), axis=1)
-        columns_names = ["Date Heure, GMT+01:00", 
-        "Débit d'eau échangé (m/s) - pour les meilleurs paramètres"]
-        for quantile in self.quantiles :
-            columns_names.append(f"Débit d'eau échangé (m/s) - quantile {quantile}")
         df_flows_quantiles = pd.DataFrame(np_flows_times_and_quantiles, 
-        columns=columns_names)
+        columns=["Date Heure, GMT+01:00", 
+        "Débit d'eau échangé (m/s) - pour les meilleurs paramètres",
+        "Débit d'eau échangé (m/s) - quantile 5%",
+        "Débit d'eau échangé (m/s) - quantile 50%",
+        "Débit d'eau échangé (m/s) - quantile 95%"])
     
         # Sauvegarde sous forme d'un fichier csv
         flows_quantiles_file = os.path.join(resultsDir, 'MCMC_flows_quantiles.csv')
@@ -196,12 +193,9 @@ class Compute(QtCore.QObject):
         times = self.col.times_solve
 
         temp = self.col.temps_solve[:,0] #température à l'interface
-        QUANTILES = []
-        for quantile in self.quantiles :
-            QUANTILES.append(self.col.get_temps_quantile(quantile)[:,0])
-        #quantile05 = self.col.get_temps_quantile(0.05)[:,0]
-        #quantile50 = self.col.get_temps_quantile(0.5)[:,0]
-        #quantile95 = self.col.get_temps_quantile(0.95)[:,0]
+        quantile05 = self.col.get_temps_quantile(0.05)[:,0]
+        quantile50 = self.col.get_temps_quantile(0.5)[:,0]
+        quantile95 = self.col.get_temps_quantile(0.95)[:,0]
 
         # Formatage des dates
         n_dates = len(times)
@@ -211,21 +205,19 @@ class Compute(QtCore.QObject):
             times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
 
         # Création du dataframe
-        np_temps_quantiles = np.zeros((n_dates,len(QUANTILES)+1))
+        np_temps_quantiles = np.zeros((n_dates,4))
         for i in range(n_dates):
             np_temps_quantiles[i,0] = temp[i]
-            for k in range(len(QUANTILES)):
-                np_temps_quantiles[i, k+1] = QUANTILES[k][i]
-            #np_temps_quantiles[i,1] = quantile05[i]
-            #np_temps_quantiles[i,2] = quantile50[i]
-            #np_temps_quantiles[i,3] = quantile95[i]
+            np_temps_quantiles[i,1] = quantile05[i]
+            np_temps_quantiles[i,2] = quantile50[i]
+            np_temps_quantiles[i,3] = quantile95[i]
         np_temps_times_and_quantiles = np.concatenate((times_string, np_temps_quantiles), axis=1)
-        columns_names = ["Date Heure, GMT+01:00", 
-        "Température à l'interface (K) - pour les meilleurs paramètres"]
-        for quantile in self.quantiles :
-            columns_names.append(f"Température à l'interface (K) - quantile {quantile}")
         df_temps_quantiles = pd.DataFrame(np_temps_times_and_quantiles, 
-        columns=columns_names)
+        columns=["Date Heure, GMT+01:00", 
+        "Température à l'interface (K) - pour les meilleurs paramètres",
+        "Température à l'interface (K) - quantile 5%",
+        "Température à l'interface (K) - quantile 50%",
+        "Température à l'interface (K) - quantile 95%"])
 
         # Sauvegarde sous forme d'un fichier csv
         temps_quantiles_file = os.path.join(resultsDir, 'MCMC_temps_quantiles.csv')
