@@ -88,7 +88,7 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
                     except :
                         self.lineEditInfo.setText('') 
 
-                if re.search('config', file):
+                if re.search('.png', file):
                     try :
                         filePath = os.path.join(dirPath, file)
                         self.lineEditConfig.setText(filePath) 

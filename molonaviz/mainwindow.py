@@ -178,15 +178,17 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         dlg.setPointsList(self.pointModel)
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
-            print("Opening point...")
             pointname = dlg.getPointName()
+            print(f"Opening {pointname} ...", end = "") #Pb : ne s'affiche pas tant que tout n'est pas chargé chez Sandra
             point = self.pointModel.findItems(pointname)[0].data(QtCore.Qt.UserRole)
             self.openPointView(point)
+            print(" ==> done")
 
     def openPointfromTree(self):
-        print("Opening point...")
         point = self.treeViewDataPoints.selectedIndexes()[0].data(QtCore.Qt.UserRole)
+        print(f"Opening {point.getName()} ...", end = "")
         self.openPointView(point)
+        print(" ==> done")
 
     def openPointView(self, point: Point):
         subWin = SubWindow(point, self.currentStudy)
@@ -250,6 +252,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
 
 
 if __name__ == '__main__':
+
     app = QtWidgets.QApplication(sys.argv)
     #app.setStyle('windows')
     app.setWindowIcon(QtGui.QIcon("fakeMolonavizIcon.png")) #à modifier quand l'icone est prête
