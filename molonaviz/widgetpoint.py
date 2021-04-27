@@ -241,7 +241,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.plotFriseTempMCMC(self.dfsolvedtemp, self.dfdepths)
                 #Parapluies
                 clearLayout(self.vboxsolvedtempMCMC)
-                self.plotParapluiesMCMC(self.fsolvedtemp, self.dfdepths)
+                self.plotParapluiesMCMC(self.dfsolvedtemp, self.dfdepths)
                 #Température à l'interface
                 clearLayout(self.vboxintertempMCMC)
                 self.plotInterfaceTempMCMC(self.dfintertemp)
