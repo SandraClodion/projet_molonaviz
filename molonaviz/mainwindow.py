@@ -105,6 +105,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                     print('Study creation aborted')
                     displayCriticalMessage('Study creation aborted', f'An error occured \n Please check "Application messages" for further information')
                     shutil.rmtree(self.currentStudy.getRootDir())
+                    self.currentStudy = None
                     return None
                 except Exception as e :
                     try :
@@ -114,6 +115,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                     print('Study creation aborted')
                     displayCriticalMessage('Study creation aborted', f'An error occured. Please check "Application messages" for further information')
                     shutil.rmtree(self.currentStudy.getRootDir())
+                    self.currentStudy = None
                     return None
             except EmptyFieldError as e:
                 displayCriticalMessage(f"{str(e)} \nPlease try again")
@@ -122,7 +124,8 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                 displayCriticalMessage(f"{str(e)} \nPlease try again")
                 self.createStudy()
             except Exception as error:
-                print('error')
+                print(f'error : {str(e)}')
+                self.currentStudy = None
             print("New study successfully created")
 
     def openStudy(self):
