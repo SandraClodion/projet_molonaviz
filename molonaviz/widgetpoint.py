@@ -65,7 +65,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.tableViewInfos.setModel(self.infosModel)
         self.tableViewInfos.horizontalHeader().hide()
         self.tableViewInfos.verticalHeader().hide()
-        self.tableViewInfos.resizeColumnsToContents()
+        self.tableViewInfos.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        self.tableViewInfos.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
 
     def setPressureAndTemperatureModels(self):
         # Set the Temperature and Pressure models
