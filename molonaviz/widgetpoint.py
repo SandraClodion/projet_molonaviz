@@ -149,17 +149,20 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             if res == QtWidgets.QDialog.Accepted:
                 script = dlg.getScript()
                 print("Cleaning data...")
-                self.dftemp, self.dfpress = self.point.cleanup(script, self.dftemp, self.dfpress)
-                print("Data successfully cleaned !...")
-                
-                #On actualise les modèles
-                self.currentTemperatureModel.setData(self.dftemp)
-                self.currentPressureModel.setData(self.dfpress)
-                self.tableViewTemp.resizeColumnsToContents()
-                self.tableViewPress.resizeColumnsToContents()
-                self.graphpress.update_(self.dfpress)
-                self.graphtemp.update_(self.dftemp)
-                print("Plots successfully updated")
+                try :
+                    self.dftemp, self.dfpress = self.point.cleanup(script, self.dftemp, self.dfpress)
+                    print("Data successfully cleaned !...")
+                    
+                    #On actualise les modèles
+                    self.currentTemperatureModel.setData(self.dftemp)
+                    self.currentPressureModel.setData(self.dfpress)
+                    self.tableViewTemp.resizeColumnsToContents()
+                    self.tableViewPress.resizeColumnsToContents()
+                    self.graphpress.update_(self.dfpress)
+                    self.graphtemp.update_(self.dftemp)
+                    print("Plots successfully updated")
+                except Exception as e :
+                    print(e, "==> Clean-up aborted")
     
 
     def compute(self):

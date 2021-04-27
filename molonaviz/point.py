@@ -155,20 +155,24 @@ class Point(object):
 
         from script import fonction
 
-        new_dft, new_dfp = fonction(dft, dfp)
-
         os.remove(scriptDir)
         del sys.modules["script"]
 
-        #exec(script)
+        try :
+            new_dft, new_dfp = fonction(dft, dfp)
 
-        #On réécrit les csv:
-        os.remove(self.tprocessedfile)
-        os.remove(self.pprocessedfile)
-        new_dft.to_csv(self.tprocessedfile, index=False)
-        new_dfp.to_csv(self.pprocessedfile, index=False)
+            #exec(script)
 
-        return(new_dft, new_dfp)
+            #On réécrit les csv:
+            os.remove(self.tprocessedfile)
+            os.remove(self.pprocessedfile)
+            new_dft.to_csv(self.tprocessedfile, index=False)
+            new_dfp.to_csv(self.pprocessedfile, index=False)
+
+            return(new_dft, new_dfp)
+        
+        except Exception as e :
+            raise e
 
     
     def setColumn(self, sensorDir):
