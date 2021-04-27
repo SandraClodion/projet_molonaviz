@@ -186,21 +186,21 @@ class MplCanvaHeatFluxes(FigureCanvasQTAgg):
         image = self.ax[0].imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.ax[0].xaxis_date()
         self.ax[0].set_title('Flux advectif')
-        plt.colorbar(image, ax=self.ax[0])
+        self.colorbar_advec = plt.colorbar(image, ax=self.ax[0])
 
         profils = self.df_conduc.to_numpy()
         profils = profils[:,1:].astype(np.float)
         image = self.ax[1].imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.ax[1].xaxis_date()
         self.ax[1].set_title('Flux conductif')
-        plt.colorbar(image, ax=self.ax[1])
+        self.colorbar_conduc = plt.colorbar(image, ax=self.ax[1])
 
         profils = self.df_tot.to_numpy()
         profils = profils[:,1:].astype(np.float)
         image = self.ax[2].imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.ax[2].xaxis_date()
         self.ax[2].set_title("Flux d'énergie total")
-        plt.colorbar(image, ax=self.ax[2])
+        self.colorbar_tot = plt.colorbar(image, ax=self.ax[2])
     
     def update_(self, df_advec, df_conduc, df_tot, df_depths):
         for i in range(3):
@@ -209,8 +209,12 @@ class MplCanvaHeatFluxes(FigureCanvasQTAgg):
         self.df_conduc = df_conduc
         self.df_tot = df_tot
         self.depths = df_depths
+        self.colorbar_advec.remove()
+        self.colorbar_conduc.remove()
+        self.colorbar_tot.remove()
         self.setTime()
         self.setFrises()
+        self.draw()
         
             
 
