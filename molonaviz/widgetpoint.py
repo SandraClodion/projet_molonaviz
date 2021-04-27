@@ -63,7 +63,9 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         dfinfo = pd.read_csv(infoFile, sep=';', header=None)
         self.infosModel = PandasModel(dfinfo)
         self.tableViewInfos.setModel(self.infosModel)
-
+        self.tableViewInfos.horizontalHeader().hide()
+        self.tableViewInfos.verticalHeader().hide()
+        self.tableViewInfos.resizeColumnsToContents()
 
     def setPressureAndTemperatureModels(self):
         # Set the Temperature and Pressure models
@@ -333,7 +335,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.vboxfrisetempMCMC.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
             self.vboxintertempMCMC.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
             self.vboxhistos.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
-            self.vboxsolvedtempMCMC.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
+            self.vboxsolvedtempMCMC.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
     
         
 
