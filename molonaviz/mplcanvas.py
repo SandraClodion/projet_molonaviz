@@ -89,7 +89,7 @@ class MplCanvas(FigureCanvasQTAgg):
         depths = self.depths[self.depths.columns[0]].values.tolist()
         image = self.axes.imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.axes.xaxis_date()
-        plt.colorbar(image, ax=self.axes)
+        self.colorbar = plt.colorbar(image, ax=self.axes)
 
     def setParapluies(self):
         #Détermination du pas pour tracer 10 profils
@@ -117,6 +117,7 @@ class MplCanvas(FigureCanvasQTAgg):
         elif self.datatype == "frise":
             #print("hello frise")
             self.setTime()
+            self.colorbar.remove()
             self.setFrises()
         elif self.datatype == "parapluies":
             self.setParapluies()
