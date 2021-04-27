@@ -43,15 +43,20 @@ class PressureSensor(object):
 
         
     def setPressureSensorFromFile(self, csv):
-
-        df = pd.read_csv(csv, sep=';', header=None, index_col=0)
-        self.name = df.iloc[0].at[1] #pas nécessaire ici puisqu'on a déjà le nom
-        self.datalogger = df.iloc[1].at[1]
-        self.calibrationDate = df.iloc[2].at[1] #à convertir au format date ?
-        self.intercept = float(df.iloc[3].at[1])
-        self.dudh = float(df.iloc[4].at[1])
-        self.dudt = float(df.iloc[5].at[1])
-        self.sigma = float(df.iloc[6].at[1])
+        try :
+            df = pd.read_csv(csv, header=None, index_col=0)
+        except Exception :
+            print("couldnt load df")
+        try :
+            self.name = df.iloc[0].at[1] #pas nécessaire ici puisqu'on a déjà le nom
+            self.datalogger = df.iloc[1].at[1]
+            self.calibrationDate = df.iloc[2].at[1] #à convertir au format date ?
+            self.intercept = float(df.iloc[3].at[1])
+            self.dudh = float(df.iloc[4].at[1])
+            self.dudt = float(df.iloc[5].at[1])
+            self.sigma = float(df.iloc[6].at[1])
+        except Exception:
+            print("couldn't set Pressure sensor")
     
     def loadPressureSensor(self, csv, sensorModel):
 
@@ -67,8 +72,6 @@ class PressureSensor(object):
         item.appendRow(QtGui.QStandardItem(f"dudt = {self.dudt:.2f}"))
         item.appendRow(QtGui.QStandardItem(f"sigma = {self.sigma:.2f}"))
 
-    
-   
 
 
 class Shaft(object):
@@ -86,17 +89,17 @@ class Shaft(object):
         return self.tSensorName
     
     def setShaftFromFile(self, csv):
-
-        df = pd.read_csv(csv, sep=';', header=None, index_col=0)
+        try :
+            df = pd.read_csv(csv, header=None)
+        except :
+            print("couldn't load df")
         self.name = df.iloc[0].at[1] #pas nécessaire ici puisqu'on a déjà le nom
         self.datalogger = df.iloc[1].at[1]
         self.tSensorName = df.iloc[2].at[1] 
         self.depths = ast.literal_eval(df.iloc[3].at[1])
-
+        
     def loadShaft(self, csv, sensorModel):
-
         self.setShaftFromFile(csv)
-                    
         item = QtGui.QStandardItem(self.name)
         item.setData(self, QtCore.Qt.UserRole) 
         sensorModel.appendRow(item)
@@ -119,7 +122,7 @@ class Thermometer(object):
     
     def setThermometerFromFile(self, csv):
 
-        df = pd.read_csv(csv, sep=';', header=None, index_col=0)
+        df = pd.read_csv(csv, header=None, index_col=0)
         self.consName = df.iloc[0].at[1] 
         self.ref = df.iloc[1].at[1]
         self.name = df.iloc[2].at[1] #pas nécessaire ici puisqu'on a déjà le nom

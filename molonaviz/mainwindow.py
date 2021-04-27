@@ -105,6 +105,8 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             except FileNotFoundError as e:
                 displayCriticalMessage(f"{str(e)} \nPlease try again")
                 self.createStudy()
+            except Exception as error:
+                print('error')
 
     def openStudy(self):
         if self.currentStudy == None : #si on ne vient pas de créer une étude
@@ -126,11 +128,23 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
             displayCriticalMessage(str(e), infoMessage)
             self.currentStudy = None
             return None
-                
-        self.currentStudy.loadPressureSensors(self.pSensorModel)
-        self.currentStudy.loadShafts(self.shaftModel)
-        self.currentStudy.loadThermometers(self.thermometersModel)
-        self.currentStudy.loadPoints(self.pointModel)
+        try :
+            self.currentStudy.loadPressureSensors(self.pSensorModel)
+        except Exception :
+            print('error in loading PressureSensors')
+        try : 
+            self.currentStudy.loadShafts(self.shaftModel)
+        except Exception :
+            print('error in loading Shafts')
+        try :
+            self.currentStudy.loadThermometers(self.thermometersModel)
+        except Exception :
+            print('error in loading Thermometers')
+        try :
+            self.currentStudy.loadPoints(self.pointModel)
+        except Exception :
+            print('error in loading Points')
+
 
         #le menu point n'est pas actif tant qu'aucune étude n'est ouverte et chargée
         self.menuPoint.setEnabled(True)
