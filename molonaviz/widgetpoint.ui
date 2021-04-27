@@ -103,7 +103,7 @@
        <item row="0" column="0">
         <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,1">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
+          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0">
            <item>
             <widget class="QGroupBox" name="groupBox_2">
              <property name="title">
@@ -500,7 +500,40 @@
       <attribute name="title">
        <string>MCMC Results</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_13">
+      <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,1">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QTableView" name="tableViewBestParams">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>79</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
        <item>
         <widget class="QScrollArea" name="scrollArea_5">
          <property name="widgetResizable">
@@ -512,7 +545,7 @@
             <x>0</x>
             <y>0</y>
             <width>1368</width>
-            <height>649</height>
+            <height>558</height>
            </rect>
           </property>
           <property name="sizePolicy">

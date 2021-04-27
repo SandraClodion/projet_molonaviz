@@ -178,16 +178,17 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         dlg.setPointsList(self.pointModel)
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
+            print("Opening point...")
             pointname = dlg.getPointName()
             point = self.pointModel.findItems(pointname)[0].data(QtCore.Qt.UserRole)
             self.openPointView(point)
 
     def openPointfromTree(self):
+        print("Opening point...")
         point = self.treeViewDataPoints.selectedIndexes()[0].data(QtCore.Qt.UserRole)
         self.openPointView(point)
 
     def openPointView(self, point: Point):
-        
         subWin = SubWindow(point, self.currentStudy)
         subWin.setPointWidget()
 

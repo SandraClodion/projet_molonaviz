@@ -123,6 +123,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
 
     def reset(self):
+        print("Resetting data...")
         self.point.processData(self.study.getSensorDir())
         #On actualise les modèles
         self.dfpress = pd.read_csv(self.PressureDir)
@@ -133,19 +134,20 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.tableViewPress.resizeColumnsToContents()
         self.graphpress.update_(self.dfpress)
         self.graphtemp.update_(self.dftemp)
-        displayInfoMessage("Data successfully reset !")
+        print("Data successfully reset !")
 
 
     def cleanup(self):
         if self.currentdata == "raw":
-            displayInfoMessage("Please clean-up your processed data.")
+            print("Please clean-up your processed data.")
         else:
             dlg = DialogCleanup()
             res = dlg.exec_()
             if res == QtWidgets.QDialog.Accepted:
                 script = dlg.getScript()
+                print("Cleaning data...")
                 self.dftemp, self.dfpress = self.point.cleanup(script, self.dftemp, self.dfpress)
-                displayInfoMessage("Data successfully cleaned ! Please wait a moment...")
+                print("Data successfully cleaned !...")
                 
                 #On actualise les modèles
                 self.currentTemperatureModel.setData(self.dftemp)
@@ -154,7 +156,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.tableViewPress.resizeColumnsToContents()
                 self.graphpress.update_(self.dfpress)
                 self.graphtemp.update_(self.dftemp)
-                displayInfoMessage("Plots successfully updated")
+                print("Plots successfully updated")
     
 
     def compute(self):
@@ -178,7 +180,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.graphintertempdirect.update_(self.dfintertemp)
                 self.graphfluxesdirect.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
                 self.parapluies.update_(self.dfsolvedtemp, self.dfdepths)
-                displayInfoMessage("Model successfully updated !")
+                print("Model successfully updated !")
 
             else :
 
@@ -202,7 +204,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.plotInterfaceTempDirect(self.dfintertemp)
 
                 self.directmodeliscomputed = True
-                displayInfoMessage("Model successfully created !")
+                print("Model successfully created !")
 
     
         if res == 1 : #MCMC
@@ -220,7 +222,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.graphfluxesMCMC.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
                 self.histos.update_(self.dfallparams)
                 self.parapluiesMCMC.update_(self.dfsolvedtemp, self.dfdepths)
-                displayInfoMessage("Model successfully updated !")
+                self.BestParamsModel.setData(self.dfbestparams)
+                print("Model successfully updated !")
 
             else :
 
@@ -245,9 +248,11 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 #Histogrammes
                 clearLayout(self.vboxhistos)
                 self.histos(self.dfallparams)
+                #Les meilleurs paramètres
+                self.setBestParamsModel(self.dfbestparams)
 
                 self.MCMCiscomputed = True
-                displayInfoMessage("Model successfully created !")
+                print("Model successfully created !")
 
 
     def setDataPlots(self):
@@ -328,6 +333,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
             #Les histogrammes
             self.histos(self.dfallparams)
+            #Les meilleurs paramètres
+            self.setBestParamsModel(self.dfbestparams)
 
         else:
             self.vboxwaterMCMC.addWidget(QtWidgets.QLabel("MCMC has not been computed yet"))
@@ -346,12 +353,13 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.dfdepths = pd.read_csv(self.directdepthsdir)
             self.dfsolvedtemp = pd.read_csv(self.directmodelDir + "/solved_temperatures.csv")
             self.dfintertemp = self.dfsolvedtemp[self.dfsolvedtemp.columns[0:2]]
+            #print(self.dfintertemp)
             self.dfadvec = pd.read_csv(self.directmodelDir + "/advective_flux.csv")
             self.dfconduc = pd.read_csv(self.directmodelDir + "/conductive_flux.csv")
             self.dftot = pd.read_csv(self.directmodelDir + "/total_flux.csv")
 
         elif mode == 'MCMC':
-            self.dfwater = pd.read_csv(self.MCMCDir + "/solved_flows.csv")
+            self.dfwater = pd.read_csv(self.MCMCDir + "/MCMC_flows_quantiles.csv")
             self.dfsolvedtemp = pd.read_csv(self.MCMCDir + "/solved_temperatures.csv")
             self.dfdepths = pd.read_csv(self.MCMCdepthsdir)
             self.dfintertemp = pd.read_csv(self.MCMCDir + "/MCMC_temps_quantiles.csv")
@@ -359,6 +367,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.dfadvec = pd.read_csv(self.MCMCDir + "/advective_flux.csv")
             self.dfconduc = pd.read_csv(self.MCMCDir + "/conductive_flux.csv")
             self.dftot = pd.read_csv(self.MCMCDir + "/total_flux.csv")
+            self.dfbestparams = pd.read_csv(self.MCMCDir + "/MCMC_best_params.csv")
+            self.dfbestparams = self.dfbestparams[self.dfbestparams.columns[1:]]
 
 
 
@@ -369,7 +379,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.vboxwaterdirect.addWidget(self.toolbarwaterdirect)
     
     def plotWaterFlowsMCMC(self, dfwater):
-        self.graphwaterMCMC = MplCanvas(dfwater, "water flow")
+        self.graphwaterMCMC = MplCanvas(dfwater, "water flow with quantiles")
         self.toolbarwaterMCMC = NavigationToolbar(self.graphwaterMCMC, self)
         self.vboxwaterMCMC.addWidget(self.graphwaterMCMC)
         self.vboxwaterMCMC.addWidget(self.toolbarwaterMCMC)
@@ -426,7 +436,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.parapluiesMCMC = MplCanvas(dfsolvedtemp, "parapluies", dfdepths)
         self.toolbarparapluiesMCMC = NavigationToolbar(self.parapluiesMCMC, self)
         self.vboxsolvedtempMCMC.addWidget(self.parapluiesMCMC)
-        self.vboxsolvedtempMCMC.addWidget(self.toolbarparapluiesMCMC )
+        self.vboxsolvedtempMCMC.addWidget(self.toolbarparapluiesMCMC)
+
+    def setBestParamsModel(self, dfbestparams):
+        self.BestParamsModel = PandasModel(self.dfbestparams)
+        self.tableViewBestParams.setModel(self.BestParamsModel)
+        self.tableViewBestParams.resizeColumnsToContents()
 
 
 

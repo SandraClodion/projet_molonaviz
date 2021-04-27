@@ -26,8 +26,8 @@ class MplCanvas(FigureCanvasQTAgg):
         self.pdf = pdf
         self.datatype = datatype
         self.depths = depths
-        list_Curves = ["pressure", "temperature", "water flow", "temperature interface", "temperature with quantiles"]
-        if self.datatype in list_Curves:
+        self.list_Curves = ["pressure", "temperature", "water flow", "temperature interface", "temperature with quantiles", "water flow with quantiles"]
+        if self.datatype in self.list_Curves:
             self.setTime()
             self.setCurves()
         elif self.datatype == "frise":
@@ -63,6 +63,15 @@ class MplCanvas(FigureCanvasQTAgg):
                 self.axes.plot(self.x, data, label=f"{self.pdf.columns[i]}")
             self.axes.legend(loc='best')
             self.axes.set_ylabel("Températures (K)")
+        
+        elif self.datatype == "water flow with quantiles":
+            #On a 3 colonnes à tracer
+            quantiles = list(self.pdf.columns)
+            for i in range(1,len(quantiles)):
+                data = self.pdf[self.pdf.columns[i]].values.tolist()
+                self.axes.plot(self.x, data, label=f"{quantiles[i]}")
+            self.axes.legend(loc="best")
+            self.axes.set_ylabel("Débit d'eau (m/s)")
 
         else : 
             data = self.pdf[self.pdf.columns[1]].values.tolist()
@@ -101,7 +110,7 @@ class MplCanvas(FigureCanvasQTAgg):
         self.axes.clear()
         self.pdf = new_pdf
         self.depths = depths
-        if self.datatype == "pressure" or self.datatype == "temperature" or self.datatype == "water flow":
+        if self.datatype in self.list_Curves :
             #print("hello curve")
             self.setTime()
             self.setCurves()
