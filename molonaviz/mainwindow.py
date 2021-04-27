@@ -73,10 +73,10 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.pushButtonClear.clicked.connect(self.clearText)
 
         #On adapte la taille de la fenêtre principale à l'écran
-        screenSize = QtWidgets.QDesktopWidget().screenGeometry(-1)
-        self.setGeometry(screenSize)
-        self.setMaximumWidth(self.geometry().width())
-        self.setMaximumHeight(self.geometry().height())
+        # screenSize = QtWidgets.QDesktopWidget().screenGeometry(-1)
+        # self.setGeometry(screenSize)
+        # self.setMaximumWidth(self.geometry().width())
+        # self.setMaximumHeight(self.geometry().height())
     
     def appendText(self,text):
         self.textEditApplicationMessages.moveCursor(QtGui.QTextCursor.End)
@@ -254,7 +254,7 @@ if __name__ == '__main__':
     #app.setStyle('windows')
     app.setWindowIcon(QtGui.QIcon("fakeMolonavizIcon.png")) #à modifier quand l'icone est prête
     mainWin = MainWindow()
-    mainWin.show()
+    mainWin.showMaximized()
 
     # Create thread that will listen on the other end of the queue, and send the text to the textedit in our application
     thread = QtCore.QThread()
