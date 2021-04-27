@@ -56,7 +56,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             #Installation
         self.labelSchema.setPixmap(QPixmap(self.pointDir + "/info_data" + "/config.png"))
             #Notice
-        file = open(self.pointDir + "/info_data" + "/notice.txt")
+        file = open(self.pointDir + "/info_data" + "/notice.txt", encoding="ascii", errors="surrogateescape")
         notice = file.read()
         self.plainTextEditNotice.setPlainText(notice)
         file.close()
