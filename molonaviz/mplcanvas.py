@@ -89,9 +89,12 @@ class MplCanvas(FigureCanvasQTAgg):
         pas = n // 10
         self.axes.set_xlabel("Température en K")
         self.axes.set_ylabel("Profondeur en m")
-        for i in range(10):
-            self.axes.plot(profils[i*10, 1:], self.depths, label=profils[i,0])
-            #print(profils[i, 1:])
+        try :
+            for i in range(10):
+                self.axes.plot(profils[i*10, 1:], self.depths, label=profils[i*10,0])
+                #print(profils[i, 1:])
+        except IndexError :
+            print('Not enough values in files')
         self.axes.legend(loc='best')
 
     def update_(self, new_pdf, depths=None):
