@@ -168,7 +168,7 @@ class Point(object):
         new_dft.to_csv(self.tprocessedfile, index=False)
         new_dfp.to_csv(self.pprocessedfile, index=False)
 
-        return(dft, dfp)
+        return(new_dft, new_dfp)
 
     
     def setColumn(self, sensorDir):
