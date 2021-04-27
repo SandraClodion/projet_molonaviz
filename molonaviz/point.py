@@ -148,6 +148,7 @@ class Point(object):
 
         scriptDir = self.pointDir + "/script.py"
         sys.path.append(self.pointDir)
+
         with open(scriptDir, "w") as f:
             f.write(script)
             f.close()
@@ -157,6 +158,9 @@ class Point(object):
         new_dft, new_dfp = fonction(dft, dfp)
 
         os.remove(scriptDir)
+        del sys.modules["script"]
+
+        #exec(script)
 
         #On réécrit les csv:
         os.remove(self.tprocessedfile)
@@ -164,7 +168,7 @@ class Point(object):
         new_dft.to_csv(self.tprocessedfile, index=False)
         new_dfp.to_csv(self.pprocessedfile, index=False)
 
-        return(new_dft, new_dfp)
+        return(dft, dfp)
 
     
     def setColumn(self, sensorDir):
