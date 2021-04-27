@@ -51,6 +51,8 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         self.pushButtonRestoreDefault.clicked.connect(self.setDefaultValues)
         self.pushButtonRestoreDefault.setToolTip("All parameters will be set to default value")
 
+        self.pushButtonCancel.clicked.connect(self.close)
+
         self.labelMoinsLog10KDirect.setToolTip("Please enter -log10K, K being permeability")
 
     def setDefaultValues(self):
