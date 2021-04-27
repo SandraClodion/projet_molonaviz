@@ -180,14 +180,14 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         res = dlg.exec()
         if res == QtWidgets.QDialog.Accepted:
             pointname = dlg.getPointName()
-            print(f"Opening {pointname} ...", end = "") #Pb : ne s'affiche pas tant que tout n'est pas chargé chez Sandra
+            print(f"Opening {pointname} ...") #Pb : ne s'affiche pas tant que tout n'est pas chargé chez Sandra
             point = self.pointModel.findItems(pointname)[0].data(QtCore.Qt.UserRole)
             self.openPointView(point)
             print(" ==> done")
 
     def openPointfromTree(self):
         point = self.treeViewDataPoints.selectedIndexes()[0].data(QtCore.Qt.UserRole)
-        print(f"Opening {point.getName()} ...", end = "")
+        print(f"Opening {point.getName()} ...")
         self.openPointView(point)
         print(" ==> done")
 

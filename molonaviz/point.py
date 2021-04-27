@@ -43,7 +43,7 @@ class Point(object):
         presscsv = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
         infocsv = os.path.join(self.pointDir, "info_data", "info.csv")
         
-        df = pd.read_csv(infocsv, sep=";", header=None, index_col=0)
+        df = pd.read_csv(infocsv, header=None, index_col=0)
         #self.oldName = df.iloc[0].at[1] 
         self.psensor = df.iloc[1].at[1]
         self.shaft = df.iloc[2].at[1]

@@ -62,7 +62,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         file.close()
             #Infos
         infoFile = self.pointDir + "/info_data" + "/info.csv"
-        dfinfo = pd.read_csv(infoFile, sep=';', header=None)
+        dfinfo = pd.read_csv(infoFile, header=None)
         self.infosModel = PandasModel(dfinfo)
         self.tableViewInfos.setModel(self.infosModel)
         self.tableViewInfos.horizontalHeader().hide()

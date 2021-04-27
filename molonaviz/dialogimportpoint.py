@@ -78,7 +78,7 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
                     filePath = os.path.join(dirPath, file)
                     try :
                         self.lineEditInfo.setText(filePath) 
-                        df = pd.read_csv(filePath, sep=';', header=None, index_col=0)
+                        df = pd.read_csv(filePath, header=None, index_col=0)
                         if not self.lineEditName.text(): 
                         #on n'importe pas le nom si un autre nom a été choisi par l'utilisateur
                             self.lineEditName.setText(df.iloc[0].at[1])
@@ -129,7 +129,7 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
         filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
         if filePath:
             self.lineEditInfo.setText(filePath) 
-            df = pd.read_csv(filePath, sep=';', header=None, index_col=0)
+            df = pd.read_csv(filePath, header=None, index_col=0)
             if not self.lineEditName.text(): 
             #on n'importe pas le nom si un autre nom a été choisi par l'utilisateur
                 self.lineEditName.setText(df.iloc[0].at[1])

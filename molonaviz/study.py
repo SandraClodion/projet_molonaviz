@@ -65,7 +65,7 @@ class Study(object):
     
         pointDir = os.path.join(self.rootDir, name) #le dossier porte le nom du point
         
-        df_info = pd.read_csv(infofile, sep=";", header=None, index_col=0)
+        df_info = pd.read_csv(infofile, header=None, index_col=0)
         psensor = df_info.iloc[1].at[1]
         shaft = df_info.iloc[2].at[1]
         rivBed = float(df_info.iloc[5].at[1])
