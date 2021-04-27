@@ -43,3 +43,17 @@ class TextFileError(Exception):
     
     def getFilesNumber(self):
         return self.filesNumber
+
+class LoadingError(Exception):
+
+    """
+    classdoc
+    """
+
+    def __init__(self, object: str):
+        self.object = object
+
+    def __str__(self):
+        return f"Error : Couldn't load {self.object}"
+
+

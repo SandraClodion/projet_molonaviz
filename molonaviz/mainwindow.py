@@ -93,12 +93,26 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
     def createStudy(self):
         dlg = DialogStudy()
         res = dlg.exec_()
+        errors = False
         if res == QtWidgets.QDialog.Accepted:
             try :
                 self.currentStudy = dlg.setStudy()
                 self.currentStudy.saveStudyToText()
-                print("New study successfully created")
-                self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
+                try :
+                    self.openStudy() #on ouvre automatiquement une étude qui vient d'être créée
+                except LoadingError as e :
+                    print(e)
+                    print('Study creation aborted')
+                    shutil.rmtree(self.currentStudy.getRootDir())
+                    return
+                except Exception as e :
+                    try :
+                        print(e)
+                    except :
+                        print('Unknown error')
+                    print('Study creation aborted')
+                    shutil.rmtree(self.currentStudy.getRootDir())
+                    return 
             except EmptyFieldError as e:
                 displayCriticalMessage(f"{str(e)} \nPlease try again")
                 self.createStudy()
@@ -107,6 +121,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                 self.createStudy()
             except Exception as error:
                 print('error')
+            print("New study successfully created")
 
     def openStudy(self):
         if self.currentStudy == None : #si on ne vient pas de créer une étude
@@ -131,19 +146,19 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         try :
             self.currentStudy.loadPressureSensors(self.pSensorModel)
         except Exception :
-            print('error in loading PressureSensors')
+            raise LoadingError("pressure sensors")
         try : 
             self.currentStudy.loadShafts(self.shaftModel)
         except Exception :
-            print('error in loading Shafts')
+            raise LoadingError("shafts")
         try :
             self.currentStudy.loadThermometers(self.thermometersModel)
         except Exception :
-            print('error in loading Thermometers')
+            raise LoadingError("thermometers")
         try :
             self.currentStudy.loadPoints(self.pointModel)
         except Exception :
-            print('error in loading Points')
+            print('Error in loading points')
 
 
         #le menu point n'est pas actif tant qu'aucune étude n'est ouverte et chargée
