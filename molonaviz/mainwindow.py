@@ -232,7 +232,8 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                 
                 print("Point successfully removed")
             else : 
-                displayInfoMessage("Point removal aborted")
+                #displayInfoMessage("Point removal aborted")
+                print("Point removal aborted")
 
     def switchToTabbedView(self):
         self.mdi.setViewMode(QtWidgets.QMdiArea.TabbedView)
