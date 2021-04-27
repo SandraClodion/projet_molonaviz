@@ -443,6 +443,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.BestParamsModel = PandasModel(self.dfbestparams)
         self.tableViewBestParams.setModel(self.BestParamsModel)
         self.tableViewBestParams.resizeColumnsToContents()
+        self.tableViewBestParams.verticalHeader().hide()
+        self.tableViewBestParams.verticalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        self.tableViewBestParams.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        self.tableViewBestParams.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        self.tableViewBestParams.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        self.tableViewBestParams.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
 
 
 
