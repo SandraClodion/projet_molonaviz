@@ -6,7 +6,7 @@ import pandas as pd
 from pandasmodel import PandasModel
 from dialogcleanup import DialogCleanup
 from dialogcompute import DialogCompute
-from usefulfonctions import displayInfoMessage
+from usefulfonctions import displayInfoMessage, displayCriticalMessage
 from point import Point
 from study import Study
 from mplcanvas import MplCanvas, MplCanvasHisto, MplCanvaHeatFluxes
@@ -163,6 +163,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                     print("Plots successfully updated")
                 except Exception as e :
                     print(e, "==> Clean-up aborted")
+                    displayCriticalMessage("Error : Clean-up aborted", f'Clean-up was aborted due to the following error : \n"{str(e)}" ' )
     
 
     def compute(self):
