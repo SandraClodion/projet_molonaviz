@@ -62,6 +62,10 @@ class Point(object):
             pointModel.appendRow(item)
             self.tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
             self.pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
+            item.appendRow(QtGui.QStandardItem(f"pressure sensor : {self.psensor}"))
+            item.appendRow(QtGui.QStandardItem(f"shaft : {self.shaft}"))
+            item.appendRow(QtGui.QStandardItem(f"rivBed = {self.rivBed:.2f}"))
+            item.appendRow(QtGui.QStandardItem(f"offset = {self.deltaH:.2f}"))
         except Exception as e :
             shutil.rmtree(self.pointDir)
             raise e
