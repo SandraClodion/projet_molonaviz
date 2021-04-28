@@ -93,7 +93,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>8</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabInfos">
       <attribute name="title">
@@ -563,6 +563,9 @@
          </item>
          <item>
           <widget class="QSlider" name="horizontalSliderBins">
+           <property name="value">
+            <number>0</number>
+           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>

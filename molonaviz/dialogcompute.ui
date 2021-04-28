@@ -122,14 +122,14 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Sediment Thermal Conductivity:</string>
+        <string>Sediment Thermal Conductivity (W/m/K):</string>
        </property>
       </widget>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Equivalent Thermal Capacity:</string>
+        <string>Solid volumetric thermal capacity (J/m^3/kg):</string>
        </property>
       </widget>
      </item>
@@ -277,7 +277,7 @@
       </font>
      </property>
      <property name="text">
-      <string>MCMC</string>
+      <string>Bayesian Inversion</string>
      </property>
     </widget>
    </item>
@@ -482,7 +482,7 @@
      <item row="4" column="0">
       <widget class="QLabel" name="label_16">
        <property name="text">
-        <string>Equivalent Thermal Capacity (J/m^3/kg):</string>
+        <string>Solid volumetric thermal capacity (J/m^3/kg):</string>
        </property>
       </widget>
      </item>
