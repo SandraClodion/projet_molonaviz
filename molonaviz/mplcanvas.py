@@ -161,6 +161,66 @@ class MplCanvasHisto(FigureCanvasQTAgg):
         self.setHistos()
         self.draw()
 
+class MplTempbydepth(FigureCanvasQTAgg):
+
+    def __init__(self, pdf, datatype, depths, depth_index=0, nb_quantiles=None, width=5, height=8, dpi=100):
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = self.fig.add_subplot(111)
+        super(MplTempbydepth, self).__init__(self.fig)
+        self.fig.tight_layout(h_pad=5, pad=5)
+        self.pdf = pdf
+        self.datatype = datatype
+        self.depth_index = depth_index
+        self.nb_quantiles = nb_quantiles
+        self.depths = depths
+
+        self.setTime()
+        self.setCurves()
+
+    def setTime(self):
+            time = self.pdf[self.pdf.columns[0]].values.tolist()
+            #print(time)
+            a = [datetime.strptime(t, '%y/%m/%d %H:%M:%S') for t in time]
+            self.x = mdates.date2num(a)
+            formatter = mdates.DateFormatter("%y/%m/%d %H:%M:%S")
+            self.axes.xaxis.set_major_formatter(formatter)
+            self.axes.xaxis.set_major_locator(MaxNLocator(4))
+            plt.setp(self.axes.get_xticklabels(), rotation = 15)
+            #self.axes.set_xlabel("Dates") Inutile
+    
+    def setCurves(self):
+        if self.datatype == "direct":
+            #Il n'y a pas de quantiles à prendre en compte
+            data = self.pdf[self.pdf.columns[self.depth_index+1]].values.tolist()
+            self.axes.plot(self.x, data)
+        elif self.datatype == "MCMC":
+            #Il faut prendre en compte les quantiles
+            index = 1 + self.nb_quantiles*self.depth_index
+            for i in range(self.nb_quantiles+1):
+                label = self.pdf.columns[index + i]
+                data = self.pdf[label].values.tolist()
+                self.axes.plot(self.x, data, label=label)
+        self.axes.set_title(f"Température à la profondeur {self.depths.values[self.depth_index]}")
+        self.axes.set_ylabel("Température (K)")
+        self.axes.legend(loc='best', fontsize='xx-small')
+    
+    def update_(self, pdf, depths, nb_quantiles=None):
+        self.pdf = pdf
+        self.depths = depths
+        self.nb_quantiles = nb_quantiles
+        self.axes.clear()
+        self.setTime()
+        self.setCurves()
+        self.draw()
+
+    def refresh(self, depth_index):
+        self.depth_index = depth_index
+        self.axes.clear()
+        self.setTime()
+        self.setCurves()
+        self.draw()
+
+
 
 
 class MplCanvaHeatFluxes(FigureCanvasQTAgg):

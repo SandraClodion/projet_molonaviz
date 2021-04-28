@@ -195,38 +195,41 @@ class Compute(QtCore.QObject):
         
         times = self.col.times_solve
 
-        temp = self.col.temps_solve[:,0] #température à l'interface
-        QUANTILES = []
-        for quantile in self.quantiles :
-            QUANTILES.append(self.col.get_temps_quantile(quantile)[:,0])
-        #quantile05 = self.col.get_temps_quantile(0.05)[:,0]
-        #quantile50 = self.col.get_temps_quantile(0.5)[:,0]
-        #quantile95 = self.col.get_temps_quantile(0.95)[:,0]
+        dataframe_list = []
 
-        # Formatage des dates
-        n_dates = len(times)
-        times_string = np.zeros((n_dates,1))
-        times_string = times_string.astype('str')
-        for i in range(n_dates):
-            times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
+        for l in range(self.col.temps_solve.shape[1]):
 
-        # Création du dataframe
-        np_temps_quantiles = np.zeros((n_dates,len(QUANTILES)+1))
-        for i in range(n_dates):
-            np_temps_quantiles[i,0] = temp[i]
-            for k in range(len(QUANTILES)):
-                np_temps_quantiles[i, k+1] = QUANTILES[k][i]
-            #np_temps_quantiles[i,1] = quantile05[i]
-            #np_temps_quantiles[i,2] = quantile50[i]
-            #np_temps_quantiles[i,3] = quantile95[i]
-        np_temps_times_and_quantiles = np.concatenate((times_string, np_temps_quantiles), axis=1)
-        columns_names = ["Date Heure, GMT+01:00", 
-        "Température à l'interface (K) - pour les meilleurs paramètres"]
-        for quantile in self.quantiles :
-            columns_names.append(f"Température à l'interface (K) - quantile {quantile}")
-        df_temps_quantiles = pd.DataFrame(np_temps_times_and_quantiles, 
-        columns=columns_names)
+            temp = self.col.temps_solve[:,l] #température à la lème profondeur
+            QUANTILES = []
+            for quantile in self.quantiles :
+                QUANTILES.append(self.col.get_temps_quantile(quantile)[:,l])
 
+
+            # Formatage des dates
+            n_dates = len(times)
+            times_string = np.zeros((n_dates,1))
+            times_string = times_string.astype('str')
+            for i in range(n_dates):
+                times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
+
+            # Création du dataframe
+            np_temps_quantiles = np.zeros((n_dates,len(QUANTILES)+1))
+            for i in range(n_dates):
+                np_temps_quantiles[i,0] = temp[i]
+                for k in range(len(QUANTILES)):
+                    np_temps_quantiles[i, k+1] = QUANTILES[k][i]
+
+            np_temps_times_and_quantiles = np.concatenate((times_string, np_temps_quantiles), axis=1)
+            columns_names = ["Date Heure, GMT+01:00", 
+            f"Température à la profondeur {l} (K) - pour les meilleurs paramètres"]
+            for quantile in self.quantiles :
+                columns_names.append(f"Température à la profondeur {l} (K) - quantile {quantile}") #À modifier pour avoir les vrais noms
+            df_temps_quantiles = pd.DataFrame(np_temps_times_and_quantiles, 
+            columns=columns_names)
+            dataframe_list.append(df_temps_quantiles)
+
+        for dataframe in dataframe_list :
+            df_temps_quantiles = pd.concat([df_temps_quantiles, dataframe[dataframe.columns[1:]]], axis=1)
         # Sauvegarde sous forme d'un fichier csv
         temps_quantiles_file = os.path.join(resultsDir, 'MCMC_temps_quantiles.csv')
         df_temps_quantiles.to_csv(temps_quantiles_file, index=False)

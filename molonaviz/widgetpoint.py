@@ -9,7 +9,7 @@ from dialogcompute import DialogCompute
 from usefulfonctions import displayInfoMessage, displayCriticalMessage
 from point import Point
 from study import Study
-from mplcanvas import MplCanvas, MplCanvasHisto, MplCanvaHeatFluxes
+from mplcanvas import MplCanvas, MplCanvasHisto, MplCanvaHeatFluxes, MplTempbydepth
 from compute import Compute
 import numpy as np
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -46,6 +46,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.pushButtonCleanUp.clicked.connect(self.cleanup)
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
+        self.pushButtonRefresh.clicked.connect(self.refresh)
         
         self.setPressureAndTemperatureModels()
         self.setDataPlots()
@@ -204,12 +205,15 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.computeEngine.computeDirectModel(params, nb_cells, sensorDir)
 
             self.setDataFrames('DirectModel')
+            self.comboBoxDepth.clear()
+            for depth in self.dfdepths.values.tolist():
+                self.comboBoxDepth.insertItem(len(self.dfdepths.values.tolist()), str(depth))
 
             if self.directmodeliscomputed :
                 print('Direct Model is computed')
                 self.graphwaterdirect.update_(self.dfwater)
                 self.graphsolvedtempdirect.update_(self.dfsolvedtemp, self.dfdepths)
-                self.graphintertempdirect.update_(self.dfintertemp)
+                self.graphintertempdirect.update_(self.dfsolvedtemp, self.dfdepths)
                 self.graphfluxesdirect.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
                 self.parapluies.update_(self.dfsolvedtemp, self.dfdepths)
                 print("Model successfully updated !")
@@ -233,7 +237,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
                 #Température à l'interface
                 clearLayout(self.vboxintertempdirect)
-                self.plotInterfaceTempDirect(self.dfintertemp)
+                self.plotInterfaceTempDirect(self.dfsolvedtemp, self.dfdepths)
 
                 self.directmodeliscomputed = True
                 print("Model successfully created !")
@@ -241,6 +245,10 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
     
         if res == 1 : #MCMC
             nb_iter, priors, nb_cells, quantiles = dlg.getInputMCMC()
+            self.nb_quantiles = len(quantiles)
+            with open(self.MCMCDir+"/nb_quantiles", "w") as f:
+                f.write(str(self.nb_quantiles))
+                f.close()
             # compute = Compute(self.point)
             # compute.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
             self.computeEngine.MCMCFinished.connect(self.onMCMCFinished)
@@ -250,11 +258,15 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
         self.setDataFrames('MCMC')
 
+        self.comboBoxDepth.clear()
+        for depth in self.dfdepths.values.tolist():
+            self.comboBoxDepth.insertItem(len(self.dfdepths.values.tolist()), str(depth))
+
         if self.MCMCiscomputed :
             print('MCMC is computed')
             self.graphwaterMCMC.update_(self.dfwater)
             self.graphsolvedtempMCMC.update_(self.dfsolvedtemp, self.dfdepths)
-            self.graphintertempMCMC.update_(self.dfintertemp)
+            self.graphintertempMCMC.update_(self.dfintertemp, self.dfdepths, nb_quantiles=self.nb_quantiles)
             self.graphfluxesMCMC.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
             self.histos.update_(self.dfallparams)
             self.parapluiesMCMC.update_(self.dfsolvedtemp, self.dfdepths)
@@ -279,7 +291,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.plotParapluiesMCMC(self.dfsolvedtemp, self.dfdepths)
             #Température à l'interface
             clearLayout(self.vboxintertempMCMC)
-            self.plotInterfaceTempMCMC(self.dfintertemp)
+            self.plotInterfaceTempMCMC(self.dfintertemp, self.dfdepths, self.nb_quantiles)
 
             #Histogrammes
             clearLayout(self.vboxhistos)
@@ -290,6 +302,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.MCMCiscomputed = True
             print("Model successfully created !")
 
+
+    def refresh(self):
+        depth_index = self.comboBoxDepth.currentIndex()
+        self.graphintertempdirect.refresh(depth_index)
+        self.graphintertempMCMC.refresh(depth_index)
+        self.comboBoxDepth.setCurrentIndex(depth_index)
 
     def setDataPlots(self):
 
@@ -322,7 +340,6 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         
         # Le reste directement dans le fichier .ui (permet de voir les 2 méthodes)
 
-
         if self.directmodeliscomputed:
 
             self.setDataFrames('DirectModel')
@@ -339,7 +356,10 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.plotParapluies(self.dfsolvedtemp, self.dfdepths)
 
             #La température à l'interface
-            self.plotInterfaceTempDirect(self.dfintertemp)
+            self.plotInterfaceTempDirect(self.dfsolvedtemp, self.dfdepths)
+            self.comboBoxDepth.clear()
+            for depth in self.dfdepths.values.tolist():
+                self.comboBoxDepth.insertItem(len(self.dfdepths.values.tolist()), str(depth))
 
             #Le reste à rajouter plus tard
 
@@ -366,7 +386,10 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.plotParapluiesMCMC(self.dfsolvedtemp, self.dfdepths)
 
             #La température à l'interface
-            self.plotInterfaceTempMCMC(self.dfintertemp)
+            self.plotInterfaceTempMCMC(self.dfintertemp, self.dfdepths, self.nb_quantiles)
+            self.comboBoxDepth.clear()
+            for depth in self.dfdepths.values.tolist():
+                self.comboBoxDepth.insertItem(len(self.dfdepths.values.tolist()), str(depth))
 
             #Les histogrammes
             self.histos(self.dfallparams)
@@ -389,8 +412,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.dfwater = pd.read_csv(self.directmodelDir + "/solved_flows.csv")
             self.dfdepths = pd.read_csv(self.directdepthsdir)
             self.dfsolvedtemp = pd.read_csv(self.directmodelDir + "/solved_temperatures.csv")
-            self.dfintertemp = self.dfsolvedtemp[self.dfsolvedtemp.columns[0:2]]
-            #print(self.dfintertemp)
+            #self.dfintertemp = self.dfsolvedtemp[self.dfsolvedtemp.columns[0:2]]
+            #C'EST ICI QU'ON AJOUTE LE CHOIX DE LA PROFONDEUR ?
             self.dfadvec = pd.read_csv(self.directmodelDir + "/advective_flux.csv")
             self.dfconduc = pd.read_csv(self.directmodelDir + "/conductive_flux.csv")
             self.dftot = pd.read_csv(self.directmodelDir + "/total_flux.csv")
@@ -400,13 +423,17 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.dfsolvedtemp = pd.read_csv(self.MCMCDir + "/solved_temperatures.csv")
             self.dfdepths = pd.read_csv(self.MCMCdepthsdir)
             self.dfintertemp = pd.read_csv(self.MCMCDir + "/MCMC_temps_quantiles.csv")
+            #C'EST ICI QU'ON AJOUTE LE CHOIX DE LA PROFONDEUR ?
             self.dfallparams = pd.read_csv(self.MCMCDir + "/MCMC_all_params.csv")
             self.dfadvec = pd.read_csv(self.MCMCDir + "/advective_flux.csv")
             self.dfconduc = pd.read_csv(self.MCMCDir + "/conductive_flux.csv")
             self.dftot = pd.read_csv(self.MCMCDir + "/total_flux.csv")
             self.dfbestparams = pd.read_csv(self.MCMCDir + "/MCMC_best_params.csv")
             self.dfbestparams = self.dfbestparams[self.dfbestparams.columns[1:]].round(decimals=3)
-            print(self.dfbestparams)
+            #print(self.dfbestparams)
+            with open(self.MCMCDir+"/nb_quantiles", "r") as f:
+                self.nb_quantiles = int(f.read())
+                f.close()
 
 
 
@@ -446,14 +473,14 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.vboxfrisetempMCMC.addWidget(self.graphsolvedtempMCMC)
         self.vboxfrisetempMCMC.addWidget(self.toolbarsolvedtempMCMC)
     
-    def plotInterfaceTempDirect(self, dfintertemp):
-        self.graphintertempdirect = MplCanvas(dfintertemp, "temperature interface")
+    def plotInterfaceTempDirect(self, dfintertemp, depths):
+        self.graphintertempdirect = MplTempbydepth(dfintertemp, "direct", depths)
         self.toolbarintertempdirect = NavigationToolbar(self.graphintertempdirect, self)
         self.vboxintertempdirect.addWidget(self.graphintertempdirect)
         self.vboxintertempdirect.addWidget(self.toolbarintertempdirect)
     
-    def plotInterfaceTempMCMC(self, dfintertemp):
-        self.graphintertempMCMC = MplCanvas(dfintertemp, "temperature with quantiles")
+    def plotInterfaceTempMCMC(self, dfintertemp, depths, nb_quantiles):
+        self.graphintertempMCMC = MplTempbydepth(dfintertemp, "MCMC", depths, nb_quantiles=nb_quantiles)
         self.toolbarintertempMCMC = NavigationToolbar(self.graphintertempMCMC, self)
         self.vboxintertempMCMC.addWidget(self.graphintertempMCMC)
         self.vboxintertempMCMC.addWidget(self.toolbarintertempMCMC)

@@ -93,7 +93,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>8</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="tabInfos">
       <attribute name="title">
@@ -376,9 +376,37 @@
      </widget>
      <widget class="QWidget" name="tabSolvedInterfaceTemp">
       <attribute name="title">
-       <string>Solved Interface Temperature</string>
+       <string>Solved Temperature by Depth</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_16">
+      <layout class="QVBoxLayout" name="verticalLayout_14">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,0,0,0">
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Mettre les paramètres ICI</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Choose the depth :</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxDepth"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonRefresh">
+           <property name="text">
+            <string>Refresh</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <widget class="QScrollArea" name="scrollArea_6">
          <property name="widgetResizable">
@@ -390,7 +418,7 @@
             <x>0</x>
             <y>0</y>
             <width>1368</width>
-            <height>649</height>
+            <height>607</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_15">
