@@ -47,6 +47,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.pushButtonCompute.clicked.connect(self.compute)
         self.checkBoxRaw_Data.stateChanged.connect(self.checkbox)
         self.pushButtonRefresh.clicked.connect(self.refresh)
+        self.pushButtonRefreshBins.clicked.connect(self.refreshbins)
+        self.horizontalSliderBins.valueChanged.connect(self.label_update)
         
         self.setPressureAndTemperatureModels()
         self.setDataPlots()
@@ -311,6 +313,13 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.graphintertempMCMC.refresh(depth_index)
         self.comboBoxDepth.setCurrentIndex(depth_index)
 
+    def refreshbins(self):
+        if self.MCMCiscomputed:
+            bins = self.horizontalSliderBins.value()
+            self.histos.refresh(bins)
+        else :
+            print("Please run the MCMC first")
+
     def setDataPlots(self):
 
         #La pression :
@@ -515,7 +524,9 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.tableViewBestParams.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         self.tableViewBestParams.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
         self.tableViewBestParams.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
-
+    
+    def label_update(self):
+        self.labelBins.setText(str(self.horizontalSliderBins.value()))
 
 
 

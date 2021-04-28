@@ -136,19 +136,20 @@ class MplCanvas(FigureCanvasQTAgg):
 
 class MplCanvasHisto(FigureCanvasQTAgg):
 
-    def __init__(self, df, width=5, height=5, dpi=100):
+    def __init__(self, df, bins=60, width=5, height=5, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.ax = self.fig.add_subplot(221), self.fig.add_subplot(222), self.fig.add_subplot(223), self.fig.add_subplot(224)
         super(MplCanvasHisto, self).__init__(self.fig)
         self.fig.tight_layout(h_pad=2, pad=2)
         self.df = df
+        self.bins = bins
         self.setHistos()
     
     def setHistos(self):
         colors = ['green', 'blue', 'orange', 'pink']
         for i in range(4):
             data = self.df[self.df.columns[i+1]].values.tolist()
-            self.ax[i].hist(data, edgecolor='black', bins=60, alpha=.3, density=True, color=colors[i])
+            self.ax[i].hist(data, edgecolor='black', bins=self.bins, alpha=.3, density=True, color=colors[i])
         self.ax[0].set_title("Histogramme a posteriori des -log10K")
         self.ax[1].set_title("Histogramme a posteriori des n")
         self.ax[2].set_title("Histogramme a posteriori des lambda_s")
@@ -156,6 +157,13 @@ class MplCanvasHisto(FigureCanvasQTAgg):
     
     def update_(self, new_df):
         self.df = new_df
+        for ax in self.ax :
+            ax.clear()
+        self.setHistos()
+        self.draw()
+    
+    def refresh(self, bins):
+        self.bins = bins
         for ax in self.ax :
             ax.clear()
         self.setHistos()
