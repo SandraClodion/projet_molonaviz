@@ -305,8 +305,10 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
     def refresh(self):
         depth_index = self.comboBoxDepth.currentIndex()
-        self.graphintertempdirect.refresh(depth_index)
-        self.graphintertempMCMC.refresh(depth_index)
+        if self.directmodeliscomputed:
+            self.graphintertempdirect.refresh(depth_index)
+        if self.MCMCiscomputed:
+            self.graphintertempMCMC.refresh(depth_index)
         self.comboBoxDepth.setCurrentIndex(depth_index)
 
     def setDataPlots(self):
