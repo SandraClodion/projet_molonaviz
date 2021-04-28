@@ -88,6 +88,8 @@ class MplCanvas(FigureCanvasQTAgg):
                 self.axes.set_ylabel("Débit d'eau (m/s)")
             elif self.datatype =="temperature interface":
                 self.axes.set_ylabel("Température de l'interface (K)")
+        
+        self.axes.grid(True)
     
     def setFrises(self):
         profils = self.pdf.to_numpy()
@@ -171,7 +173,7 @@ class MplCanvasHisto(FigureCanvasQTAgg):
 
 class MplTempbydepth(FigureCanvasQTAgg):
 
-    def __init__(self, pdf, datatype, depths, depth_index=0, nb_quantiles=None, width=5, height=8, dpi=100):
+    def __init__(self, pdf, datatype, depths, depth_index=0, nb_quantiles=None, width=5, height=5, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)
         super(MplTempbydepth, self).__init__(self.fig)
@@ -265,8 +267,8 @@ class MplCanvaHeatFluxes(FigureCanvasQTAgg):
         #profils = np.flipud(profils)
         image = self.ax[0].imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.ax[0].xaxis_date()
-        self.ax[0].set_title('Flux advectif')
-        self.ax[0].set_ylabel("Flux d'énergie (W/m2)")
+        self.ax[0].set_title('Flux advectif (W/m2)')
+        self.ax[0].set_ylabel("Profondeur (m)")
         self.colorbar_advec = plt.colorbar(image, ax=self.ax[0])
 
         profils = self.df_conduc.to_numpy()
@@ -275,8 +277,8 @@ class MplCanvaHeatFluxes(FigureCanvasQTAgg):
         #profils = np.flipud(profils)
         image = self.ax[1].imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.ax[1].xaxis_date()
-        self.ax[1].set_title('Flux conductif')
-        self.ax[1].set_ylabel("Flux d'énergie (W/m2)")
+        self.ax[1].set_title('Flux conductif (W/m2)')
+        self.ax[1].set_ylabel("Profondeur (m)")
         self.colorbar_conduc = plt.colorbar(image, ax=self.ax[1])
 
         profils = self.df_tot.to_numpy()
@@ -285,8 +287,8 @@ class MplCanvaHeatFluxes(FigureCanvasQTAgg):
         #profils = np.flipud(profils)
         image = self.ax[2].imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.ax[2].xaxis_date()
-        self.ax[2].set_title("Flux d'énergie total")
-        self.ax[2].set_ylabel("Flux d'énergie (W/m2)")
+        self.ax[2].set_title("Flux d'énergie total (W/m2)")
+        self.ax[2].set_ylabel("Profondeur (m)")
         self.colorbar_tot = plt.colorbar(image, ax=self.ax[2])
     
     def update_(self, df_advec, df_conduc, df_tot, df_depths):
