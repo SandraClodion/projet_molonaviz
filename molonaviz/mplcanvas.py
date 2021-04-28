@@ -86,6 +86,8 @@ class MplCanvas(FigureCanvasQTAgg):
     def setFrises(self):
         profils = self.pdf.to_numpy()
         profils = profils[:,1:].astype(np.float)
+        profils = np.transpose(profils) #à vérifier
+        profils = np.flipud(profils) #à vérifier
         depths = self.depths[self.depths.columns[0]].values.tolist()
         image = self.axes.imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.axes.xaxis_date()
@@ -98,13 +100,14 @@ class MplCanvas(FigureCanvasQTAgg):
         pas = n // 10
         self.axes.set_xlabel("Température en K")
         self.axes.set_ylabel("Profondeur en m")
+        self.axes.set_ylim(float(self.depths.values[-1]), float(self.depths.values[0]))
         try :
             for i in range(10):
                 self.axes.plot(profils[i*10, 1:], self.depths, label=profils[i*10,0])
                 #print(profils[i, 1:])
         except IndexError :
             print('Not enough values in files')
-        self.axes.legend(loc='best')
+        self.axes.legend(loc='best', fontsize='xx-small')
 
     def update_(self, new_pdf, depths=None):
         self.axes.clear()
@@ -183,6 +186,8 @@ class MplCanvaHeatFluxes(FigureCanvasQTAgg):
         
         profils = self.df_advec.to_numpy()
         profils = profils[:,1:].astype(np.float)
+        profils = np.transpose(profils)
+        profils = np.flipud(profils)
         image = self.ax[0].imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.ax[0].xaxis_date()
         self.ax[0].set_title('Flux advectif')
@@ -190,6 +195,8 @@ class MplCanvaHeatFluxes(FigureCanvasQTAgg):
 
         profils = self.df_conduc.to_numpy()
         profils = profils[:,1:].astype(np.float)
+        profils = np.transpose(profils)
+        profils = np.flipud(profils)
         image = self.ax[1].imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.ax[1].xaxis_date()
         self.ax[1].set_title('Flux conductif')
@@ -197,6 +204,8 @@ class MplCanvaHeatFluxes(FigureCanvasQTAgg):
 
         profils = self.df_tot.to_numpy()
         profils = profils[:,1:].astype(np.float)
+        profils = np.transpose(profils)
+        profils = np.flipud(profils)
         image = self.ax[2].imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.ax[2].xaxis_date()
         self.ax[2].set_title("Flux d'énergie total")
