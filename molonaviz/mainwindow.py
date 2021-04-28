@@ -71,6 +71,9 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.actionRemove_Point.triggered.connect(self.removePoint)
         self.actionSwitch_To_Tabbed_View.triggered.connect(self.switchToTabbedView)
         self.actionSwitch_To_SubWindow_View.triggered.connect(self.switchToSubWindowView)
+        
+        self.actionData_Points.triggered.connect(self.changeDockPointsStatus)
+
         self.treeViewDataPoints.doubleClicked.connect(self.openPointfromTree)
 
         self.pushButtonClear.clicked.connect(self.clearText)
@@ -95,6 +98,12 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
     def aboutUs(self):
         dlg = DialogAboutUs()
         dlg.exec_()
+    
+    def changeDockPointsStatus(self):
+        if self.actionData_Points.isChecked() == True :
+            print(True)
+        else :
+            print(False)
 
     def createStudy(self):
         dlg = DialogStudy()
@@ -130,7 +139,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                 displayCriticalMessage(f"{str(e)} \nPlease try again")
                 self.createStudy()
             except Exception as error:
-                print(f'error : {str(e)}')
+                print(f'error : {str(error)}')
                 self.currentStudy = None
             print("New study successfully created")
 
