@@ -166,7 +166,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
     def cleanup(self):
         if self.currentdata == "raw":
-            print("Please clean-up your processed data.")
+            print("Please clean-up your processed data. Click again on the raw data box")
         else:
             dlg = DialogCleanup()
             res = dlg.exec_()

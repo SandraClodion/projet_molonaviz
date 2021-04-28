@@ -109,7 +109,7 @@ class MplCanvas(FigureCanvasQTAgg):
         self.axes.set_ylim(float(self.depths.values[-1]), float(self.depths.values[0]))
         try :
             for i in range(10):
-                self.axes.plot(profils[i*10, 1:], self.depths, label=profils[i*10,0])
+                self.axes.plot(profils[i*pas, 1:], self.depths, label=profils[i*pas,0])
                 #print(profils[i, 1:])
         except IndexError :
             print('Not enough values in files')
