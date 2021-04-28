@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>792</width>
+    <width>1019</width>
     <height>630</height>
    </rect>
   </property>
@@ -701,9 +701,9 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonCancel">
-       <property name="text">
-        <string>Cancel</string>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel</set>
        </property>
       </widget>
      </item>
@@ -712,5 +712,54 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>dialogCompute</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>624</x>
+     <y>586</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>314</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonMCMC</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogCompute</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>898</x>
+     <y>514</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>509</x>
+     <y>314</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonDirect</sender>
+   <signal>clicked()</signal>
+   <receiver>dialogCompute</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>933</x>
+     <y>227</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>509</x>
+     <y>314</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

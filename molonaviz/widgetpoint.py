@@ -173,7 +173,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         dlg = DialogCompute()
         res = dlg.exec()
 
-        if res == 0 : #Direct Model
+        if res == 10 : #Direct Model
             params, nb_cells = dlg.getInputDirectModel()
             # compute = Compute(self.point)
             # compute.computeDirectModel(params, nb_cells, sensorDir)
@@ -215,7 +215,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 print("Model successfully created !")
 
     
-        if res == 1 : #MCMC
+        if res == 11 : #MCMC
             nb_iter, priors, nb_cells = dlg.getInputMCMC()
             # compute = Compute(self.point)
             # compute.computeMCMC(nb_iter, priors, nb_cells, sensorDir)

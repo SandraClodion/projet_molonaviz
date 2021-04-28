@@ -51,8 +51,6 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         self.pushButtonRestoreDefault.clicked.connect(self.setDefaultValues)
         self.pushButtonRestoreDefault.setToolTip("All parameters will be set to default value")
 
-        self.pushButtonCancel.clicked.connect(self.close)
-
         self.labelMoinsLog10KDirect.setToolTip("Please enter -log10K, K being permeability")
 
     def setDefaultValues(self):
@@ -95,7 +93,7 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         lambda_s = float(self.lineEditThermalConductivityDirect.text())
         rhos_cs = float(self.lineEditThermalCapacityDirect.text())
         nb_cells = int(self.comboBoxNCellsDirect.currentText())
-        self.done(0)
+        self.done(10)
         return (moinslog10K, n, lambda_s, rhos_cs), nb_cells
 
     def getInputMCMC(self):
@@ -125,7 +123,7 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         "lambda_s": ((lambda_s_min, lambda_s_max), lambda_s_sigma),
         "rhos_cs": ((rhos_cs_min, rhos_cs_max), rhos_cs_sigma) }
         
-        self.done(1)
+        self.done(11)
         return nb_iter, priors, nb_cells
 
 
