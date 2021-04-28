@@ -11,6 +11,7 @@ from dialogfindstudy import DialogFindStudy
 from dialogimportpoint import DialogImportPoint
 from dialogopenpoint import DialogOpenPoint
 from dialogremovepoint import DialogRemovePoint
+from dialogaboutus import DialogAboutUs
 from queuethread import *
 from usefulfonctions import *
 from errors import *
@@ -61,6 +62,7 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
         self.setWindowTitle("MolonaViz")
 
         self.actionQuit_MolonaViz.triggered.connect(self.exitApp)
+        self.actionAbout_MolonaViz.triggered.connect(self.aboutUs)
         self.actionOpen_Study.triggered.connect(self.openStudy)
         self.actionCreate_Study.triggered.connect(self.createStudy)
         self.actionClose_Study.triggered.connect(self.closeStudy)
@@ -89,6 +91,10 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
     
     def exitApp(self):
         QtWidgets.QApplication.quit()
+    
+    def aboutUs(self):
+        dlg = DialogAboutUs()
+        dlg.exec_()
 
     def createStudy(self):
         dlg = DialogStudy()
@@ -208,10 +214,6 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                 point.loadPoint(self.pointModel)
             except Exception as e :
                 print(f"Point import aborted : {str(e)}")
-                pointDir = point.getPointDir()
-                if os.path.exists(pointDir):
-                    shutil.rmtree(pointDir)
-                    #os.remove(pointDir)
                 displayCriticalMessage('Point import aborted', f"Couldn't import point due to the following error : \n{str(e)}")
            
     def openPoint(self):
@@ -296,7 +298,7 @@ if __name__ == '__main__':
 
     app = QtWidgets.QApplication(sys.argv)
     #app.setStyle('windows')
-    app.setWindowIcon(QtGui.QIcon("fakeMolonavizIcon.png")) #à modifier quand l'icone est prête
+    app.setWindowIcon(QtGui.QIcon("MolonavizIcon.png")) #à modifier quand l'icone est prête
     mainWin = MainWindow()
     mainWin.showMaximized()
 

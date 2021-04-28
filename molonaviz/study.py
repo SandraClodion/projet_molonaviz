@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore, uic
 import os, glob, shutil, errno
 import pandas as pd
 
-from usefulfonctions import clean_filename, celsiusToKelvin
+from usefulfonctions import *
 from point import Point
 from errors import *
 
@@ -65,39 +65,47 @@ class Study(object):
     
         pointDir = os.path.join(self.rootDir, name) #le dossier porte le nom du point
         
-        df_info = pd.read_csv(infofile, header=None, index_col=0)
-        psensor = df_info.iloc[1].at[1]
-        shaft = df_info.iloc[2].at[1]
-        rivBed = float(df_info.iloc[5].at[1])
-        deltaH = float(df_info.iloc[6].at[1])
-        
-        point = Point(name, pointDir, psensor, shaft, rivBed, deltaH)
+        try :
+            df_info = pd.read_csv(infofile, header=None, index_col=0)
+            psensor = df_info.iloc[1].at[1]
+            shaft = df_info.iloc[2].at[1]
+            rivBed = float(df_info.iloc[5].at[1])
+            deltaH = float(df_info.iloc[6].at[1])
+            
+            point = Point(name, pointDir, psensor, shaft, rivBed, deltaH)
 
-        os.mkdir(pointDir)
-        rawDataDir = os.path.join(pointDir, "raw_data")
-        processedDataDir = os.path.join(pointDir, "processed_data")
-        infoDataDir = os.path.join(pointDir, "info_data")
-        resultsDir = os.path.join(pointDir, "results")
+            os.mkdir(pointDir)
+            rawDataDir = os.path.join(pointDir, "raw_data")
+            processedDataDir = os.path.join(pointDir, "processed_data")
+            infoDataDir = os.path.join(pointDir, "info_data")
+            resultsDir = os.path.join(pointDir, "results")
 
-        os.mkdir(rawDataDir)
-        shutil.copyfile(prawfile, os.path.join(rawDataDir, "raw_pressures.csv"))
-        shutil.copyfile(trawfile, os.path.join(rawDataDir, "raw_temperatures.csv"))
+            os.mkdir(rawDataDir)
+            shutil.copyfile(prawfile, os.path.join(rawDataDir, "raw_pressures.csv"))
+            shutil.copyfile(trawfile, os.path.join(rawDataDir, "raw_temperatures.csv"))
 
-        os.mkdir(infoDataDir)
-        shutil.copyfile(infofile, os.path.join(infoDataDir, "info.csv"))
-        shutil.copyfile(noticefile, os.path.join(infoDataDir, "notice.txt"))
-        shutil.copyfile(configfile, os.path.join(infoDataDir, "config.png"))
-        
-        os.mkdir(processedDataDir)  
-        point.processData(self.sensorDir)
+            os.mkdir(infoDataDir)
+            shutil.copyfile(infofile, os.path.join(infoDataDir, "info.csv"))
+            shutil.copyfile(noticefile, os.path.join(infoDataDir, "notice.txt"))
+            shutil.copyfile(configfile, os.path.join(infoDataDir, "config.png"))
+            
+            os.mkdir(processedDataDir)  
+            point.processData(self.sensorDir)
 
-        os.mkdir(resultsDir)
-        resultsDirMCMC = os.path.join(pointDir, "results", "MCMC_results")
-        resultsDirDirectModel = os.path.join(pointDir, "results", "direct_model_results")
-        os.mkdir(resultsDirMCMC)
-        os.mkdir(resultsDirDirectModel)
+            os.mkdir(resultsDir)
+            resultsDirMCMC = os.path.join(pointDir, "results", "MCMC_results")
+            resultsDirDirectModel = os.path.join(pointDir, "results", "direct_model_results")
+            os.mkdir(resultsDirMCMC)
+            os.mkdir(resultsDirDirectModel)
+            return point
 
-        return point
+        except FileExistsError as e :
+            raise CustomError(f"{str(e)}\nPlease choose a different point name") 
+            return
+
+        except Exception as e :
+            shutil.rmtree(pointDir)
+            raise e
     
     
     # Fonctions utiles seulement dans le cadre de l'utilisation de l'interface graphique : 
