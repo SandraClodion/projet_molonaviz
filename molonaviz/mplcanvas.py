@@ -56,22 +56,24 @@ class MplCanvas(FigureCanvasQTAgg):
             self.axes.legend(loc='best')
             self.axes.set_ylabel("Températures (K)")
         
-        elif self.datatype == "temperature with quantiles":
+        #elif self.datatype == "temperature with quantiles":
             #On a 4 colonnes de températures
-            for i in range(1,5):
-                data = self.pdf[self.pdf.columns[i]].values.tolist()
-                self.axes.plot(self.x, data, label=f"{self.pdf.columns[i]}")
-            self.axes.legend(loc='best')
-            self.axes.set_ylabel("Températures (K)")
+            #for i in range(1,5):
+            #    data = self.pdf[self.pdf.columns[i]].values.tolist()
+             #   self.axes.plot(self.x, data, label=f"{self.pdf.columns[i]}")
+            #self.axes.legend(loc='best')
+            #self.axes.set_ylabel("Températures (K)")
         
-        elif self.datatype == "water flow with quantiles":
-            #On a 3 colonnes à tracer
+        elif self.datatype == "water flow with quantiles" or self.datatype == "temperature with quantiles":
             quantiles = list(self.pdf.columns)
             for i in range(1,len(quantiles)):
                 data = self.pdf[self.pdf.columns[i]].values.tolist()
                 self.axes.plot(self.x, data, label=f"{quantiles[i]}")
             self.axes.legend(loc="best")
-            self.axes.set_ylabel("Débit d'eau (m/s)")
+            if self.datatype == "water flow with quantiles":
+                self.axes.set_ylabel("Débit d'eau (m/s)")
+            else :
+                self.axes.set_ylabel("Températures (K)")
 
         else : 
             data = self.pdf[self.pdf.columns[1]].values.tolist()
