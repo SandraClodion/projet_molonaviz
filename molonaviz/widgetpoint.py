@@ -215,12 +215,12 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 print("Model successfully created !")
 
     
-        if res == 11 : #MCMC
-            nb_iter, priors, nb_cells = dlg.getInputMCMC()
+        if res == 1 : #MCMC
+            nb_iter, priors, nb_cells, quantiles = dlg.getInputMCMC()
             # compute = Compute(self.point)
             # compute.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
             self.computeEngine.MCMCFinished.connect(self.onMCMCFinished)
-            self.computeEngine.computeMCMC(nb_iter, priors, nb_cells, sensorDir)
+            self.computeEngine.computeMCMC(nb_iter, priors, nb_cells, sensorDir, quantiles)
 
     def onMCMCFinished(self):
 
