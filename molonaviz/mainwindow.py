@@ -210,7 +210,8 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
                 print(f"Point import aborted : {str(e)}")
                 pointDir = point.getPointDir()
                 if os.path.exists(pointDir):
-                    shutil.rmtree(pointDir)
+                    #shutil.rmtree(pointDir)
+                    os.remove(pointDir)
                 displayCriticalMessage('Point import aborted', f"Couldn't import point due to the following error : \n{str(e)}")
            
     def openPoint(self):
