@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Ouvrir une étude</string>
+   <string>Open your study</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

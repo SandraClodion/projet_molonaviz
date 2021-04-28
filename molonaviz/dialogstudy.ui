@@ -20,7 +20,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Study Dialog</string>
+   <string>Create your Study</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

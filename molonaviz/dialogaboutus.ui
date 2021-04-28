@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>About Us</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="1">
@@ -32,7 +32,7 @@
        <item>
         <widget class="QLabel" name="labelLogo2">
          <property name="text">
-          <string>TextLabel</string>
+          <string/>
          </property>
          <property name="pixmap">
           <pixmap>../../../../../../Library/Containers/com.apple.mail/Data/Desktop/Capture d’écran 2021-04-28 à 14.34.03.png</pixmap>
@@ -75,7 +75,7 @@ Contact : nicolas.flipo@mines-paristech.fr
        <item>
         <widget class="QLabel" name="labelLogo1">
          <property name="text">
-          <string>TextLabel</string>
+          <string/>
          </property>
          <property name="pixmap">
           <pixmap>../../../../../../Library/Containers/com.apple.mail/Data/Downloads/178817831_166642522036788_6433939548656503243_n.png</pixmap>
