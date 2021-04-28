@@ -56,11 +56,15 @@ class Point(object):
         
 
     def loadPoint(self, pointModel): 
-        item = QtGui.QStandardItem(self.name)
-        item.setData(self, QtCore.Qt.UserRole)
-        pointModel.appendRow(item)
-        self.tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
-        self.pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
+        try :
+            item = QtGui.QStandardItem(self.name)
+            item.setData(self, QtCore.Qt.UserRole)
+            pointModel.appendRow(item)
+            self.tprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_temperatures.csv")
+            self.pprocessedfile = os.path.join(self.pointDir, "processed_data", "processed_pressures.csv")
+        except Exception as e :
+            shutil.rmtree(self.pointDir)
+            raise e
     
     def delete(self):
         shutil.rmtree(self.pointDir)

@@ -123,6 +123,7 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
             
             if nPath<5 : 
                 displayWarningMessage(f'Only {nPath} lines have been successfully filled. Please fill in missing information manually')
+                self.lineEditDataDir.setText('')
                 self.radioButtonManual.setChecked(True)
 
 
