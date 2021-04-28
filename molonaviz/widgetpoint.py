@@ -218,6 +218,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 self.graphintertempdirect.update_(self.dfsolvedtemp, self.dfdepths)
                 self.graphfluxesdirect.update_(self.dfadvec, self.dfconduc, self.dftot, self.dfdepths)
                 self.parapluies.update_(self.dfsolvedtemp, self.dfdepths)
+                self.paramsModel.setData(self.dfparams)
                 print("Model successfully updated !")
 
             else :
@@ -240,6 +241,9 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                 #Température à l'interface
                 clearLayout(self.vboxintertempdirect)
                 self.plotInterfaceTempDirect(self.dfsolvedtemp, self.dfdepths)
+                
+                # Les paramètres utilisés
+                self.setParamsModel(self.dfparams)
 
                 self.directmodeliscomputed = True
                 print("Model successfully created !")
@@ -372,7 +376,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             for depth in self.dfdepths.values.tolist():
                 self.comboBoxDepth.insertItem(len(self.dfdepths.values.tolist()), str(depth))
 
-            #Le reste à rajouter plus tard
+            #Les paramètres
+            self.setParamsModel(self.dfparams)
 
         else:
             self.vboxwaterdirect.addWidget(QtWidgets.QLabel("Direct Model has not been computed yet"))
@@ -428,6 +433,8 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.dfadvec = pd.read_csv(self.directmodelDir + "/advective_flux.csv")
             self.dfconduc = pd.read_csv(self.directmodelDir + "/conductive_flux.csv")
             self.dftot = pd.read_csv(self.directmodelDir + "/total_flux.csv")
+            self.dfparams = pd.read_csv(self.directmodelDir + "/params.csv")
+            self.dfparams = self.dfparams[self.dfparams.columns[1:]].round(decimals=3)
 
         elif mode == 'MCMC':
             self.dfwater = pd.read_csv(self.MCMCDir + "/MCMC_flows_quantiles.csv")
@@ -524,6 +531,17 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.tableViewBestParams.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         self.tableViewBestParams.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
         self.tableViewBestParams.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
+    
+    def setParamsModel(self, dfparams):
+        self.paramsModel = PandasModel(self.dfparams)
+        self.tableViewParams.setModel(self.paramsModel)
+        self.tableViewParams.resizeColumnsToContents()
+        self.tableViewParams.verticalHeader().hide()
+        self.tableViewParams.verticalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        self.tableViewParams.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        self.tableViewParams.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        self.tableViewParams.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        self.tableViewParams.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
     
     def label_update(self):
         self.labelBins.setText(str(self.horizontalSliderBins.value()))

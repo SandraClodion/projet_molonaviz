@@ -110,12 +110,32 @@ class Compute(QtCore.QObject):
         # Sauvegarde des différents résultats du modèle direct
         resultsDir = os.path.join(self.point.getPointDir(), 'results', 'direct_model_results')
         self.saveResults(resultsDir)
+        self.saveParams(params, resultsDir)
+    
+
+    def saveParams(self, params: tuple, resultsDir: str):
+        """
+        Sauvegarde les paramètres du modèle direct dans un fichier csv en local
+        Pour accéder au fichier : pointDir --> results --> direct_model_results --> params.csv
+        """
+
+        params_dict = {
+            'moinslog10K': [params[0]], 
+            'n': [params[1]], 
+            'lambda_s': [params[2]], 
+            'rhos_cs': [params[3]]
+        }
+
+        df_params = pd.DataFrame.from_dict(params_dict)
+
+        params_file = os.path.join(resultsDir, 'params.csv')
+        df_params.to_csv(params_file, index=True)
     
   
     def saveBestParams(self, resultsDir: str):
         """
         Sauvegarde les meilleurs paramètres inférés par la MMC dans un fichier csv en local
-        Pour accéder au fichier : pointDir --> results --> MCMC_best_params.csv
+        Pour accéder au fichier : pointDir --> results --> MCMC_results --> MCMC_best_params.csv
         """
 
         best_params = self.col.get_best_param()
