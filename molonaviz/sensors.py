@@ -33,9 +33,10 @@ class PressureSensor(object):
         tension = columnsNames[2]
 
         df = df.astype({temperature : np.float, tension : np.float})
-        df[temperature] = df[temperature] + 273.15 #conversion en Kelvin
         a, b, c = self.intercept, self.dudh, self.dudt
+        # La formule s'applique sur des °C
         df['Pression différentielle (m)'] = (1/b)*(df[tension] - c*df[temperature] - a)
+        df[temperature] = df[temperature] + 273.15 #conversion en Kelvin
         df.drop([tension], axis=1, inplace=True)
         df = df[[times, 'Pression différentielle (m)', temperature]] #on réordonne les colonnes
         df.rename(columns={temperature: 'Temperature (K)'}, inplace=True)
