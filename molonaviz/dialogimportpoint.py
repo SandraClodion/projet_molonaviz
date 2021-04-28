@@ -128,7 +128,7 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
 
 
     def browseInfo(self):
-        filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
+        filePath = QtWidgets.QFileDialog.getOpenFileName(self, "Get Info File")[0]
         if filePath:
             self.lineEditInfo.setText(filePath) 
             try :
@@ -148,22 +148,22 @@ class DialogImportPoint(QtWidgets.QDialog, From_DialogImportPoint):
                 raise CustomError("Parser error. You might have selected the wrong file")
     
     def browsePressures(self):
-        filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
+        filePath = QtWidgets.QFileDialog.getOpenFileName(self, "Get Pressure Measures File")[0]
         if filePath:
             self.lineEditPressures.setText(filePath) 
     
     def browseTemperatures(self):
-        filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
+        filePath = QtWidgets.QFileDialog.getOpenFileName(self, "Get Temperature Measures File")[0]
         if filePath:
             self.lineEditTemperatures.setText(filePath) 
     
     def browseNotice(self):
-        filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
+        filePath = QtWidgets.QFileDialog.getOpenFileName(self, "Get Notice File")[0]
         if filePath:
             self.lineEditNotice.setText(filePath) 
     
     def browseConfig(self):
-        filePath = QtWidgets.QFileDialog.getOpenFileName(self)[0]
+        filePath = QtWidgets.QFileDialog.getOpenFileName(self, "Get Configuration File")[0]
         if filePath:
             self.lineEditConfig.setText(filePath) 
     
