@@ -93,7 +93,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>6</number>
+      <number>8</number>
      </property>
      <widget class="QWidget" name="tabInfos">
       <attribute name="title">
@@ -155,8 +155,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>1336</width>
-                 <height>357</height>
+                 <width>98</width>
+                 <height>40</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -228,8 +228,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>1368</width>
-            <height>666</height>
+            <width>129</width>
+            <height>69</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -283,8 +283,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>1368</width>
-            <height>649</height>
+            <width>322</width>
+            <height>69</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -335,8 +335,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>1368</width>
-            <height>649</height>
+            <width>358</width>
+            <height>103</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -507,8 +507,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>1368</width>
-            <height>649</height>
+            <width>332</width>
+            <height>107</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -599,8 +599,14 @@
          </item>
          <item>
           <widget class="QSlider" name="horizontalSliderBins">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>200</number>
+           </property>
            <property name="value">
-            <number>0</number>
+            <number>60</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
