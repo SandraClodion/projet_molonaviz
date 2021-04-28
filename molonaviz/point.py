@@ -177,6 +177,9 @@ class Point(object):
             new_dft.to_csv(self.tprocessedfile, index=False)
             new_dfp.to_csv(self.pprocessedfile, index=False)
 
+            self.dftemp = pd.read_csv(self.tprocessedfile)
+            self.dfpress = pd.read_csv(self.pprocessedfile)
+
             return(new_dft, new_dfp)
         
         except Exception as e :
