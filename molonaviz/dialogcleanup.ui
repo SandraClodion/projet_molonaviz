@@ -36,13 +36,39 @@
    <item>
     <widget class="QPlainTextEdit" name="plainTextEdit">
      <property name="plainText">
-      <string>#Pour enlever les 5 premières valeurs:
-dft = dft.iloc[5:]
-dfp = dfp.iloc[5:]
+      <string># Point 27
 
-#Pour enlever la 6ème valeur:
-dft.drop([6])
-dfp.drop([6])</string>
+# Remove measures after 2016/03/30
+dft = dft.iloc[:2236]
+dfp = dfp.iloc[:2236]
+
+# Remove all first measures up to 2016/03/19
+dft = dft.iloc[1084:]
+dfp = dfp.iloc[1084:]
+
+# TODO : use date/time comparison instead of sample indices
+
+
+
+
+# Point 23
+
+# Import numpy
+import numpy as np
+
+# Remove measures after 2015/12/15 10:00:00
+dft = dft.iloc[:660]
+dfp = dfp.iloc[:660]
+
+# Remove all first measures up to 2015/12/19 12:00:00
+dft = dft.iloc[92:]
+dfp = dfp.iloc[92:]
+
+
+# Remove Spurious Temperatures (Kelvin)
+dft.iloc[:,1:]=np.where((dft.iloc[:,1:]&lt;274), np.NaN, dft.iloc[:,1:])
+dft.iloc[:,1:]=np.where((dft.iloc[:,1:]&gt;304), np.NaN, dft.iloc[:,1:])
+</string>
      </property>
     </widget>
    </item>
