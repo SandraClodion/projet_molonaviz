@@ -201,6 +201,7 @@ class MplTempbydepth(FigureCanvasQTAgg):
             #Il n'y a pas de quantiles à prendre en compte
             data = self.pdf[self.pdf.columns[self.depth_index+1]].values.tolist()
             self.axes.plot(self.x, data)
+            print(len(data))
         elif self.datatype == "MCMC":
             #Il faut prendre en compte les quantiles
             index = 1 + self.nb_quantiles*self.depth_index
