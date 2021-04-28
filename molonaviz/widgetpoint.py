@@ -141,7 +141,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.tableViewTemp.resizeColumnsToContents()
             self.tableViewPress.resizeColumnsToContents()
             self.graphpress.update_(self.dfpress)
-            self.graphtemp.update_(self.dftemp)
+            self.graphtemp.update_(self.dftemp, dfpressure=self.dfpress)
             print("Data successfully reset !")
 
 
@@ -164,7 +164,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                     self.tableViewTemp.resizeColumnsToContents()
                     self.tableViewPress.resizeColumnsToContents()
                     self.graphpress.update_(self.dfpress)
-                    self.graphtemp.update_(self.dftemp)
+                    self.graphtemp.update_(self.dftemp, dfpressure=self.dfpress)
                     print("Plots successfully updated")
                 except Exception as e :
                     print(e, "==> Clean-up aborted")
@@ -283,7 +283,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         vbox.addWidget(self.toolbarPress)
 
         #Les températures :
-        self.graphtemp = MplCanvas(self.dftemp, "temperature")
+        self.graphtemp = MplCanvas(self.dftemp, "temperature", dfpressure=self.dfpress)
         self.toolbarTemp = NavigationToolbar(self.graphtemp, self)
         vbox2 = QtWidgets.QVBoxLayout()
         self.groupBoxTemp.setLayout(vbox2)
