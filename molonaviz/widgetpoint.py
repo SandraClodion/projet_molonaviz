@@ -142,7 +142,26 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.tableViewPress.resizeColumnsToContents()
             self.graphpress.update_(self.dfpress)
             self.graphtemp.update_(self.dftemp, dfpressure=self.dfpress)
+
+            self.directmodeliscomputed = False
+            self.MCMCiscomputed = False
+            ##Clear des layouts :
+            clearLayout(self.vboxwaterdirect)
+            clearLayout(self.vboxwaterMCMC)
+            clearLayout(self.vboxfluxesdirect)
+            clearLayout(self.vboxfluxesMCMC)
+            clearLayout(self.vboxfrisetempdirect)
+            clearLayout(self.vboxfrisetempMCMC)
+            clearLayout(self.vboxintertempdirect)
+            clearLayout(self.vboxintertempMCMC)
+            clearLayout(self.vboxsolvedtempdirect)
+            clearLayout(self.vboxsolvedtempMCMC)
+            clearLayout(self.vboxhistos)
+            self.tableViewBestParams.setModel(PandasModel())
+
+            self.setResultsPlots()
             print("Data successfully reset !")
+            
 
 
     def cleanup(self):
@@ -302,6 +321,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         self.groupBoxWaterMCMC.setLayout(self.vboxwaterMCMC)
         
         # Le reste directement dans le fichier .ui (permet de voir les 2 méthodes)
+
 
         if self.directmodeliscomputed:
 

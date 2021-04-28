@@ -127,7 +127,6 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         quantiles = quantiles.split(",")
         quantiles = tuple(quantiles)
         quantiles = [float(quantile) for quantile in quantiles]
-        print(quantiles)
         
         self.done(1)
         return nb_iter, priors, nb_cells, quantiles
