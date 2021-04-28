@@ -14,6 +14,7 @@ from compute import Compute
 import numpy as np
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from usefulfonctions import clearLayout
+from dialogreset import DialogReset
 
 From_WidgetPoint = uic.loadUiType(os.path.join(os.path.dirname(__file__),"widgetpoint.ui"))[0]
 
@@ -126,18 +127,22 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
 
 
     def reset(self):
-        print("Resetting data...")
-        self.point.processData(self.study.getSensorDir())
-        #On actualise les modèles
-        self.dfpress = pd.read_csv(self.PressureDir)
-        self.dftemp = pd.read_csv(self.TemperatureDir)
-        self.currentTemperatureModel.setData(self.dftemp)
-        self.currentPressureModel.setData(self.dfpress)
-        self.tableViewTemp.resizeColumnsToContents()
-        self.tableViewPress.resizeColumnsToContents()
-        self.graphpress.update_(self.dfpress)
-        self.graphtemp.update_(self.dftemp)
-        print("Data successfully reset !")
+        dlg = DialogReset()
+        res = dlg.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            print("Resetting data...")
+            self.point.processData(self.study.getSensorDir())
+            self.point.reset()
+            #On actualise les modèles
+            self.dfpress = pd.read_csv(self.PressureDir)
+            self.dftemp = pd.read_csv(self.TemperatureDir)
+            self.currentTemperatureModel.setData(self.dftemp)
+            self.currentPressureModel.setData(self.dfpress)
+            self.tableViewTemp.resizeColumnsToContents()
+            self.tableViewPress.resizeColumnsToContents()
+            self.graphpress.update_(self.dfpress)
+            self.graphtemp.update_(self.dftemp, dfpressure=self.dfpress)
+            print("Data successfully reset !")
 
 
     def cleanup(self):
@@ -159,7 +164,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
                     self.tableViewTemp.resizeColumnsToContents()
                     self.tableViewPress.resizeColumnsToContents()
                     self.graphpress.update_(self.dfpress)
-                    self.graphtemp.update_(self.dftemp)
+                    self.graphtemp.update_(self.dftemp, dfpressure=self.dfpress)
                     print("Plots successfully updated")
                 except Exception as e :
                     print(e, "==> Clean-up aborted")
@@ -278,7 +283,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
         vbox.addWidget(self.toolbarPress)
 
         #Les températures :
-        self.graphtemp = MplCanvas(self.dftemp, "temperature")
+        self.graphtemp = MplCanvas(self.dftemp, "temperature", dfpressure=self.dfpress)
         self.toolbarTemp = NavigationToolbar(self.graphtemp, self)
         vbox2 = QtWidgets.QVBoxLayout()
         self.groupBoxTemp.setLayout(vbox2)

@@ -18,7 +18,7 @@ from matplotlib.ticker import MaxNLocator
 
 class MplCanvas(FigureCanvasQTAgg):
 
-    def __init__(self, pdf, datatype, depths=None, parent=None, width=5, height=5, dpi=100):
+    def __init__(self, pdf, datatype, depths=None, dfpressure=None, parent=None, width=5, height=5, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)
         super(MplCanvas, self).__init__(self.fig)
@@ -26,6 +26,7 @@ class MplCanvas(FigureCanvasQTAgg):
         self.pdf = pdf
         self.datatype = datatype
         self.depths = depths
+        self.dfpressure = dfpressure
         self.list_Curves = ["pressure", "temperature", "water flow", "temperature interface", "temperature with quantiles", "water flow with quantiles"]
         if self.datatype in self.list_Curves:
             self.setTime()
@@ -53,25 +54,30 @@ class MplCanvas(FigureCanvasQTAgg):
             for i in range(1,5):
                 data = self.pdf[self.pdf.columns[i]].values.tolist()
                 self.axes.plot(self.x, data, label=f"Capteur n°{i}")
+            #On rajoute la température du capteur de pression
+            last_temp = self.dfpressure[self.dfpressure.columns[2]].values.tolist()
+            self.axes.plot(self.x, last_temp, label = "Capteur de pression")
             self.axes.legend(loc='best')
             self.axes.set_ylabel("Températures (K)")
         
-        elif self.datatype == "temperature with quantiles":
+        #elif self.datatype == "temperature with quantiles":
             #On a 4 colonnes de températures
-            for i in range(1,5):
-                data = self.pdf[self.pdf.columns[i]].values.tolist()
-                self.axes.plot(self.x, data, label=f"{self.pdf.columns[i]}")
-            self.axes.legend(loc='best')
-            self.axes.set_ylabel("Températures (K)")
+            #for i in range(1,5):
+            #    data = self.pdf[self.pdf.columns[i]].values.tolist()
+             #   self.axes.plot(self.x, data, label=f"{self.pdf.columns[i]}")
+            #self.axes.legend(loc='best')
+            #self.axes.set_ylabel("Températures (K)")
         
-        elif self.datatype == "water flow with quantiles":
-            #On a 3 colonnes à tracer
+        elif self.datatype == "water flow with quantiles" or self.datatype == "temperature with quantiles":
             quantiles = list(self.pdf.columns)
             for i in range(1,len(quantiles)):
                 data = self.pdf[self.pdf.columns[i]].values.tolist()
                 self.axes.plot(self.x, data, label=f"{quantiles[i]}")
             self.axes.legend(loc="best")
-            self.axes.set_ylabel("Débit d'eau (m/s)")
+            if self.datatype == "water flow with quantiles":
+                self.axes.set_ylabel("Débit d'eau (m/s)")
+            else :
+                self.axes.set_ylabel("Températures (K)")
 
         else : 
             data = self.pdf[self.pdf.columns[1]].values.tolist()
@@ -109,10 +115,11 @@ class MplCanvas(FigureCanvasQTAgg):
             print('Not enough values in files')
         self.axes.legend(loc='best', fontsize='xx-small')
 
-    def update_(self, new_pdf, depths=None):
+    def update_(self, new_pdf, depths=None, dfpressure=None):
         self.axes.clear()
         self.pdf = new_pdf
         self.depths = depths
+        self.dfpressure = dfpressure
         if self.datatype in self.list_Curves :
             #print("hello curve")
             self.setTime()

@@ -173,7 +173,15 @@ class Point(object):
         
         except Exception as e :
             raise e
-
+    
+    def reset(self):
+        resultsDir = self.pointDir + "/results"
+        DirectresultsDir = resultsDir + "/direct_model_results"
+        MCMCresultsDir = resultsDir + "/MCMC_results"
+        for fichier in os.listdir(DirectresultsDir) :
+            os.remove(DirectresultsDir + "/" + fichier)
+        for fichier in os.listdir(MCMCresultsDir) :
+            os.remove(MCMCresultsDir + "/" + fichier)
     
     def setColumn(self, sensorDir):
 
