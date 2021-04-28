@@ -93,7 +93,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>8</number>
      </property>
      <widget class="QWidget" name="tabInfos">
       <attribute name="title">
@@ -504,9 +504,16 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Best Parameters (rounded)  :</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QTableView" name="tableViewBestParams">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -514,23 +521,31 @@
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>79</height>
+             <height>60</height>
             </size>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer_2">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Bins :</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="horizontalSliderBins">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>60</string>
            </property>
-          </spacer>
+          </widget>
          </item>
         </layout>
        </item>
@@ -545,7 +560,7 @@
             <x>0</x>
             <y>0</y>
             <width>1368</width>
-            <height>558</height>
+            <height>577</height>
            </rect>
           </property>
           <property name="sizePolicy">
