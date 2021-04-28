@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1300</width>
-    <height>700</height>
+    <width>1019</width>
+    <height>901</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1300</width>
+     <width>1019</width>
      <height>22</height>
     </rect>
    </property>
@@ -49,6 +49,10 @@
     </property>
     <addaction name="actionSwitch_To_Tabbed_View"/>
     <addaction name="actionSwitch_To_SubWindow_View"/>
+    <addaction name="separator"/>
+    <addaction name="actionData_Points"/>
+    <addaction name="actionSensors"/>
+    <addaction name="actionApplication_Messages"/>
    </widget>
    <widget class="QMenu" name="menuMolonaViz">
     <property name="title">
@@ -187,7 +191,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="dockMessages">
    <property name="windowTitle">
     <string>Application Messages</string>
    </property>
@@ -273,6 +277,39 @@
   <action name="actionPreferences">
    <property name="text">
     <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionData_Points">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Points</string>
+   </property>
+  </action>
+  <action name="actionSensors">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sensors</string>
+   </property>
+  </action>
+  <action name="actionApplication_Messages">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Application Messages</string>
    </property>
   </action>
  </widget>
