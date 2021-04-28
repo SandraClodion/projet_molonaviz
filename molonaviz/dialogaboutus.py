@@ -14,8 +14,8 @@ class DialogAboutUs(QtWidgets.QDialog,From_DialogAboutUs):
         
         self.setupUi(self)
 
-        logo1path = os.path.join(os.getcwd(), "molonaviz", "MolonavizIcon.png")
-        logo2path = os.path.join(os.getcwd(), "molonaviz", "LogoMines.jpeg")
+        logo1path = os.path.join(os.path.dirname(__file__), "MolonavizIcon.png")
+        logo2path = os.path.join(os.path.dirname(__file__), "LogoMines.jpeg")
         print(logo1path)
         print(logo2path)
 
