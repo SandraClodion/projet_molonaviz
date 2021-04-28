@@ -380,7 +380,7 @@ class WidgetPoint(QtWidgets.QWidget,From_WidgetPoint):
             self.dfconduc = pd.read_csv(self.MCMCDir + "/conductive_flux.csv")
             self.dftot = pd.read_csv(self.MCMCDir + "/total_flux.csv")
             self.dfbestparams = pd.read_csv(self.MCMCDir + "/MCMC_best_params.csv")
-            self.dfbestparams = self.dfbestparams[self.dfbestparams.columns[1:]].round(decimals=4)
+            self.dfbestparams = self.dfbestparams[self.dfbestparams.columns[1:]].round(decimals=3)
             print(self.dfbestparams)
 
 
