@@ -1,6 +1,7 @@
 # MolonaViz
 
 MolonaViz is a graphic interface developed in the the context of the MOLONARI project 
+
 This version of MolonaViz is a development version. Some features are not yet implemented or are incomplete.
 Some bugs may also appear.
 
