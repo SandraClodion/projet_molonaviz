@@ -2,6 +2,7 @@ import sys
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Qt5Agg')
+from matplotlib.ticker import FormatStrFormatter
 import pandas as pd
 from datetime import datetime
 
@@ -99,6 +100,7 @@ class MplCanvas(FigureCanvasQTAgg):
         depths = self.depths[self.depths.columns[0]].values.tolist()
         image = self.axes.imshow(profils, cmap=cm.Spectral_r, aspect="auto", extent=[self.x[0], self.x[-1], float(depths[-1]), float(depths[0])], data="float")
         self.axes.xaxis_date()
+        self.axes.set_ylabel("Profondeur (m)")
         self.colorbar = plt.colorbar(image, ax=self.axes)
 
     def setParapluies(self):
@@ -156,6 +158,7 @@ class MplCanvasHisto(FigureCanvasQTAgg):
         self.ax[1].set_title("Histogramme a posteriori des n")
         self.ax[2].set_title("Histogramme a posteriori des lambda_s")
         self.ax[3].set_title("Histogramme a posteriori des rho_s * c_s")
+        self.ax[3].tick_params(labelsize = 'small', labelrotation = 25)
         self.fig.tight_layout()
     
     def update_(self, new_df):
