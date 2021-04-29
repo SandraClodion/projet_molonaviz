@@ -206,7 +206,7 @@ class MplTempbydepth(FigureCanvasQTAgg):
             #print(len(data))
         elif self.datatype == "MCMC":
             #Il faut prendre en compte les quantiles
-            index = 1 + self.nb_quantiles*self.depth_index
+            index = 1 + (1+self.nb_quantiles)*self.depth_index
             for i in range(self.nb_quantiles+1):
                 label = self.pdf.columns[index + i]
                 data = self.pdf[label].values.tolist()

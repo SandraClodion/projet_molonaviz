@@ -76,6 +76,9 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockDataPoints">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="windowTitle">
     <string>Data Points</string>
    </property>
@@ -95,6 +98,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockSensors">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="allowedAreas">
     <set>Qt::AllDockWidgetAreas</set>
    </property>
@@ -192,6 +198,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockMessages">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="windowTitle">
     <string>Application Messages</string>
    </property>

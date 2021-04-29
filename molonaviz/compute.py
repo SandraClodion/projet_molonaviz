@@ -217,20 +217,19 @@ class Compute(QtCore.QObject):
 
         dataframe_list = []
 
+        # Formatage des dates
+        n_dates = len(times)
+        times_string = np.zeros((n_dates,1))
+        times_string = times_string.astype('str')
+        for i in range(n_dates):
+            times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
+
         for l in range(self.col.temps_solve.shape[1]):
 
             temp = self.col.temps_solve[:,l] #température à la lème profondeur
             QUANTILES = []
             for quantile in self.quantiles :
                 QUANTILES.append(self.col.get_temps_quantile(quantile)[:,l])
-
-
-            # Formatage des dates
-            n_dates = len(times)
-            times_string = np.zeros((n_dates,1))
-            times_string = times_string.astype('str')
-            for i in range(n_dates):
-                times_string[i,0] = times[i].strftime('%y/%m/%d %H:%M:%S')
 
             # Création du dataframe
             np_temps_quantiles = np.zeros((n_dates,len(QUANTILES)+1))
@@ -248,7 +247,9 @@ class Compute(QtCore.QObject):
             columns=columns_names)
             dataframe_list.append(df_temps_quantiles)
 
-        for dataframe in dataframe_list :
+        df_temps_quantiles = dataframe_list[0]
+        for i in range (1, len(dataframe_list)) :
+            dataframe = dataframe_list[i]
             df_temps_quantiles = pd.concat([df_temps_quantiles, dataframe[dataframe.columns[1:]]], axis=1)
         # Sauvegarde sous forme d'un fichier csv
         temps_quantiles_file = os.path.join(resultsDir, 'MCMC_temps_quantiles.csv')

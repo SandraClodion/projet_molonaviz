@@ -101,9 +101,10 @@ class MainWindow(QtWidgets.QMainWindow,From_MainWindow):
     
     def changeDockPointsStatus(self):
         if self.actionData_Points.isChecked() == True :
-            print(True)
+            self.dockDataPoints.hide()
+            self.actionData_Points.setChecked(False)
         else :
-            print(False)
+            pass
 
     def createStudy(self):
         dlg = DialogStudy()
