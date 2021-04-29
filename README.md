@@ -15,7 +15,7 @@ To install pyheatmy : https://github.com/mathisbrdn/pyheatmy
 pip install -r requirements.txt
 ```
 ### 3rd step
-Execute mainwindow.py
+Execute `mainwindow.py
 
 ***
 
