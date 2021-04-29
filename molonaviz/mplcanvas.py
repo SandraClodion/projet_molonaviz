@@ -156,6 +156,7 @@ class MplCanvasHisto(FigureCanvasQTAgg):
         self.ax[1].set_title("Histogramme a posteriori des n")
         self.ax[2].set_title("Histogramme a posteriori des lambda_s")
         self.ax[3].set_title("Histogramme a posteriori des rho_s * c_s")
+        self.fig.tight_layout()
     
     def update_(self, new_df):
         self.df = new_df
