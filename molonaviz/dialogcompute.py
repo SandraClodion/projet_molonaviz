@@ -1,6 +1,7 @@
 import sys
 import os
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
+from math import log10
 
 From_DialogCompute = uic.loadUiType(os.path.join(os.path.dirname(__file__),"dialogcompute.ui"))[0]
 
@@ -15,14 +16,10 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
 
         self.setMouseTracking(True)
 
-        self.label10Power.setText(f"10 <sup>-</sup>")
-        self.label10Power_2.setText(f"10 <sup>-</sup>")
-        self.label10Power_3.setText(f"10 <sup>-</sup>")
-
         #self.permeabilityValidator = QtGui.QDoubleValidator(0.0, 5.0, 2)
-        #self.lineEditMoinsLog10KDirect.setValidator(self.permeabilityValidator)
-        #self.lineEditMoinsLog10KMax.setValidator(self.permeabilityValidator)
-        #self.lineEditMoinsLog10KMin.setValidator(self.permeabilityValidator)
+        #self.lineEditKDirect.setValidator(self.permeabilityValidator)
+        #self.lineEditKMax.setValidator(self.permeabilityValidator)
+        #self.lineEditKMin.setValidator(self.permeabilityValidator)
 
         for i in range(50, 151, 5):
             self.comboBoxNCellsDirect.addItem(f'{i}')
@@ -30,11 +27,11 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         
         self.setDefaultValues()
 
-        self.directModelLineEdits = [self.lineEditMoinsLog10KDirect, self.lineEditPorosityDirect, self.lineEditThermalConductivityDirect,
+        self.directModelLineEdits = [self.lineEditKDirect, self.lineEditPorosityDirect, self.lineEditThermalConductivityDirect,
             self.lineEditThermalCapacityDirect]
 
         self.MCMCLineEdits = [self.lineEditMaxIterMCMC, 
-            self.lineEditMoinsLog10KMin, self.lineEditMoinsLog10KMax, self.lineEditMoinsLog10KSigma,
+            self.lineEditKMin, self.lineEditKMax, self.lineEditMoinsLog10KSigma,
             self.lineEditPorosityMin, self.lineEditPorosityMax, self.lineEditPorositySigma,
             self.lineEditThermalConductivityMin, self.lineEditThermalConductivityMax, self.lineEditThermalConductivitySigma,
             self.lineEditThermalCapacityMin, self.lineEditThermalCapacityMax, self.lineEditThermalCapacitySigma]
@@ -51,10 +48,41 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         self.pushButtonRestoreDefault.clicked.connect(self.setDefaultValues)
         self.pushButtonRestoreDefault.setToolTip("All parameters will be set to default value")
 
-        self.labelMoinsLog10KDirect.setToolTip("Please enter -log10K, K being permeability")
+        #self.labelMoinsLog10KDirect.setToolTip("Please enter -log10K, K being permeability")
+        self.labelsigmaK.setToolTip(f"WARNING : sigma applies to -log<sub>10<sub>K")
 
     def setDefaultValues(self):
-        pass #À COMPLÉTER
+
+        # Direct model
+        self.lineEditKDirect.setText('1e-5')
+        self.lineEditPorosityDirect.setText('0.15')
+        self.lineEditThermalConductivityDirect.setText('3.4')
+        self.lineEditThermalCapacityDirect.setText('5e6')
+        self.comboBoxNCellsDirect.setCurrentIndex(10) #100 cellules
+
+        # MCMC
+        self.lineEditMaxIterMCMC.setText('5000')
+
+        self.lineEditKMin.setText('1e-2')
+        self.lineEditKMax.setText('1e-7')
+        self.lineEditMoinsLog10KSigma.setText('0.01')
+
+        self.lineEditPorosityMin.setText('0.01')
+        self.lineEditPorosityMax.setText('0.25')
+        self.lineEditPorositySigma.setText('0.01')
+
+        self.lineEditThermalConductivityMin.setText('1')
+        self.lineEditThermalConductivityMax.setText('5')
+        self.lineEditThermalConductivitySigma.setText('0.05')
+
+        self.lineEditThermalCapacityMin.setText('5e5')
+        self.lineEditThermalCapacityMax.setText('1e7')
+        self.lineEditThermalCapacitySigma.setText('1e5')
+
+        self.comboBoxNCellsMCMC.setCurrentIndex(10) #100 cellules
+
+        self.lineEditQuantiles.setText('0.05,0.5,0.95')
+
 
     def inputDirect(self):
 
@@ -88,7 +116,7 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
 
 
     def getInputDirectModel(self):
-        moinslog10K = float(self.lineEditMoinsLog10KDirect.text())
+        moinslog10K = -log10(float(self.lineEditKDirect.text()))
         n = float(self.lineEditPorosityDirect.text())
         lambda_s = float(self.lineEditThermalConductivityDirect.text())
         rhos_cs = float(self.lineEditThermalCapacityDirect.text())
@@ -101,9 +129,9 @@ class DialogCompute(QtWidgets.QDialog, From_DialogCompute):
         nb_iter = int(self.lineEditMaxIterMCMC.text())
         nb_cells = int(self.comboBoxNCellsMCMC.currentText())
 
-        moins10logKmin = float(self.lineEditMoinsLog10KMin.text())
-        moins10logKmax = float(self.lineEditMoinsLog10KMax.text())
-        moins10logKsigma = float(self.lineEditMoinsLog10KSigma.text())
+        moins10logKmin = -log10(float(self.lineEditKMin.text()))
+        moins10logKmax = -log10(float(self.lineEditKMax.text()))
+        moins10logKsigma = -log10(float(self.lineEditMoinsLog10KSigma.text()))
 
         nmin = float(self.lineEditPorosityMin.text())
         nmax = float(self.lineEditPorosityMax.text())

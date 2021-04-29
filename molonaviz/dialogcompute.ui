@@ -67,28 +67,9 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1">
+         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1">
           <item>
-           <widget class="QLabel" name="label10Power">
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>40</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>10^-</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="lineEditMoinsLog10KDirect">
+           <widget class="QLineEdit" name="lineEditKDirect">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -308,7 +289,7 @@
          </widget>
         </item>
         <item row="1" column="5">
-         <widget class="QLabel" name="label_30">
+         <widget class="QLabel" name="labelsigmaK">
           <property name="text">
            <string>Sigma :</string>
           </property>
@@ -601,26 +582,7 @@
         <item row="1" column="2">
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
-           <widget class="QLabel" name="label10Power_2">
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>40</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>10^-</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="lineEditMoinsLog10KMin">
+           <widget class="QLineEdit" name="lineEditKMin">
             <property name="text">
              <string>2</string>
             </property>
@@ -641,26 +603,7 @@
         <item row="1" column="4">
          <layout class="QHBoxLayout" name="horizontalLayout_7">
           <item>
-           <widget class="QLabel" name="label10Power_3">
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>40</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>10^-</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="lineEditMoinsLog10KMax">
+           <widget class="QLineEdit" name="lineEditKMax">
             <property name="text">
              <string>7</string>
             </property>
