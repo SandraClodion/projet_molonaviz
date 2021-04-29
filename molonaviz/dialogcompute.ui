@@ -131,7 +131,7 @@
         <item row="3" column="0">
          <widget class="QLabel" name="label_5">
           <property name="text">
-           <string>Solid Volumetric Thermal Capacity (J/m^3/kg):</string>
+           <string>Solid Volumetric Thermal Capacity (J/m^3/K):</string>
           </property>
          </widget>
         </item>
@@ -388,7 +388,7 @@
            </size>
           </property>
           <property name="text">
-           <string>0.005</string>
+           <string>0.01</string>
           </property>
           <property name="readOnly">
            <bool>true</bool>
@@ -428,7 +428,7 @@
         <item row="4" column="0">
          <widget class="QLabel" name="label_16">
           <property name="text">
-           <string>Solid Volumetric Thermal Capacity (J/m^3/kg):</string>
+           <string>Solid Volumetric Thermal Capacity (J/m^3/K):</string>
           </property>
          </widget>
         </item>
@@ -509,7 +509,7 @@
         <item row="0" column="2">
          <widget class="QLineEdit" name="lineEditMaxIterMCMC">
           <property name="text">
-           <string>20</string>
+           <string>5000</string>
           </property>
          </widget>
         </item>
@@ -561,7 +561,7 @@
            </size>
           </property>
           <property name="text">
-           <string>0.005</string>
+           <string>0.01</string>
           </property>
           <property name="readOnly">
            <bool>true</bool>
