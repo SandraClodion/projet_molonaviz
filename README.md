@@ -18,6 +18,10 @@ pip install -r requirements.txt
 ### 3rd step
 Execute `mainwindow.py`
 
+## Acknowledgments
+
+Special thanks to Fabien Ors and our fellow students : Léa Mailhol, Maëlle Baronnet, Flore Maroni, Clara Allois, Raphael Grébert, Adrien Moulinas and Victor Gautier !
+
 ***
 
 ## Licence
